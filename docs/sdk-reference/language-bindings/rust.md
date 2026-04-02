@@ -88,4 +88,4 @@ async fn main() {
 
 ## Full API reference
 
-For all available daemon endpoints, see the [REST API](../rest-api.md). For the direct network path, see [ant-client Overview](../../cli-reference/overview.md).
+For all available daemon endpoints, see the [REST API](../rest-api.md). For the native Rust path, see [Developing in Rust](../../rust-reference/overview.md).

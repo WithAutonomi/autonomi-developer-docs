@@ -1,4 +1,4 @@
-# Daemon CLI: antd
+# Daemon Command Reference
 
 <!-- verification:
   source_repo: ant-sdk
@@ -12,7 +12,9 @@ Reference for the `antd` command-line interface.
 
 ## Usage
 
-### `antd`
+### Main command
+
+**Command:** `antd`
 
 Runs the local REST and gRPC gateway daemon for Autonomi.
 

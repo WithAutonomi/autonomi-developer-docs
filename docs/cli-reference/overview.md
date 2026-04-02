@@ -1,4 +1,4 @@
-# ant-client Overview
+# CLI Overview
 
 <!-- verification:
   source_repo: ant-client
@@ -8,24 +8,17 @@
   verification_mode: current-merged-truth
 -->
 
-`ant-client` is the direct CLI and Rust path to the Autonomi network. The repo contains `ant-core`, a headless Rust library, and `ant-cli`, the `ant` binary built on top of it.
+`ant` is the command-line interface for Autonomi. It gives you direct shell access to uploads, downloads, wallet inspection, chunk operations, and node-management workflows without running the SDK daemon.
 
-## When to use this path
+## When to use the CLI
 
-Use `ant-client` when you want:
+Use the CLI when you want:
 
-- a Rust-native client without the `antd` daemon
 - direct CLI access for file, chunk, wallet, or node-management workflows
 - direct control over bootstrap peers, devnet manifests, and EVM network selection
+- shell-first automation or operational workflows
 
-For most multi-language application work, `ant-sdk` remains the easier starting point.
-
-## Components
-
-| Component | What it does |
-|------|------|
-| `ant-core` | Direct network library for data operations, payments, local devnet helpers, and node management |
-| `ant-cli` | `ant` binary for file, chunk, wallet, and node commands |
+If you want SDK ergonomics in other languages, use the SDK path instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
 
 ## CLI shape
 
@@ -55,19 +48,19 @@ The current README documents install scripts for Linux, macOS, and Windows, plus
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash
 ```
 
-## Relationship to ant-sdk
+## Relationship to the other paths
 
-`ant-client` and `ant-sdk` reach the same network, but they have different shapes:
+The CLI, SDK, and native Rust paths reach the same network, but they have different shapes:
 
-| | ant-sdk | ant-client |
-|---|---|---|
-| Interface model | daemon + SDK bindings | direct CLI + Rust library |
-| Language coverage | multi-language | Rust and CLI |
-| Local process model | requires `antd` | no daemon for data commands |
-| Main entry point | REST/gRPC via `antd` | direct P2P connection |
+| | SDK path | CLI path | Native Rust path |
+|---|---|---|---|
+| Interface model | daemon + SDK bindings | direct CLI | direct Rust library |
+| Best for | app development in many languages | shell workflows and operations | daemon-free Rust development |
+| Local process model | requires `antd` | no daemon for data commands | no daemon |
+| Main entry point | REST/gRPC via `antd` | `ant` command | `ant-core` crate |
 
 ## Related pages
 
 - [Use the ant CLI](../getting-started/using-ant-client.md)
-- [Command Reference](command-reference.md)
-- [ant-core Rust Library](ant-core-library.md)
+- [CLI Command Reference](command-reference.md)
+- [Developing in Rust](../rust-reference/overview.md)

@@ -18,7 +18,7 @@ Use the current `ant-node` API when your Rust application needs to own a node ru
 
 ## Steps
 
-### 1. Add `ant-node`
+### 1. Add ant-node
 
 ```toml
 [dependencies]

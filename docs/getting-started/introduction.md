@@ -22,7 +22,7 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi is a decentralized, encrypted, content-addressed network for permanent, immutable data storage. You pay in ANT when you upload data, and the storage model is designed around pay-once uploads rather than ongoing storage fees.
+Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model use post-quantum cryptography. You pay in ANT token when you upload data, and the storage model is designed around pay-once uploads rather than ongoing storage fees.
 
 ## What makes it different
 
@@ -31,7 +31,7 @@ At a high level, Autonomi gives you:
 - immutable data storage: changing the content produces a new address instead of mutating the old one
 - client-side encryption through self-encryption before chunks are stored on the network
 - public and private retrieval paths through addresses and DataMaps
-- pay-once storage, with no separate retrieval payment flow in the current developer tooling
+- pay-once storage: you pay when you upload, and downloads are free
 
 ## Three ways to build on Autonomi
 
@@ -43,7 +43,7 @@ This is the easiest starting point for most developers.
 - it exposes REST and gRPC endpoints
 - language SDKs talk to that daemon for you
 
-Choose this path if you want to build in Python, JavaScript, TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
+Choose this path if you want to build in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
 
 ### 2. Use the ant CLI
 

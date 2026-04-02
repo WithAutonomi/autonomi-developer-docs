@@ -30,7 +30,7 @@ If you are reasoning about security, transport identity, or release authenticity
 
 ## How it works
 
-### `saorsa-pqc`
+### saorsa-pqc
 
 The current `saorsa-pqc` README describes a broader PQC library that includes:
 
@@ -41,7 +41,7 @@ The current `saorsa-pqc` README describes a broader PQC library that includes:
 
 So the library itself is broader than any single Autonomi-facing transport choice.
 
-### `saorsa-transport`
+### saorsa-transport
 
 The current `saorsa-transport` README describes its transport layer as pure post-quantum and highlights this pair for transport use:
 
@@ -50,7 +50,7 @@ The current `saorsa-transport` README describes its transport layer as pure post
 
 That repo frames the transport surface as no classical fallback in its documented model.
 
-### `ant-keygen`
+### ant-keygen
 
 `ant-keygen` is the concrete current CLI in scope that uses ML-DSA-65 today. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
 

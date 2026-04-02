@@ -23,13 +23,13 @@ This page is narrower than the earlier draft version. The sources in scope suppo
 
 ## How it works
 
-### HKDF in `saorsa-pqc`
+### HKDF in saorsa-pqc
 
 The current `saorsa-pqc` README documents HKDF-SHA3-256 and HKDF-SHA3-512 as available key-derivation primitives.
 
 That means the crypto library can derive new key material from shared secrets or existing key material, but the repo does not by itself define how application-level Autonomi keys should be organized.
 
-### Domain separation in `ant-keygen`
+### Domain separation in ant-keygen
 
 `ant-keygen` uses a `--context` flag for signing and verification. That context string keeps one signing domain separate from another, so the same raw key material is not reused blindly across unrelated purposes.
 

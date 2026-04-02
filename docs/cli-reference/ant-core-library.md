@@ -1,4 +1,4 @@
-# ant-core Rust Library
+# Rust Library Reference
 
 <!-- verification:
   source_repo: ant-client
@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-`ant-core` is the headless Rust library that powers the `ant` CLI and exposes direct Autonomi network operations without a daemon.
+`ant-core` is the native Rust library for building directly on Autonomi without the daemon.
 
 ## Install
 
@@ -144,6 +144,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Related pages
 
-- [ant-client Overview](overview.md)
-- [Command Reference](command-reference.md)
+- [Developing in Rust](../rust-reference/overview.md)
+- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
 - [Rust SDK](../sdk-reference/language-bindings/rust.md)

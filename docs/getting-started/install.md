@@ -10,7 +10,7 @@
 
 Use this path when you want to build on Autonomi through language SDKs and a local daemon. `antd` runs on your machine, talks to the network for you, and exposes REST and gRPC so your application can work through a stable local API.
 
-This is usually the best starting point if you are building in Python, JavaScript, TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another SDK language.
+This is usually the best starting point if you are building in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another SDK language.
 
 ## Prerequisites
 
@@ -18,6 +18,8 @@ This is usually the best starting point if you are building in Python, JavaScrip
 - Rust toolchain
 - For write operations on the default network: a wallet private key exported as `AUTONOMI_WALLET_KEY`
 - For a fully local devnet: Python 3.10+ and a sibling `ant-node` checkout if you plan to use `ant dev start`
+
+The SDK path is available in many languages. This guide focuses on cURL, Python, Node.js / TypeScript, and Rust in the featured examples. For the full list, see [Language Bindings Overview](../sdk-reference/language-bindings/overview.md).
 
 ## Steps
 
@@ -102,6 +104,6 @@ You built `antd` and started a local gateway for the Autonomi SDKs. The health c
 ## Next steps
 
 - [Your First Upload with the SDKs](hello-world.md)
-- [ant-sdk Overview](../sdk-reference/overview.md)
+- [SDK Overview](../sdk-reference/overview.md)
 - [REST API](../sdk-reference/rest-api.md)
 - [Use the ant CLI](using-ant-client.md)

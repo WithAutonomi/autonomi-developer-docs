@@ -8,15 +8,17 @@
   verification_mode: current-merged-truth
 -->
 
-This guide uses the SDK path through `antd`. It shows how to store public data, private data, files, and directories through the local daemon and language SDKs.
+In this guide, you use `antd`, the local daemon used by the SDKs, to store public data, private data, files, and directories through language SDKs.
 
 If you want direct shell access instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct programmatic Rust access without the daemon, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
+
+Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Prerequisites
 
 - `antd` running on `http://localhost:8082`
 - A configured wallet for write operations, or a local devnet started with `ant dev start`
-- Optional: Python or JavaScript runtime if you want to use those SDK tabs
+- Optional: Python, Node.js, or Rust toolchain if you want to use the SDK examples
 
 ## Steps
 
@@ -42,8 +44,8 @@ result = client.data_put_public(b"Hello, Autonomi!")
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -56,6 +58,20 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client.data_put_public(b"Hello, Autonomi!", None).await?;
+
+    println!("{}", result.address);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -78,8 +94,8 @@ data = client.data_get_public("<address>")
 print(data.decode())
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -94,9 +110,23 @@ main().catch((error) => {
 });
 ```
 {% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let data = client.data_get_public("<address>").await?;
+
+    println!("{}", String::from_utf8_lossy(&data));
+    Ok(())
+}
+```
+{% endtab %}
 {% endtabs %}
 
-The REST response uses base64 in the `data` field. The current Python and JavaScript SDKs decode it back into bytes.
+The REST response uses base64 in the `data` field. The Python, Node.js / TypeScript, and Rust SDKs decode it back into bytes.
 
 ### 3. Store private data
 
@@ -132,8 +162,8 @@ data_map = result.address
 print(data_map)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -149,9 +179,24 @@ main().catch((error) => {
 });
 ```
 {% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client.data_put_private(b"Secret message", None).await?;
+
+    let data_map = result.address;
+    println!("{}", data_map);
+    Ok(())
+}
+```
+{% endtab %}
 {% endtabs %}
 
-In the Python and JavaScript SDKs, the returned private `data_map` is surfaced through `PutResult.address`.
+In the Python, Node.js / TypeScript, and Rust SDKs, the returned private `data_map` is surfaced through `PutResult.address`.
 
 ### 4. Retrieve private data
 
@@ -171,8 +216,8 @@ data = client.data_get_private("<hex_encoded_datamap>")
 print(data.decode())
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -185,6 +230,20 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let data = client.data_get_private("<hex_encoded_datamap>").await?;
+
+    println!("{}", String::from_utf8_lossy(&data));
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -216,8 +275,8 @@ client.file_download_public(result.address, "/absolute/path/to/downloaded-docume
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -231,6 +290,25 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client
+        .file_upload_public("/absolute/path/to/document.pdf", None)
+        .await?;
+    client
+        .file_download_public(&result.address, "/absolute/path/to/downloaded-document.pdf")
+        .await?;
+
+    println!("{}", result.address);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -260,8 +338,8 @@ client.dir_download_public(result.address, "/absolute/path/to/output-folder")
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -275,6 +353,25 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client
+        .dir_upload_public("/absolute/path/to/my-folder", None)
+        .await?;
+    client
+        .dir_download_public(&result.address, "/absolute/path/to/output-folder")
+        .await?;
+
+    println!("{}", result.address);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -295,4 +392,4 @@ For raw data, compare the retrieved bytes to the original payload. For files and
 
 - [Your First Upload with the SDKs](../getting-started/hello-world.md)
 - [REST API](../sdk-reference/rest-api.md)
-- [ant-sdk Overview](../sdk-reference/overview.md)
+- [SDK Overview](../sdk-reference/overview.md)

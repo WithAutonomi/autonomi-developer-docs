@@ -18,7 +18,7 @@ Use the current two-phase upload flow when your application signs EVM payment tr
 
 ## Steps
 
-### 1. Start `antd` without a wallet key
+### 1. Start antd without a wallet key
 
 The daemon does not have an `--external-signer` flag. External-signer mode is the absence of `AUTONOMI_WALLET_KEY` plus the use of the prepare/finalize endpoints.
 
@@ -92,7 +92,7 @@ The `address` field is only present when `store_data_map` is `true`.
 
 ### 5. Know the current SDK limitation
 
-The Python and JavaScript SDKs include helper methods for prepare/finalize, but their finalize wrappers do not currently expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly for now.
+The Python, Node.js / TypeScript, and Rust SDKs include helper methods for prepare/finalize, but their finalize wrappers do not currently expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly for now.
 
 ## Verify it worked
 

@@ -102,5 +102,6 @@ On the client side, `self_encryption` turns uploaded content into a `DataMap` pl
 ## Related pages
 
 - [Core Concepts Overview](../core-concepts/overview.md)
-- [ant-sdk Overview](../sdk-reference/overview.md)
-- [ant-client Overview](../cli-reference/overview.md)
+- [SDK Overview](../sdk-reference/overview.md)
+- [CLI Overview](../cli-reference/overview.md)
+- [Developing in Rust](../rust-reference/overview.md)

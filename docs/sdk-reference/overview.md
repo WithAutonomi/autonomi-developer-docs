@@ -1,4 +1,4 @@
-# ant-sdk Overview
+# SDK Overview
 
 <!-- verification:
   source_repo: ant-sdk
@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-`ant-sdk` is the SDK path for building on Autonomi through a local daemon. The repo centers on `antd`, a local gateway daemon that exposes REST and gRPC APIs, plus language SDKs and local developer tooling around that daemon.
+The SDK path for Autonomi centers on `antd`, a local gateway daemon that exposes REST and gRPC APIs, plus language SDKs and local developer tooling around that daemon.
 
 ## Architecture
 

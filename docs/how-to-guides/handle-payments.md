@@ -8,9 +8,11 @@
   verification_mode: current-merged-truth
 -->
 
-This guide uses the SDK path through `antd` to check balances, approve token spend, estimate uploads, and choose a payment mode.
+In this guide, you use `antd`, the local daemon used by the SDKs, to check balances, approve token spend, estimate uploads, and choose a payment mode.
 
 If you want to work from the command line instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct Rust access, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
+
+Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Prerequisites
 
@@ -41,8 +43,8 @@ print(balance.balance)
 print(balance.gas_balance)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -59,6 +61,23 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let address = client.wallet_address().await?;
+    let balance = client.wallet_balance().await?;
+
+    println!("{}", address.address);
+    println!("{}", balance.balance);
+    println!("{}", balance.gas_balance);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -87,8 +106,8 @@ approved = client.wallet_approve()
 print(approved)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -101,6 +120,20 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let approved = client.wallet_approve().await?;
+
+    println!("{}", approved);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -129,8 +162,8 @@ cost = client.data_cost(b"Hello, Autonomi!")
 print(cost)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -143,6 +176,20 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let cost = client.data_cost(b"Hello, Autonomi!").await?;
+
+    println!("{}", cost);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -175,8 +222,8 @@ result = client.data_put_public(b"Hello, Autonomi!", payment_mode="merkle")
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -191,6 +238,22 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client
+        .data_put_public(b"Hello, Autonomi!", Some("merkle"))
+        .await?;
+
+    println!("{}", result.address);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}

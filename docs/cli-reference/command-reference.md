@@ -1,4 +1,4 @@
-# Command Reference
+# CLI Command Reference
 
 <!-- verification:
   source_repo: ant-client
@@ -12,7 +12,9 @@ Reference for the `ant` CLI.
 
 ## Global flags
 
-### `ant [FLAGS] <COMMAND>`
+### Main command
+
+**Command:** `ant [FLAGS] <COMMAND>`
 
 **Parameters:**
 
@@ -35,7 +37,9 @@ Reference for the `ant` CLI.
 
 ## File commands
 
-### `ant file upload <PATH>`
+### Upload a file
+
+**Command:** `ant file upload <PATH>`
 
 Uploads a file with self-encryption and EVM payment.
 
@@ -54,7 +58,9 @@ Uploads a file with self-encryption and EVM payment.
 SECRET_KEY=0x... ant file upload my_data.bin --public --devnet-manifest /tmp/devnet.json --allow-loopback --evm-network local
 ```
 
-### `ant file download [ADDRESS]`
+### Download a file
+
+**Command:** `ant file download [ADDRESS]`
 
 Downloads a public file by address or a private file using a local DataMap file.
 
@@ -74,7 +80,9 @@ ant file download a1b2c3... -o restored.bin --devnet-manifest /tmp/devnet.json -
 
 ## Chunk commands
 
-### `ant chunk put [FILE]`
+### Store a chunk
+
+**Command:** `ant chunk put [FILE]`
 
 Stores a single chunk from a file or stdin.
 
@@ -84,7 +92,9 @@ Stores a single chunk from a file or stdin.
 echo "hello autonomi" | SECRET_KEY=0x... ant chunk put --devnet-manifest /tmp/devnet.json --allow-loopback --evm-network local
 ```
 
-### `ant chunk get <ADDRESS>`
+### Get a chunk
+
+**Command:** `ant chunk get <ADDRESS>`
 
 Retrieves a single chunk by address.
 
@@ -103,7 +113,9 @@ ant chunk get a1b2c3... -o output.bin --bootstrap 1.2.3.4:12000 --evm-network ar
 
 ## Wallet commands
 
-### `ant wallet address`
+### Show wallet address
+
+**Command:** `ant wallet address`
 
 Prints the current wallet address derived from `SECRET_KEY`.
 
@@ -113,7 +125,9 @@ Prints the current wallet address derived from `SECRET_KEY`.
 SECRET_KEY=0x... ant wallet address --evm-network arbitrum-one
 ```
 
-### `ant wallet balance`
+### Show wallet balance
+
+**Command:** `ant wallet balance`
 
 Prints the token balance for the configured EVM network.
 
@@ -125,23 +139,33 @@ SECRET_KEY=0x... ant wallet balance --evm-network arbitrum-one
 
 ## Node commands
 
-### `ant node daemon start`
+### Start the node daemon
+
+**Command:** `ant node daemon start`
 
 Starts the node-management daemon in the background.
 
-### `ant node daemon stop`
+### Stop the node daemon
+
+**Command:** `ant node daemon stop`
 
 Stops the node-management daemon.
 
-### `ant node daemon status`
+### Check node daemon status
+
+**Command:** `ant node daemon status`
 
 Shows daemon status and node counts.
 
-### `ant node daemon info`
+### Show node daemon info
+
+**Command:** `ant node daemon info`
 
 Outputs programmatic connection details for the daemon.
 
-### `ant node add`
+### Add nodes
+
+**Command:** `ant node add`
 
 Adds one or more nodes to the registry.
 
@@ -168,7 +192,9 @@ Adds one or more nodes to the registry.
 ant node add --rewards-address 0xYourWallet --count 3 --node-port 12000-12002 --path /path/to/antnode
 ```
 
-### `ant node start`
+### Start nodes
+
+**Command:** `ant node start`
 
 Starts all nodes, or one named node with `--service-name`.
 
@@ -178,7 +204,9 @@ Starts all nodes, or one named node with `--service-name`.
 |------|------|----------|-------------|
 | `--service-name <NAME>` | string | No | Start one named node instead of all nodes |
 
-### `ant node stop`
+### Stop nodes
+
+**Command:** `ant node stop`
 
 Stops all nodes, or one named node with `--service-name`.
 
@@ -188,11 +216,15 @@ Stops all nodes, or one named node with `--service-name`.
 |------|------|----------|-------------|
 | `--service-name <NAME>` | string | No | Stop one named node instead of all nodes |
 
-### `ant node status`
+### Check node status
+
+**Command:** `ant node status`
 
 Shows the status of registered nodes.
 
-### `ant node reset`
+### Reset node state
+
+**Command:** `ant node reset`
 
 Clears node data, logs, and registry state.
 
@@ -204,6 +236,6 @@ Clears node data, logs, and registry state.
 
 ## Related pages
 
-- [ant-client Overview](overview.md)
+- [CLI Overview](overview.md)
 - [Use the ant CLI](../getting-started/using-ant-client.md)
-- [ant-core Rust Library](ant-core-library.md)
+- [Rust Library Reference](ant-core-library.md)

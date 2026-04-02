@@ -35,10 +35,10 @@
 
 ## SDK Reference
 
-- [ant-sdk Overview](sdk-reference/overview.md)
+- [SDK Overview](sdk-reference/overview.md)
 - [REST API](sdk-reference/rest-api.md)
 - [gRPC Services](sdk-reference/grpc-services.md)
-- [Daemon CLI: antd](sdk-reference/daemon-cli.md)
+- [Daemon Command Reference](sdk-reference/daemon-cli.md)
 - **Language Bindings**
   - [How Bindings Work](sdk-reference/language-bindings/overview.md)
   - [Python](sdk-reference/language-bindings/python.md)
@@ -56,11 +56,15 @@
   - [Dart](sdk-reference/language-bindings/dart.md)
   - [Zig](sdk-reference/language-bindings/zig.md)
 
-## CLI Reference (ant-client)
+## CLI Reference
 
-- [ant-client Overview](cli-reference/overview.md)
-- [Command Reference](cli-reference/command-reference.md)
-- [ant-core Rust Library](cli-reference/ant-core-library.md)
+- [CLI Overview](cli-reference/overview.md)
+- [CLI Command Reference](cli-reference/command-reference.md)
+
+## Rust Reference
+
+- [Developing in Rust](rust-reference/overview.md)
+- [Rust Library Reference](cli-reference/ant-core-library.md)
 
 ## Architecture
 

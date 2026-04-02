@@ -15,13 +15,13 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi is a decentralized, encrypted, content-addressed network for permanent, immutable data storage. You pay once when you upload data, then retrieve it later with a public address or a DataMap.
+Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model use post-quantum cryptography. You pay once in ANT token when you upload data, then retrieve it later with a public address or a DataMap.
 
 ## Choose your path
 
 ### Build an app with the SDKs
 
-Use the SDK path if you want a local daemon plus SDKs in Python, JavaScript, TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, and other supported languages. `antd` runs on your machine and exposes REST and gRPC so your application can talk to Autonomi through a stable local API.
+Use the SDK path if you want a local daemon plus SDKs in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, and other supported languages. `antd` runs on your machine and exposes REST and gRPC so your application can talk to Autonomi through a stable local API.
 
 Start with [Build with the SDKs](getting-started/install.md), then [Your First Upload with the SDKs](getting-started/hello-world.md).
 
@@ -46,5 +46,6 @@ Start with [Build Directly in Rust](getting-started/build-directly-in-rust.md).
 ## Reference material
 
 - [REST API](sdk-reference/rest-api.md)
-- [Daemon CLI: antd](sdk-reference/daemon-cli.md)
-- [Command Reference](cli-reference/command-reference.md)
+- [Daemon Command Reference](sdk-reference/daemon-cli.md)
+- [CLI Command Reference](cli-reference/command-reference.md)
+- [Rust Library Reference](cli-reference/ant-core-library.md)

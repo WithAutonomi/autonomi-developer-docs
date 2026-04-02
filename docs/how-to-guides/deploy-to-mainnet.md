@@ -58,7 +58,7 @@ curl http://127.0.0.1:8082/v1/wallet/address
 curl http://127.0.0.1:8082/v1/wallet/balance
 ```
 
-### 4. Estimate and perform a small write through `antd`
+### 4. Estimate and perform a small write through antd
 
 ```bash
 DATA_B64=$(printf 'mainnet deployment test' | base64)

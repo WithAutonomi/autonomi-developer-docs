@@ -8,15 +8,17 @@
   verification_mode: current-merged-truth
 -->
 
-This guide uses the SDK path. It stores a small public payload through `antd` and reads it back again so you can see how the local daemon, SDK, and network fit together.
+In this guide, you use `antd`, the local daemon used by the SDKs, to store a small public payload and read it back again so you can see how the SDKs and the network fit together.
 
 ## Prerequisites
 
 - `antd` installed and running on `http://localhost:8082` (see [Build with the SDKs](install.md))
 - For write operations: start `antd` with `AUTONOMI_WALLET_KEY` set, or use `ant dev start` for a local devnet
-- Optional: Python or JavaScript runtime if you want to use those SDK tabs
+- Optional: Python, Node.js, or Rust toolchain if you want to use the SDK examples
 
 If you would rather use shell commands or direct Rust instead, see [Use the ant CLI](using-ant-client.md) and [Build Directly in Rust](build-directly-in-rust.md).
+
+Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Steps
 
@@ -39,8 +41,8 @@ print(status.network)
 print(status.ok)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -54,6 +56,21 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let status = client.health().await?;
+
+    println!("{}", status.network);
+    println!("{}", status.ok);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -91,8 +108,8 @@ result = client.data_put_public(b"Hello, Autonomi!")
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -105,6 +122,20 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+```
+{% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let result = client.data_put_public(b"Hello, Autonomi!", None).await?;
+
+    println!("{}", result.address);
+    Ok(())
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -139,8 +170,8 @@ data = client.data_get_public("<address>")
 print(data.decode())
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { createClient } from "antd";
 
 async function main() {
@@ -155,6 +186,20 @@ main().catch((error) => {
 });
 ```
 {% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let data = client.data_get_public("<address>").await?;
+
+    println!("{}", String::from_utf8_lossy(&data));
+    Ok(())
+}
+```
+{% endtab %}
 {% endtabs %}
 
 Expected REST response shape:
@@ -165,7 +210,7 @@ Expected REST response shape:
 }
 ```
 
-The REST `data` field is base64-encoded. The Python and JavaScript SDKs decode it for you.
+The REST `data` field is base64-encoded. The Python, Node.js / TypeScript, and Rust SDKs decode it for you.
 
 ### 4. Verify the round-trip
 
@@ -183,8 +228,8 @@ assert retrieved == original
 print(result.address)
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import assert from "node:assert/strict";
 import { createClient } from "antd";
 
@@ -204,14 +249,31 @@ main().catch((error) => {
 });
 ```
 {% endtab %}
+{% tab title="Rust" %}
+```rust
+use antd_client::{Client, DEFAULT_BASE_URL};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new(DEFAULT_BASE_URL);
+    let original = b"Hello, Autonomi!";
+    let result = client.data_put_public(original, None).await?;
+    let retrieved = client.data_get_public(&result.address).await?;
+
+    assert_eq!(retrieved, original);
+    println!("{}", result.address);
+    Ok(())
+}
+```
+{% endtab %}
 {% endtabs %}
 
 ## What happened
 
-`antd` accepted your payload, self-encrypted it into chunks, stored those chunks on the network, and returned the public address used to fetch it again. That address is content-addressed: if you uploaded different bytes, you would get a different address. The REST API represents binary payloads as base64 inside JSON, while the Python and JavaScript SDKs decode those values back into bytes for you.
+`antd` accepted your payload, self-encrypted it into chunks, stored those chunks on the network, and returned the public address used to fetch it again. That address is content-addressed: if you uploaded different bytes, you would get a different address. The REST API represents binary payloads as base64 inside JSON, while the Python, Node.js / TypeScript, and Rust SDKs decode those values back into bytes for you.
 
 ## Next steps
 
 - [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)
 - [REST API](../sdk-reference/rest-api.md)
-- [ant-sdk Overview](../sdk-reference/overview.md)
+- [SDK Overview](../sdk-reference/overview.md)

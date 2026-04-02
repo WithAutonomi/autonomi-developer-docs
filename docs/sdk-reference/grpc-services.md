@@ -12,9 +12,11 @@ This page describes the gRPC surface exposed by `antd` on `localhost:50051` by d
 
 Unlike the REST API, the gRPC API carries raw bytes in protobuf fields rather than base64 strings in JSON.
 
-## HealthService
+## Health Service
 
-### `Check(HealthCheckRequest) -> HealthCheckResponse`
+### Check
+
+**Signature:** `Check(HealthCheckRequest) -> HealthCheckResponse`
 
 Checks daemon health and network selection.
 
@@ -25,67 +27,95 @@ Checks daemon health and network selection.
 | `status` | string | Expected `ok` on success |
 | `network` | string | Current network name |
 
-## DataService
+## Data Service
 
-### `GetPublic(GetPublicDataRequest) -> GetPublicDataResponse`
+### Get Public
+
+**Signature:** `GetPublic(GetPublicDataRequest) -> GetPublicDataResponse`
 
 Fetches public data by address.
 
-### `PutPublic(PutPublicDataRequest) -> PutPublicDataResponse`
+### Put Public
+
+**Signature:** `PutPublic(PutPublicDataRequest) -> PutPublicDataResponse`
 
 Stores public data.
 
-### `StreamPublic(StreamPublicDataRequest) -> stream DataChunk`
+### Stream Public
+
+**Signature:** `StreamPublic(StreamPublicDataRequest) -> stream DataChunk`
 
 Streams public data chunks.
 
-### `GetPrivate(GetPrivateDataRequest) -> GetPrivateDataResponse`
+### Get Private
+
+**Signature:** `GetPrivate(GetPrivateDataRequest) -> GetPrivateDataResponse`
 
 Fetches private data using a `data_map` string.
 
-### `PutPrivate(PutPrivateDataRequest) -> PutPrivateDataResponse`
+### Put Private
+
+**Signature:** `PutPrivate(PutPrivateDataRequest) -> PutPrivateDataResponse`
 
 Stores private data and returns a `data_map` string.
 
-### `GetCost(DataCostRequest) -> Cost`
+### Get Cost
+
+**Signature:** `GetCost(DataCostRequest) -> Cost`
 
 Estimates storage cost for a byte payload.
 
-## ChunkService
+## Chunk Service
 
-### `Get(GetChunkRequest) -> GetChunkResponse`
+### Get
+
+**Signature:** `Get(GetChunkRequest) -> GetChunkResponse`
 
 Fetches a chunk by address.
 
-### `Put(PutChunkRequest) -> PutChunkResponse`
+### Put
+
+**Signature:** `Put(PutChunkRequest) -> PutChunkResponse`
 
 Stores a raw chunk.
 
-## FileService
+## File Service
 
-### `UploadPublic(UploadFileRequest) -> UploadPublicResponse`
+### Upload Public
+
+**Signature:** `UploadPublic(UploadFileRequest) -> UploadPublicResponse`
 
 Uploads a local file path.
 
-### `DownloadPublic(DownloadPublicRequest) -> DownloadResponse`
+### Download Public
+
+**Signature:** `DownloadPublic(DownloadPublicRequest) -> DownloadResponse`
 
 Downloads a public file to a local destination path.
 
-### `DirUploadPublic(UploadFileRequest) -> UploadPublicResponse`
+### Upload Public Directory
+
+**Signature:** `DirUploadPublic(UploadFileRequest) -> UploadPublicResponse`
 
 Uploads a local directory path.
 
-### `DirDownloadPublic(DownloadPublicRequest) -> DownloadResponse`
+### Download Public Directory
+
+**Signature:** `DirDownloadPublic(DownloadPublicRequest) -> DownloadResponse`
 
 Downloads a public directory to a local destination path.
 
-### `GetFileCost(FileCostRequest) -> Cost`
+### Get File Cost
+
+**Signature:** `GetFileCost(FileCostRequest) -> Cost`
 
 Estimates file upload cost.
 
-## EventService
+## Event Service
 
-### `Subscribe(SubscribeRequest) -> stream ClientEventProto`
+### Subscribe
+
+**Signature:** `Subscribe(SubscribeRequest) -> stream ClientEventProto`
 
 Streams client events from the daemon.
 
@@ -113,5 +143,5 @@ The current proto files define these shared shapes:
 ## Related pages
 
 - [REST API](rest-api.md)
-- [ant-sdk Overview](overview.md)
+- [SDK Overview](overview.md)
 - [How Language Bindings Work](language-bindings/overview.md)

@@ -105,5 +105,5 @@ The daemon is healthy when `/health` returns `status: ok` and your application c
 ## Next steps
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Daemon CLI: antd](../sdk-reference/daemon-cli.md)
+- [Daemon Command Reference](../sdk-reference/daemon-cli.md)
 - [REST API](../sdk-reference/rest-api.md)

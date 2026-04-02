@@ -90,6 +90,8 @@ All documentation work follows `source audit -> draft -> verify`. Follow the det
 - Explain the "why" before the "how" — one sentence of context, then the steps
 - Lead with the product, user task, or developer path, not with internal repo or implementation names, unless the tool name itself is the topic of the page
 - Do not surface provenance language such as `current-merged-truth`, "current merged", refs, audits, or verification modes in rendered prose. Keep that information in verification comments and workflow docs only.
+- Do not use repo names as primary page titles, nav labels, or opening framing unless the repo itself is the topic.
+- Expand important acronyms on first use when that helps a first-time reader.
 - See [Audience and objectives](#audience-and-objectives) for reader assumptions
 
 ### Prohibited words and phrases
@@ -113,7 +115,8 @@ All technical terms must match the terminology lockfile below exactly. Using the
 - Always include imports, error handling, and expected output
 - Use `{% tabs %}` / `{% tab title="Language" %}` blocks for multi-language examples (GitBook syntax)
 - cURL is always the first tab (canonical)
-- Python and JavaScript follow cURL in tab order
+- For major SDK guides, the default featured tab order is cURL, Python, Node.js / TypeScript, and Rust when those examples are supported and verified
+- When a page shows only a subset of supported SDK languages, say that other SDK languages are available and link to the language-specific references
 - Every code example must specify the language in the code fence (```python, ```bash, etc.)
 
 ### Page structure
@@ -124,6 +127,7 @@ All technical terms must match the terminology lockfile below exactly. Using the
 - Getting Started and How-to pages must explain what tool or path they cover, why you would choose it, and where the alternatives live when multiple supported paths exist.
 - Explain a tool or interface before telling the reader to install, run, or configure it.
 - Titles should describe user outcomes or choices, not internal mechanisms, unless the mechanism name itself is the thing the page teaches.
+- Do not use inline code spans in headings. For commands, endpoints, and signatures, use a readable heading and put the exact literal syntax on the next line.
 
 ### Formatting
 

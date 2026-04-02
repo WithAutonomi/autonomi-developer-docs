@@ -14,7 +14,9 @@ All current REST payloads are JSON. When you send or receive binary data, the by
 
 ## Health
 
-### `GET /health`
+### Health Check
+
+**Endpoint:** `GET /health`
 
 Returns daemon health and the selected network.
 
@@ -35,7 +37,9 @@ curl http://localhost:8082/health
 
 ## Data
 
-### `POST /v1/data/public`
+### Store Public Data
+
+**Endpoint:** `POST /v1/data/public`
 
 Stores public data and returns the public address that can be shared with readers.
 
@@ -66,7 +70,9 @@ curl -X POST http://localhost:8082/v1/data/public \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-### `GET /v1/data/public/{addr}`
+### Get Public Data
+
+**Endpoint:** `GET /v1/data/public/{addr}`
 
 Fetches public data by address.
 
@@ -90,7 +96,9 @@ Fetches public data by address.
 curl http://localhost:8082/v1/data/public/<addr>
 ```
 
-### `GET /v1/data/public/{addr}/stream`
+### Stream Public Data
+
+**Endpoint:** `GET /v1/data/public/{addr}/stream`
 
 Current merged code exposes this streaming endpoint, but the handler is still a stub at this commit and currently returns an empty SSE stream.
 
@@ -106,7 +114,9 @@ Current merged code exposes this streaming endpoint, but the handler is still a 
 curl -N http://localhost:8082/v1/data/public/<addr>/stream
 ```
 
-### `POST /v1/data/private`
+### Store Private Data
+
+**Endpoint:** `POST /v1/data/private`
 
 Stores private data and returns a serialized DataMap instead of a public address.
 
@@ -137,7 +147,9 @@ curl -X POST http://localhost:8082/v1/data/private \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-### `GET /v1/data/private`
+### Get Private Data
+
+**Endpoint:** `GET /v1/data/private`
 
 Retrieves private data using the returned DataMap.
 
@@ -161,7 +173,9 @@ Retrieves private data using the returned DataMap.
 curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
 ```
 
-### `POST /v1/data/cost`
+### Estimate Data Cost
+
+**Endpoint:** `POST /v1/data/cost`
 
 Estimates the storage cost for a data payload without uploading it.
 
@@ -191,7 +205,9 @@ curl -X POST http://localhost:8082/v1/data/cost \
 
 ## Chunks
 
-### `POST /v1/chunks`
+### Store a Chunk
+
+**Endpoint:** `POST /v1/chunks`
 
 Stores a raw chunk.
 
@@ -220,7 +236,9 @@ curl -X POST http://localhost:8082/v1/chunks \
   -d "{\"data\":\"$CHUNK_B64\"}"
 ```
 
-### `GET /v1/chunks/{addr}`
+### Get a Chunk
+
+**Endpoint:** `GET /v1/chunks/{addr}`
 
 Retrieves a raw chunk by address.
 
@@ -248,7 +266,9 @@ curl http://localhost:8082/v1/chunks/<addr>
 
 These endpoints work on paths visible to the machine running `antd`.
 
-### `POST /v1/files/upload/public`
+### Upload a Public File
+
+**Endpoint:** `POST /v1/files/upload/public`
 
 Uploads a local file and stores its DataMap publicly.
 
@@ -278,7 +298,9 @@ curl -X POST http://localhost:8082/v1/files/upload/public \
   -d '{"path":"/absolute/path/to/document.pdf"}'
 ```
 
-### `POST /v1/files/download/public`
+### Download a Public File
+
+**Endpoint:** `POST /v1/files/download/public`
 
 Downloads a file to a local destination path.
 
@@ -299,7 +321,9 @@ curl -X POST http://localhost:8082/v1/files/download/public \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/downloaded.pdf"}'
 ```
 
-### `POST /v1/dirs/upload/public`
+### Upload a Public Directory
+
+**Endpoint:** `POST /v1/dirs/upload/public`
 
 Uploads a local directory recursively.
 
@@ -327,7 +351,9 @@ curl -X POST http://localhost:8082/v1/dirs/upload/public \
   -d '{"path":"/absolute/path/to/my-folder"}'
 ```
 
-### `POST /v1/dirs/download/public`
+### Download a Public Directory
+
+**Endpoint:** `POST /v1/dirs/download/public`
 
 Downloads a directory to a local destination path.
 
@@ -348,7 +374,9 @@ curl -X POST http://localhost:8082/v1/dirs/download/public \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/output-folder"}'
 ```
 
-### `POST /v1/cost/file`
+### Estimate File Cost
+
+**Endpoint:** `POST /v1/cost/file`
 
 Estimates upload cost for a local file.
 
@@ -377,7 +405,9 @@ curl -X POST http://localhost:8082/v1/cost/file \
 
 ## Wallet
 
-### `GET /v1/wallet/address`
+### Get Wallet Address
+
+**Endpoint:** `GET /v1/wallet/address`
 
 Returns the configured wallet address.
 
@@ -395,7 +425,9 @@ Returns the configured wallet address.
 curl http://localhost:8082/v1/wallet/address
 ```
 
-### `GET /v1/wallet/balance`
+### Get Wallet Balance
+
+**Endpoint:** `GET /v1/wallet/balance`
 
 Returns token and gas balances.
 
@@ -414,7 +446,9 @@ Returns token and gas balances.
 curl http://localhost:8082/v1/wallet/balance
 ```
 
-### `POST /v1/wallet/approve`
+### Approve Wallet Spend
+
+**Endpoint:** `POST /v1/wallet/approve`
 
 Approves token spend for payment contracts.
 
@@ -438,7 +472,9 @@ curl -X POST http://localhost:8082/v1/wallet/approve \
 
 ## External signer flow
 
-### `POST /v1/data/prepare`
+### Prepare a Data Upload
+
+**Endpoint:** `POST /v1/data/prepare`
 
 Prepares an in-memory data upload for external signing.
 
@@ -477,7 +513,9 @@ curl -X POST http://localhost:8082/v1/data/prepare \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-### `POST /v1/upload/prepare`
+### Prepare a File Upload
+
+**Endpoint:** `POST /v1/upload/prepare`
 
 Prepares a file upload for external signing.
 
@@ -497,7 +535,9 @@ curl -X POST http://localhost:8082/v1/upload/prepare \
   -d '{"path":"/absolute/path/to/document.pdf"}'
 ```
 
-### `POST /v1/upload/finalize`
+### Finalize an Upload
+
+**Endpoint:** `POST /v1/upload/finalize`
 
 Finalizes a prepared upload after the external signer has submitted payment transactions.
 

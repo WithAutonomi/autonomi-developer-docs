@@ -20,7 +20,7 @@ If you want a local REST or gRPC gateway instead, start with [Build with the SDK
 
 ## Steps
 
-### 1. Create a Rust app and add `ant-core`
+### 1. Create a Rust app and add ant-core
 
 ```bash
 git clone https://github.com/WithAutonomi/ant-client.git
@@ -76,6 +76,6 @@ Your Rust application talked to the network through `ant-core` directly, without
 
 ## Next steps
 
-- [ant-core Rust Library](../cli-reference/ant-core-library.md)
-- [Use the ant CLI](using-ant-client.md)
-- [Payment Model](../core-concepts/payment-model.md)
+- [Developing in Rust](../rust-reference/overview.md)
+- [Rust Library Reference](../cli-reference/ant-core-library.md)
+- [Rust SDK](../sdk-reference/language-bindings/rust.md)

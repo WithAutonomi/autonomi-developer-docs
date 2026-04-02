@@ -31,7 +31,7 @@ This guide shows how the Autonomi toolchain consumes existing wallet and signing
 
 ## Steps
 
-### 1. Configure a wallet for `antd`
+### 1. Configure a wallet for antd
 
 The daemon consumes a hex private key through `AUTONOMI_WALLET_KEY`.
 
@@ -40,7 +40,7 @@ export AUTONOMI_WALLET_KEY="<hex_private_key>"
 ./target/release/antd
 ```
 
-### 2. Configure a wallet for `ant`
+### 2. Configure a wallet for ant
 
 The direct-network CLI uses `SECRET_KEY`.
 
@@ -79,7 +79,7 @@ EVM_DATA_PAYMENTS_ADDRESS=0x... \
 
 That keeps the signing step outside the daemon and pushes transaction submission into your wallet or signing service.
 
-### 5. Use `ant-keygen` only for release-signing keys
+### 5. Use ant-keygen only for release-signing keys
 
 `ant-keygen` is currently for ML-DSA-65 release signing, not for storage-payment wallets.
 

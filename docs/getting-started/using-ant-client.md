@@ -85,7 +85,7 @@ echo "hello autonomi" | SECRET_KEY=0x... ant chunk put \
 
 ## Next steps
 
-- [ant-client Overview](../cli-reference/overview.md)
-- [Command Reference](../cli-reference/command-reference.md)
-- [ant-core Rust Library](../cli-reference/ant-core-library.md)
+- [CLI Overview](../cli-reference/overview.md)
+- [CLI Command Reference](../cli-reference/command-reference.md)
+- [Developing in Rust](../rust-reference/overview.md)
 - [Build Directly in Rust](build-directly-in-rust.md)

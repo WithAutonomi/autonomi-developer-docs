@@ -42,8 +42,8 @@ def test_store_data():
     assert result.address == "abc123"
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { describe, expect, it, vi } from "vitest";
 
 describe("store data", () => {
@@ -93,8 +93,8 @@ def test_round_trip():
     assert retrieved == original
 ```
 {% endtab %}
-{% tab title="JavaScript" %}
-```javascript
+{% tab title="Node.js / TypeScript" %}
+```typescript
 import { describe, expect, it } from "vitest";
 import { createClient } from "antd";
 
