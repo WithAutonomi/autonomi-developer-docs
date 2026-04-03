@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-Use the current `ant-node` API when your Rust application needs to own a node runtime directly.
+Use the `ant-node` API when your Rust application needs to own a node runtime directly.
 
 ## Prerequisites
 
@@ -26,9 +26,9 @@ ant-node = "0.10.0-rc.1"
 tokio = { version = "1", features = ["full"] }
 ```
 
-The current crate enables its `logging` feature by default. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
+The crate enables its `logging` feature by default. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
 
-### 2. Build a node with the current API
+### 2. Build a node with the API
 
 For local or development embedding, start from the development preset:
 
@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### 3. Subscribe to node events
 
-The current `RunningNode` surface exposes event subscriptions.
+`RunningNode` exposes event subscriptions.
 
 ```rust
 let mut node = NodeBuilder::new(NodeConfig::development()).build().await?;
@@ -63,7 +63,7 @@ tokio::spawn(async move {
 
 ### 4. Configure production settings explicitly
 
-`NodeConfig::default()` is production-oriented and expects real rewards configuration. The current config includes fields such as:
+`NodeConfig::default()` is production-oriented and expects real rewards configuration. The config includes fields such as:
 
 - `root_dir`
 - `port`
@@ -80,7 +80,7 @@ tokio::spawn(async move {
 - `max_message_size`
 - `log_level`
 
-Treat that list as a current snapshot rather than a permanent exhaustive contract. Use the upstream crate API when you need the full config surface.
+Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [upstream ant-node API](https://github.com/WithAutonomi/ant-node).
 
 ## Verify it worked
 

@@ -1,4 +1,4 @@
-# Build Directly in Rust
+# Build in Rust with ant-core
 
 <!-- verification:
   source_repo: ant-client
@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-Use this path when you want native, daemon-free Rust access to the Autonomi network through `ant-core`. It is the most direct programmatic route for applications that want to control networking, uploads, and payments in Rust.
+Use `ant-core` when you want native, daemon-free Rust access to the Autonomi network. It is the most direct programmatic route for applications that want to control networking, uploads, and payments in Rust.
 
 ## Prerequisites
 

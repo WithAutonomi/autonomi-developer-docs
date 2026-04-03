@@ -91,6 +91,9 @@ All documentation work follows `source audit -> draft -> verify`. Follow the det
 - Lead with the product, user task, or developer path, not with internal repo or implementation names, unless the tool name itself is the topic of the page
 - Do not surface provenance language such as `current-merged-truth`, "current merged", refs, audits, or verification modes in rendered prose. Keep that information in verification comments and workflow docs only.
 - Do not use repo names as primary page titles, nav labels, or opening framing unless the repo itself is the topic.
+- Avoid time-relative or changelog-style wording in rendered docs unless the page is explicitly comparing versions. Prefer direct statements of fact over words like `current`, `now`, `currently`, or phrases such as `in the current implementation`.
+- Use `path` language only on pages where the reader is explicitly choosing between routes. In normal prose, prefer phrases like "using the SDKs", "using the CLI", or "building in Rust with ant-core".
+- Prefer system behavior and user-facing tool names over repo names in ordinary explanatory prose.
 - Expand important acronyms on first use when that helps a first-time reader.
 - See [Audience and objectives](#audience-and-objectives) for reader assumptions
 
@@ -109,6 +112,8 @@ Never use:
 
 All technical terms must match the terminology lockfile below exactly. Using the wrong form is a linting error.
 
+On first mention in rendered prose, expand important acronyms when that helps a first-time reader. For example, use `Autonomi Network Token (ANT)` on first mention, then `ANT` afterward.
+
 ### Code examples
 
 - Must be **complete and runnable**. Never snippets that require imagination.
@@ -124,10 +129,12 @@ All technical terms must match the terminology lockfile below exactly. Using the
 - Every page must be **self-contained**. No "as we discussed in the previous section" or "see above."
 - An agent reading any single page via llms.txt should understand the topic without needing other pages.
 - Link to related pages at the end, not inline as prerequisites.
-- Getting Started and How-to pages must explain what tool or path they cover, why you would choose it, and where the alternatives live when multiple supported paths exist.
+- Getting Started and How-to pages must explain what tool or route they cover, why you would choose it, and where the alternatives live when multiple supported routes exist.
 - Explain a tool or interface before telling the reader to install, run, or configure it.
 - Titles should describe user outcomes or choices, not internal mechanisms, unless the mechanism name itself is the thing the page teaches.
 - Do not use inline code spans in headings. For commands, endpoints, and signatures, use a readable heading and put the exact literal syntax on the next line.
+- Glossary entries should be short, timeless definitions. Avoid changelog phrasing, repo framing, and unnecessary implementation qualifiers.
+- Do not inline-link repo names throughout normal prose by default. When useful, add a short `Upstream sources` section near the end of overview, concept, or reference pages instead.
 
 ### Formatting
 
@@ -438,8 +445,8 @@ NAT traversal | NAT Traversal, nat traversal | Techniques for connecting peers b
 QUIC | quic | UDP-based transport protocol
 
 # Payments
-ANT token | Ant token, ant token | ERC-20 token on Arbitrum used for network payments
-Arbitrum | arbitrum | Layer 2 Ethereum network where ANT token operates
+Autonomi Network Token (ANT) | ANT token, Ant token, ant token | ERC-20 token on Arbitrum used for network payments
+Arbitrum | arbitrum | Layer 2 Ethereum network where Autonomi Network Token (ANT) operates
 pay-once | pay once, Pay Once | Storage payment model: single upfront payment, no ongoing fees
 Merkle batch payment | merkle batch payment, Merkle Batch Payment | Efficient multi-chunk payment verification using Merkle trees
 

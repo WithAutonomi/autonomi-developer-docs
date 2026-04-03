@@ -22,17 +22,17 @@
   verification_mode: current-merged-truth
 -->
 
-The current post-quantum cryptography stack in scope centers on `saorsa-pqc`, transport documentation built around ML-KEM-768 and ML-DSA-65, and `ant-keygen` release-signing with ML-DSA-65.
+The post-quantum cryptography stack in scope centers on `saorsa-pqc`, transport documentation built around ML-KEM-768 and ML-DSA-65, and `ant-keygen` release-signing with ML-DSA-65.
 
 ## Why it matters
 
-If you are reasoning about security, transport identity, or release authenticity, you need to know which cryptographic primitives the current repos actually document and expose today.
+If you are reasoning about security, transport identity, or release authenticity, you need to know which cryptographic primitives the relevant repos actually document and expose.
 
 ## How it works
 
 ### saorsa-pqc
 
-The current `saorsa-pqc` README describes a broader PQC library that includes:
+The `saorsa-pqc` README describes a broader PQC library that includes:
 
 - ML-KEM key encapsulation variants
 - ML-DSA signature variants
@@ -43,7 +43,7 @@ So the library itself is broader than any single Autonomi-facing transport choic
 
 ### saorsa-transport
 
-The current `saorsa-transport` README describes its transport layer as pure post-quantum and highlights this pair for transport use:
+The `saorsa-transport` README describes its transport layer as pure post-quantum and highlights this pair for transport use:
 
 - ML-KEM-768 for key exchange
 - ML-DSA-65 for signatures
@@ -52,7 +52,7 @@ That repo frames the transport surface as no classical fallback in its documente
 
 ### ant-keygen
 
-`ant-keygen` is the concrete current CLI in scope that uses ML-DSA-65 today. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
+`ant-keygen` is the CLI in scope that uses ML-DSA-65 for release signing. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
 
 ## Practical example
 

@@ -10,7 +10,7 @@
 
 In this guide, you use `antd`, the local daemon used by the SDKs, to check balances, approve token spend, estimate uploads, and choose a payment mode.
 
-If you want to work from the command line instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct Rust access, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
+If you want to work from the command line instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct Rust access, see [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
@@ -82,7 +82,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 {% endtab %}
 {% endtabs %}
 
-The current wallet balance response returns token balance as atto tokens and gas balance as wei.
+The wallet balance response returns token balance as atto tokens and gas balance as wei.
 
 ### 2. Approve token spend
 

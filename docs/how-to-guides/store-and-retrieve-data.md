@@ -10,7 +10,7 @@
 
 In this guide, you use `antd`, the local daemon used by the SDKs, to store public data, private data, files, and directories through language SDKs.
 
-If you want direct shell access instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct programmatic Rust access without the daemon, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
+If you want direct shell access instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct programmatic Rust access without the daemon, see [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 

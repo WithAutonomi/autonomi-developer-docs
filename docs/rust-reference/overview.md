@@ -17,13 +17,13 @@
 
 Rust gives you two supported ways to build on Autonomi.
 
-## Choose your Rust path
+## Choose your Rust route
 
 ### Rust through the SDK daemon
 
 Use the Rust SDK when you want Rust code to talk to `antd` just like the other SDK languages do.
 
-Choose this path if you want:
+Choose the Rust SDK if you want:
 
 - the same daemon-based model used by Python, Node.js / TypeScript, Go, and the other SDKs
 - REST or gRPC access through a stable local gateway
@@ -35,13 +35,13 @@ See [Rust SDK](../sdk-reference/language-bindings/rust.md).
 
 Use `ant-core` when you want direct, daemon-free Rust access to networking, uploads, and payment flows.
 
-Choose this path if you want:
+Choose native Rust with ant-core if you want:
 
 - direct control over the network client in Rust
 - no daemon process between your code and the network
 - access to native Rust types and local devnet helpers
 
-See [Build Directly in Rust](../getting-started/build-directly-in-rust.md) and [Rust Library Reference](../cli-reference/ant-core-library.md).
+See [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md) and [Rust Library Reference](../cli-reference/ant-core-library.md).
 
 ## How the two Rust paths differ
 
@@ -59,6 +59,6 @@ See [Build Directly in Rust](../getting-started/build-directly-in-rust.md) and [
 
 ## Related pages
 
-- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
+- [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md)
 - [Rust SDK](../sdk-reference/language-bindings/rust.md)
 - [Rust Library Reference](../cli-reference/ant-core-library.md)

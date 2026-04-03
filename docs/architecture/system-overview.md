@@ -87,7 +87,7 @@ These interfaces target the same network, but one uses a local daemon and the ot
 
 ## Network and node layer
 
-The current `ant-node` crate is a thin wrapper around `saorsa-core::P2PNode`. It adds configuration, chunk storage, payment verification, replication, upgrade handling, and node runtime management on top of the core P2P layer.
+The `ant-node` crate is a thin wrapper around `saorsa-core::P2PNode`. It adds configuration, chunk storage, payment verification, replication, upgrade handling, and node runtime management on top of the core P2P layer.
 
 In the repos used for this page, `ant-node` documents chunk storage as its active network data type.
 

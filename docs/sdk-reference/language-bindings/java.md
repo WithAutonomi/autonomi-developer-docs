@@ -29,7 +29,7 @@ try (var client = new AntdClient()) {
 }
 ```
 
-The current README also documents `AsyncAntdClient` and `GrpcAntdClient`.
+The upstream README also documents `AsyncAntdClient` and `GrpcAntdClient`.
 
 ## Store and retrieve data
 

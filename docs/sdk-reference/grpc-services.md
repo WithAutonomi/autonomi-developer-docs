@@ -130,7 +130,7 @@ Streams client events from the daemon.
 
 ## Common messages
 
-The current proto files define these shared shapes:
+The proto files define these shared shapes:
 
 | Message | Fields |
 |------|--------|

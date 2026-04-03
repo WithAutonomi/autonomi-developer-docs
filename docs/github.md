@@ -62,7 +62,7 @@ This documentation is assembled from several upstream GitHub repositories. If yo
 ## WithAutonomi
 
 - [`WithAutonomi`](https://github.com/WithAutonomi) — Main GitHub organization for the current Autonomi developer-facing repos
-- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) — SDK path: `antd`, language SDKs, local dev tooling, and `antd-mcp`
+- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) — `antd`, language SDKs, local dev tooling, and `antd-mcp`
 - [`ant-client`](https://github.com/WithAutonomi/ant-client) — Direct CLI and native Rust path: `ant`, `ant-core`, and local devnet tooling
 - [`ant-node`](https://github.com/WithAutonomi/ant-node) — Node runtime, chunk storage, payment verification, and replication behavior
 - [`self_encryption`](https://github.com/WithAutonomi/self_encryption) — Client-side self-encryption crate used for content processing before network storage

@@ -12,7 +12,7 @@
 
 ## Install
 
-The current repo README documents `ant-core` as a local dependency from an `ant-client` checkout:
+The upstream README documents `ant-core` as a local dependency from an `ant-client` checkout:
 
 ```toml
 [dependencies]
@@ -95,7 +95,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## External signer flows
 
-The native Rust path now exposes both wave-batch and Merkle-batch external payment helpers.
+The native Rust library exposes both wave-batch and Merkle-batch external payment helpers.
 
 For wave-batch uploads, `data_prepare_upload`, `file_prepare_upload`, and `finalize_upload` prepare the upload, collect quotes, and later store the chunks after an external signer returns transaction hashes.
 
@@ -183,5 +183,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ## Related pages
 
 - [Developing in Rust](../rust-reference/overview.md)
-- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
+- [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md)
 - [Rust SDK](../sdk-reference/language-bindings/rust.md)

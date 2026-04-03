@@ -22,7 +22,7 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi uses a pay-once storage model. You pay in ANT token when you upload data, then retrieve it later without ongoing storage charges or download fees.
+Autonomi uses a pay-once storage model. You pay in Autonomi Network Token (ANT) when you upload data, then retrieve it later without ongoing storage charges or download fees.
 
 ## Why it matters
 
@@ -32,7 +32,7 @@ You cannot treat uploads as fire-and-forget writes. The daemon and direct-networ
 
 ### Pay once on upload
 
-Autonomi is designed around immutable storage rather than renewable storage leases. In practice, that means the payment event happens when you upload data. The current developer tooling does not expose recurring storage fees or a separate retrieval payment step.
+Autonomi is designed around immutable storage rather than renewable storage leases. In practice, that means the payment event happens when you upload data. There are no recurring storage fees or separate retrieval payments in the documented developer flows.
 
 ### Wallet-backed writes
 
@@ -43,7 +43,7 @@ The tools use different wallet inputs:
 
 Without wallet configuration, write endpoints either fail or switch into an external-signer preparation flow.
 
-In the direct Rust and CLI path, quote collection and payment construction now use on-chain market prices from the payment vault when preparing uploads. That keeps the client-side payment proofs aligned with the prices nodes verify on receipt.
+When you use the CLI or build in Rust with ant-core, quote collection and payment construction use on-chain market prices from the payment vault when preparing uploads. That keeps the client-side payment proofs aligned with the prices nodes verify on receipt.
 
 ### EVM network choices
 
@@ -76,11 +76,11 @@ The supported payment modes are:
 
 In `ant-core`, the Merkle threshold is `64` chunks.
 
-Nodes verify the payment proof that arrives with each write. In the current `ant-node` implementation, that includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the node's chunk store.
+Nodes verify the payment proof that arrives with each write. That includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the chunk store.
 
 ### What happens on retrieval
 
-The current download flows do not expose a separate payment step for retrieval. The payment surfaces in these repos are tied to storing data, chunks, files, directories, or node-management operations that require wallet context.
+Downloads do not require a separate payment step. In the documented tools, payments are tied to storing data, chunks, files, directories, or node-management operations that require wallet context.
 
 ## Practical example
 
@@ -110,7 +110,7 @@ SECRET_KEY=0x... ant \
   file upload my_data.bin --public --merkle
 ```
 
-Both paths pay as part of the upload flow, but the daemon path exposes explicit cost-estimation endpoints while the CLI path emphasizes direct upload flags and wallet setup.
+In both examples, payment happens as part of the upload flow, but the daemon example exposes explicit cost-estimation endpoints while the CLI example emphasizes direct upload flags and wallet setup.
 
 ## Related pages
 

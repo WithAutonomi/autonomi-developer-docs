@@ -86,7 +86,7 @@ This makes DataMap handling one of the main differences between public and priva
 
 ## Practical example
 
-The current tooling maps cleanly onto these surfaces:
+The tooling maps cleanly onto these surfaces:
 
 - use `POST /v1/data/public` or `client.data_put_public(...)` for public in-memory bytes
 - use `POST /v1/data/private` or `client.data_put_private(...)` for private in-memory bytes

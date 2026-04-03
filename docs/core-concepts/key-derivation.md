@@ -25,7 +25,7 @@ This page is narrower than the earlier draft version. The sources in scope suppo
 
 ### HKDF in saorsa-pqc
 
-The current `saorsa-pqc` README documents HKDF-SHA3-256 and HKDF-SHA3-512 as available key-derivation primitives.
+The `saorsa-pqc` README documents HKDF-SHA3-256 and HKDF-SHA3-512 as available key-derivation primitives.
 
 That means the crypto library can derive new key material from shared secrets or existing key material, but the repo does not by itself define how application-level Autonomi keys should be organized.
 
@@ -33,7 +33,7 @@ That means the crypto library can derive new key material from shared secrets or
 
 `ant-keygen` uses a `--context` flag for signing and verification. That context string keeps one signing domain separate from another, so the same raw key material is not reused blindly across unrelated purposes.
 
-The current default context is `ant-node-release-v1`.
+The default context is `ant-node-release-v1`.
 
 ## Practical example
 

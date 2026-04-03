@@ -72,7 +72,7 @@ curl -X POST http://127.0.0.1:8082/v1/data/public \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-### 5. Verify the direct-network CLI path separately if you use it
+### 5. Verify the CLI separately if you use it
 
 The `ant` CLI expects bootstrap peers and an EVM network setting for mainnet-style writes:
 

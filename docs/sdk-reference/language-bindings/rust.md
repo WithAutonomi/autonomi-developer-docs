@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-The current daemon-binding Rust crate in `ant-sdk` is `antd-client`. It is separate from the direct-network `ant-client` repo documented elsewhere in this docs set.
+The daemon-binding Rust crate in `ant-sdk` is `antd-client`. It is separate from the native Rust `ant-core` route documented elsewhere in this docs set.
 
 ## Install
 

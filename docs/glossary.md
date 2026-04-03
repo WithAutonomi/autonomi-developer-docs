@@ -64,9 +64,9 @@ Canonical terms used throughout this docs set.
 
 **antd** — Local daemon that exposes REST on `http://localhost:8082` and gRPC on `localhost:50051` by default.
 
-**ANT token** — Token used for storage payments in the current wallet-backed upload flows.
+**Autonomi Network Token (ANT)** — Token used for storage payments.
 
-**Arbitrum** — EVM network family referenced by the current payment tooling and CLI network selection.
+**Arbitrum** — EVM network family used by payment tooling and CLI network selection.
 
 **Autonomi** — The network these repos target for decentralized storage and retrieval.
 
@@ -74,11 +74,11 @@ Canonical terms used throughout this docs set.
 
 ## B
 
-**BLAKE3** — Hash function used in current content-addressing and self-encryption flows.
+**BLAKE3** — Hash function used in content addressing and self-encryption flows.
 
 ## C
 
-**ChaCha20-Poly1305** — Authenticated encryption primitive used in the current self-encryption crate.
+**ChaCha20-Poly1305** — Authenticated encryption primitive used in self-encryption.
 
 **chunk** — Low-level stored unit of encrypted content.
 
@@ -116,13 +116,13 @@ Canonical terms used throughout this docs set.
 
 ## P
 
-**pay-once** — Current docs shorthand for wallet-backed upload payment rather than an ongoing subscription model.
+**pay-once** — Storage payment model where you pay when you upload and do not pay ongoing storage fees.
 
 **post-quantum cryptography** — Cryptographic approach centered here on `saorsa-pqc`, `saorsa-transport`, and `ant-keygen`.
 
 ## Q
 
-**QUIC** — Transport protocol used by the current network transport layer for peer connections, NAT traversal coordination, and relay-assisted connectivity.
+**QUIC** — UDP-based transport protocol used for peer connections, NAT traversal coordination, and relay-assisted connectivity.
 
 ## S
 

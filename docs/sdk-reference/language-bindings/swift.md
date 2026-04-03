@@ -18,7 +18,7 @@ dependencies: [
 ]
 ```
 
-The current upstream README says to use a local package dependency until the package is published.
+The upstream README says to use a local package dependency until the package is published.
 
 ## Connect to the daemon
 

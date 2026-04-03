@@ -18,7 +18,7 @@ Use the CLI when you want:
 - direct control over bootstrap peers, devnet manifests, and EVM network selection
 - shell-first automation or operational workflows
 
-If you want SDK ergonomics in other languages, use the SDK path instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
+If you want SDK ergonomics in other languages, use the SDKs instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
 
 ## CLI shape
 
@@ -44,7 +44,7 @@ It also accepts global flags such as:
 
 ## Installation
 
-The current README documents install scripts for Linux, macOS, and Windows, plus source builds from the repo.
+The upstream README documents install scripts for Linux, macOS, and Windows, plus source builds from the repo.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash
@@ -54,7 +54,7 @@ curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/instal
 
 The CLI, SDK, and native Rust paths reach the same network, but they have different shapes:
 
-| | SDK path | CLI path | Native Rust path |
+| | SDKs | CLI | Native Rust |
 |---|---|---|---|
 | Interface model | daemon + SDK bindings | direct CLI | direct Rust library |
 | Best for | app development in many languages | shell workflows and operations | daemon-free Rust development |
