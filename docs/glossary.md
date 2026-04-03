@@ -10,22 +10,29 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: d57d5d550654b77d6e10e963fe93595fceb82839
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 8e9541b5bd5ae9791a1b9d037c62c76ff8a7d0c8
-  verified_date: 2026-04-02
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 6c5fb3cd67f621b4faeb9f6520a1498d3064b1d0
-  verified_date: 2026-04-02
+  source_commit: 75a663b60620096aa5989cf6e3b5040b79bc5ce9
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
+<!-- verification:
+  source_repo: saorsa-transport
+  source_ref: main
+  source_commit: b2c2280b88adb94203554bd2c80cb0c0fcb8ce6a
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -105,7 +112,7 @@ Canonical terms used throughout this docs set.
 
 ## N
 
-**NAT traversal** — Techniques used by the current transport layer to help peers connect across NAT boundaries.
+**NAT traversal** — Observed-address discovery, hole punching, and relay-assisted connectivity used by the transport layer to keep peers reachable across NAT boundaries, including harder cases such as symmetric NAT.
 
 ## P
 
@@ -115,7 +122,7 @@ Canonical terms used throughout this docs set.
 
 ## Q
 
-**QUIC** — Transport protocol used by the current network transport layer.
+**QUIC** — Transport protocol used by the current network transport layer for peer connections, NAT traversal coordination, and relay-assisted connectivity.
 
 ## S
 

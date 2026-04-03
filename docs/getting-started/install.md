@@ -7,6 +7,13 @@
   verified_date: 2026-04-02
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: ant-node
+  source_ref: main
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
 
 Use this path when you want to build on Autonomi through language SDKs and a local daemon. `antd` runs on your machine, talks to the network for you, and exposes REST and gRPC so your application can work through a stable local API.
 

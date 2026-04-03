@@ -92,7 +92,9 @@ The `address` field is only present when `store_data_map` is `true`.
 
 ### 5. Know the current SDK limitation
 
-The Python, Node.js / TypeScript, and Rust SDKs include helper methods for prepare/finalize, but their finalize wrappers do not currently expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly for now.
+The Python, Node.js / TypeScript, and Rust daemon SDKs include helper methods for prepare/finalize, but their finalize wrappers do not currently expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly for now.
+
+If you are building directly in Rust without the daemon, `ant-core` now exposes native external-payment helpers such as `data_prepare_upload`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`.
 
 ## Verify it worked
 

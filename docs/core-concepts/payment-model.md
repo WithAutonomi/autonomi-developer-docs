@@ -10,12 +10,19 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: d57d5d550654b77d6e10e963fe93595fceb82839
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
+<!-- verification:
+  source_repo: ant-node
+  source_ref: main
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 
-Autonomi uses a pay-once storage model. You pay in ANT when you upload data, then retrieve it later without ongoing storage charges or a separate retrieval payment flow in the current developer tooling.
+Autonomi uses a pay-once storage model. You pay in ANT token when you upload data, then retrieve it later without ongoing storage charges or download fees.
 
 ## Why it matters
 
@@ -36,6 +43,8 @@ The tools use different wallet inputs:
 
 Without wallet configuration, write endpoints either fail or switch into an external-signer preparation flow.
 
+In the direct Rust and CLI path, quote collection and payment construction now use on-chain market prices from the payment vault when preparing uploads. That keeps the client-side payment proofs aligned with the prices nodes verify on receipt.
+
 ### EVM network choices
 
 The `ant` CLI exposes these EVM network values:
@@ -44,7 +53,7 @@ The `ant` CLI exposes these EVM network values:
 - `arbitrum-sepolia`
 - `local`
 
-The daemon-side external-signer flow also exposes `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, and `EVM_DATA_PAYMENTS_ADDRESS` as part of the network configuration it needs to prepare payments.
+The daemon-side external-signer flow also exposes the RPC URL and payment contract addresses the signer needs to submit the transaction for the selected network.
 
 ### Cost estimation
 
@@ -66,6 +75,8 @@ The supported payment modes are:
 | `single` | Force per-chunk payment |
 
 In `ant-core`, the Merkle threshold is `64` chunks.
+
+Nodes verify the payment proof that arrives with each write. In the current `ant-node` implementation, that includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the node's chunk store.
 
 ### What happens on retrieval
 
@@ -92,10 +103,11 @@ curl -X POST http://localhost:8082/v1/data/public \
 2. Upload directly with `ant`
 
 ```bash
-SECRET_KEY=0x... ant file upload my_data.bin --public --merkle \
+SECRET_KEY=0x... ant \
   --devnet-manifest /tmp/devnet.json \
   --allow-loopback \
-  --evm-network local
+  --evm-network local \
+  file upload my_data.bin --public --merkle
 ```
 
 Both paths pay as part of the upload flow, but the daemon path exposes explicit cost-estimation endpoints while the CLI path emphasizes direct upload flags and wallet setup.

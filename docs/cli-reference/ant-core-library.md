@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: d57d5d550654b77d6e10e963fe93595fceb82839
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 
@@ -93,6 +93,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
+## External signer flows
+
+The native Rust path now exposes both wave-batch and Merkle-batch external payment helpers.
+
+For wave-batch uploads, `data_prepare_upload`, `file_prepare_upload`, and `finalize_upload` prepare the upload, collect quotes, and later store the chunks after an external signer returns transaction hashes.
+
+For Merkle batches, `prepare_merkle_batch_external` builds the batch data needed for the on-chain call, and `finalize_merkle_batch` turns the winning pool hash back into per-chunk proofs.
+
 ## Key types
 
 | Type | Description |
@@ -103,6 +111,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 | `ant_core::data::DataMap` | Private retrieval map for uploaded data |
 | `ant_core::data::LocalDevnet` | Local development helper |
 | `ant_core::data::Wallet` | EVM wallet used for paid operations |
+| `ant_core::data::PreparedUpload` | Two-phase upload state used by external-signer flows |
+| `ant_core::data::ExternalPaymentInfo` | External payment details for prepared uploads |
+| `ant_core::data::PreparedMerkleBatch` | Prepared Merkle batch data for external signing |
+
+## External signer example
+
+```rust
+use ant_core::data::{Client, ClientConfig, ExternalPaymentInfo};
+use bytes::Bytes;
+use std::collections::HashMap;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::connect(&["1.2.3.4:12000".parse()?], ClientConfig::default()).await?;
+    let prepared = client.data_prepare_upload(Bytes::from("hello autonomi")).await?;
+
+    match &prepared.payment_info {
+        ExternalPaymentInfo::WaveBatch { payment_intent, .. } => {
+            println!("Need to pay {} atto", payment_intent.total_amount);
+        }
+        ExternalPaymentInfo::Merkle { prepared_batch, .. } => {
+            println!("Merkle depth: {}", prepared_batch.depth);
+        }
+    }
+
+    let tx_hashes: HashMap<_, _> = HashMap::new();
+    let _ = tx_hashes;
+    Ok(())
+}
+```
 
 ## Error handling
 
