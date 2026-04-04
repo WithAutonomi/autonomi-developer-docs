@@ -12,7 +12,7 @@ These guides will help you get started building with the Autonomi Network!
 
 You can build on Autonomi in several ways, from SDKs in more than 15 languages through a local daemon that exposes REST and gRPC, to direct CLI access, to native Rust with `ant-core`.
 
-### Build an app with the SDKs
+### Build with the SDKs
 
 Use the SDKs if you want the easiest starting point for application development in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, and other supported languages.
 
@@ -20,13 +20,11 @@ A daemon called `antd` running on the users machine, exposing REST and gRPC endp
 
 Start with [Build with the SDKs](getting-started/install.md), then [Your First Upload with the SDKs](getting-started/hello-world.md).
 
-### Use the ant CLI
+### Use the CLI
 
-Use the CLI when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
+[Use the ant CLI ](getting-started/using-ant-client.md)when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
 
-Start with [Use the ant CLI](getting-started/using-ant-client.md).
-
-### Build in Rust with ant-core
+### Build in directly in Rust
 
 Build in Rust without the daemon when you want direct programmatic control over networking, uploads, and payments in your application.
 
