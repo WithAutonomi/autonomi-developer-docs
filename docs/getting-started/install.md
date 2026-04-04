@@ -15,6 +15,10 @@
   verification_mode: current-merged-truth
 -->
 
+{% hint style="warning" %}
+This is preview documentation for Autonomi 2.0 ahead of the planned network launch on 7 April 2026. Content is under active review and may change before launch.
+{% endhint %}
+
 Use the SDKs when you want to build on Autonomi through language bindings and a local daemon. `antd` runs on your machine, talks to the network for you, and exposes REST and gRPC so your application can work through a stable local API.
 
 This is usually the best starting point if you are building in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another SDK language.

@@ -15,6 +15,10 @@
   verification_mode: current-merged-truth
 -->
 
+{% hint style="warning" %}
+This is preview documentation for Autonomi 2.0 ahead of the planned network launch on 7 April 2026. Content is under active review and may change before launch.
+{% endhint %}
+
 Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model uses post-quantum cryptography. You pay once in Autonomi Network Token (ANT) when you upload data, then retrieve it later with a public address or a DataMap.
 
 ## Choose your path
