@@ -15,17 +15,17 @@
   verification_mode: current-merged-truth
 -->
 
-In the repos in scope, key derivation appears as a generic cryptographic primitive in `saorsa-pqc` and as domain-separated signing contexts in `ant-keygen`.
+In the repos covered here, key derivation appears as a generic cryptographic primitive in `saorsa-pqc` and as domain-separated signing contexts in `ant-keygen`.
 
 ## Why it matters
 
-This page is narrower than the earlier draft version. The sources in scope support HKDF and signing-context separation, but they do not document one Autonomi-wide master-key hierarchy for storage, signing, and payments.
+This page focuses on the parts of key derivation that are actually documented in the current stack. Autonomi uses HKDF primitives and signing-context separation, but it does not define one unified key hierarchy for storage, signing, and payments.
 
 ## How it works
 
 ### HKDF in saorsa-pqc
 
-The current `saorsa-pqc` README documents HKDF-SHA3-256 and HKDF-SHA3-512 as available key-derivation primitives.
+`saorsa-pqc` provides HKDF-SHA3-256 and HKDF-SHA3-512 as key-derivation primitives.
 
 That means the crypto library can derive new key material from shared secrets or existing key material, but the repo does not by itself define how application-level Autonomi keys should be organized.
 
@@ -33,7 +33,7 @@ That means the crypto library can derive new key material from shared secrets or
 
 `ant-keygen` uses a `--context` flag for signing and verification. That context string keeps one signing domain separate from another, so the same raw key material is not reused blindly across unrelated purposes.
 
-The current default context is `ant-node-release-v1`.
+The default context is `ant-node-release-v1`.
 
 ## Practical example
 

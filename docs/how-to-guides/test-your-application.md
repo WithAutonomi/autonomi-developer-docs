@@ -10,8 +10,15 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
+  verification_mode: current-merged-truth
+-->
+<!-- verification:
+  source_repo: ant-node
+  source_ref: main
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 
@@ -117,7 +124,7 @@ describe("integration", () => {
 
 ### 3. Use the built-in example smoke tests
 
-The current `ant-dev` CLI can run example programs from the repo:
+The `ant-dev` CLI can run example programs from the repo:
 
 ```bash
 ant dev example connect
@@ -179,7 +186,7 @@ Your local integration environment is healthy when `ant dev status` reports a ru
 
 **Health check never turns green**: Inspect `ant dev logs`.
 
-**Wrong daemon API shape in tests**: Update tests to the current JSON/base64 `antd` surface.
+**Wrong daemon API shape in tests**: Update tests to the JSON/base64 `antd` surface.
 
 **Local wallet issues**: Recreate the environment with `ant dev reset` or `ant dev stop` followed by `ant dev start`.
 

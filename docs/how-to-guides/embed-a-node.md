@@ -3,12 +3,12 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 8e9541b5bd5ae9791a1b9d037c62c76ff8a7d0c8
-  verified_date: 2026-04-02
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 
-Use the current `ant-node` API when your Rust application needs to own a node runtime directly.
+Use the `ant-node` API when your Rust application needs to own a node runtime directly.
 
 ## Prerequisites
 
@@ -22,11 +22,13 @@ Use the current `ant-node` API when your Rust application needs to own a node ru
 
 ```toml
 [dependencies]
-ant-node = "0.9.0"
+ant-node = "0.10.0-rc.1"
 tokio = { version = "1", features = ["full"] }
 ```
 
-### 2. Build a node with the current API
+The crate enables its `logging` feature by default. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
+
+### 2. Build a node with the API
 
 For local or development embedding, start from the development preset:
 
@@ -46,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### 3. Subscribe to node events
 
-The current `RunningNode` surface exposes event subscriptions.
+`RunningNode` exposes event subscriptions.
 
 ```rust
 let mut node = NodeBuilder::new(NodeConfig::development()).build().await?;
@@ -61,16 +63,24 @@ tokio::spawn(async move {
 
 ### 4. Configure production settings explicitly
 
-`NodeConfig::default()` is production-oriented and expects real rewards configuration. The current config also exposes fields such as:
+`NodeConfig::default()` is production-oriented and expects real rewards configuration. The config includes fields such as:
 
 - `root_dir`
 - `port`
+- `ipv4_only`
 - `bootstrap`
 - `network_mode`
+- `testnet`
+- `upgrade`
 - `payment.rewards_address`
 - `payment.evm_network`
+- `bootstrap_cache`
+- `storage`
+- `close_group_cache_dir`
+- `max_message_size`
+- `log_level`
 
-Use those directly instead of assuming the looser development defaults.
+Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [ant-node API](https://github.com/WithAutonomi/ant-node).
 
 ## Verify it worked
 

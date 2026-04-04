@@ -7,8 +7,15 @@
   verified_date: 2026-04-02
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: ant-node
+  source_ref: main
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
 
-Use this path when you want to build on Autonomi through language SDKs and a local daemon. `antd` runs on your machine, talks to the network for you, and exposes REST and gRPC so your application can work through a stable local API.
+Use the SDKs when you want to build on Autonomi through language bindings and a local daemon. `antd` runs on your machine, talks to the network for you, and exposes REST and gRPC so your application can work through a stable local API.
 
 This is usually the best starting point if you are building in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another SDK language.
 
@@ -20,7 +27,7 @@ This is usually the best starting point if you are building in Python, Node.js /
 - For write operations on the default network: a wallet private key exported as `AUTONOMI_WALLET_KEY`
 - For a fully local devnet: Python 3.10+ and a sibling `ant-node` checkout if you plan to use `ant dev start`
 
-The SDK path is available in many languages. This guide focuses on cURL, Python, Node.js / TypeScript, and Rust in the featured examples. For the full list, see [Language Bindings Overview](../sdk-reference/language-bindings/overview.md).
+The SDKs are available in many languages. This guide focuses on cURL, Python, Node.js / TypeScript, and Rust in the featured examples. For the full list, see [Language Bindings Overview](../sdk-reference/language-bindings/overview.md).
 
 ## Steps
 
@@ -74,7 +81,7 @@ On the first run, `ant dev start` can take longer than usual while local compone
 
 ### 3. Confirm the gateway responds
 
-The current default REST endpoint is `http://localhost:8082`:
+The default REST endpoint is `http://localhost:8082`:
 
 ```bash
 curl http://localhost:8082/health
@@ -91,7 +98,7 @@ Expected response:
 
 If you started a local devnet, the `network` value is `local`.
 
-### 4. Know what this path gives you
+### 4. Know what the SDKs give you
 
 By default, `antd` provides:
 
@@ -100,7 +107,7 @@ By default, `antd` provides:
 
 On startup, `antd` also writes a `daemon.port` file. SDKs can use that file to discover non-default ports automatically.
 
-This path is useful when you want:
+This approach is useful when you want:
 
 - a single local process that multiple apps or tools can share
 - SDK ergonomics in non-Rust languages

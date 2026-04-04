@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 
@@ -18,7 +18,7 @@ Use the CLI when you want:
 - direct control over bootstrap peers, devnet manifests, and EVM network selection
 - shell-first automation or operational workflows
 
-If you want SDK ergonomics in other languages, use the SDK path instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
+If you want SDK ergonomics in other languages, use the SDKs instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
 
 ## CLI shape
 
@@ -44,7 +44,7 @@ It also accepts global flags such as:
 
 ## Installation
 
-The current README documents install scripts for Linux, macOS, and Windows, plus source builds from the repo.
+Install scripts are available for Linux, macOS, and Windows, and you can also build the CLI from source.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash
@@ -54,7 +54,7 @@ curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/instal
 
 The CLI, SDK, and native Rust paths reach the same network, but they have different shapes:
 
-| | SDK path | CLI path | Native Rust path |
+| | SDKs | CLI | Native Rust |
 |---|---|---|---|
 | Interface model | daemon + SDK bindings | direct CLI | direct Rust library |
 | Best for | app development in many languages | shell workflows and operations | daemon-free Rust development |

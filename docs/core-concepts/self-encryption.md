@@ -16,13 +16,13 @@ This is the layer that makes uploads content-addressed and client-side encrypted
 
 ## How it works
 
-The current crate surface revolves around a few core operations:
+The crate surface revolves around a few core operations:
 
 - `encrypt(bytes)` returns `(DataMap, Vec<EncryptedChunk>)`
 - `decrypt(data_map, chunks)` reconstructs the original content
 - `stream_encrypt(...)` and `streaming_decrypt(...)` support streaming flows for files and large payloads
 
-The current implementation uses:
+The implementation uses:
 
 - BLAKE3 for chunk hashing
 - ChaCha20-Poly1305 for authenticated encryption
@@ -30,10 +30,10 @@ The current implementation uses:
 
 Chunk addresses are derived from the encrypted content. That is why the higher-level storage model is content-addressed: if the content changes, the resulting encrypted chunks and their addresses change too.
 
-Important current limits from the crate itself:
+Important limits from the crate itself:
 
-- `MIN_ENCRYPTABLE_BYTES` is currently `3`
-- `MAX_CHUNK_SIZE` is currently `4_190_208` bytes
+- `MIN_ENCRYPTABLE_BYTES` is `3`
+- `MAX_CHUNK_SIZE` is `4_190_208` bytes
 
 The crate stores chunk metadata in a `DataMap`, and the `DataMap` can be shrunk recursively when it grows beyond the immediate chunk set. In the higher-level SDK and CLI workflows, that `DataMap` is what turns a set of encrypted chunks back into retrievable content.
 

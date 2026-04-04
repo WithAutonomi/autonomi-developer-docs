@@ -7,6 +7,13 @@
   verified_date: 2026-04-02
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: ant-node
+  source_ref: main
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
 
 Use the current `ant-dev` workflow to start a local devnet plus `antd` on your machine.
 

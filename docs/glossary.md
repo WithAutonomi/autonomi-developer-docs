@@ -10,22 +10,29 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 8e9541b5bd5ae9791a1b9d037c62c76ff8a7d0c8
-  verified_date: 2026-04-02
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 6c5fb3cd67f621b4faeb9f6520a1498d3064b1d0
-  verified_date: 2026-04-02
+  source_commit: 75a663b60620096aa5989cf6e3b5040b79bc5ce9
+  verified_date: 2026-04-03
+  verification_mode: current-merged-truth
+-->
+<!-- verification:
+  source_repo: saorsa-transport
+  source_ref: main
+  source_commit: b2c2280b88adb94203554bd2c80cb0c0fcb8ce6a
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -57,9 +64,9 @@ Canonical terms used throughout this docs set.
 
 **antd** — Local daemon that exposes REST on `http://localhost:8082` and gRPC on `localhost:50051` by default.
 
-**ANT token** — Token used for storage payments in the current wallet-backed upload flows.
+**Autonomi Network Token (ANT)** — Token used for storage payments.
 
-**Arbitrum** — EVM network family referenced by the current payment tooling and CLI network selection.
+**Arbitrum** — EVM network family used by payment tooling and CLI network selection.
 
 **Autonomi** — The network these repos target for decentralized storage and retrieval.
 
@@ -67,11 +74,11 @@ Canonical terms used throughout this docs set.
 
 ## B
 
-**BLAKE3** — Hash function used in current content-addressing and self-encryption flows.
+**BLAKE3** — Hash function used in content addressing and self-encryption flows.
 
 ## C
 
-**ChaCha20-Poly1305** — Authenticated encryption primitive used in the current self-encryption crate.
+**ChaCha20-Poly1305** — Authenticated encryption primitive used in self-encryption.
 
 **chunk** — Low-level stored unit of encrypted content.
 
@@ -105,17 +112,17 @@ Canonical terms used throughout this docs set.
 
 ## N
 
-**NAT traversal** — Techniques used by the current transport layer to help peers connect across NAT boundaries.
+**NAT traversal** — Observed-address discovery and hole punching used to keep peers reachable across NAT boundaries. Relay fallback may be needed for some CGNAT cases.
 
 ## P
 
-**pay-once** — Current docs shorthand for wallet-backed upload payment rather than an ongoing subscription model.
+**pay-once** — Storage payment model where you pay when you upload and do not pay ongoing storage fees.
 
 **post-quantum cryptography** — Cryptographic approach centered here on `saorsa-pqc`, `saorsa-transport`, and `ant-keygen`.
 
 ## Q
 
-**QUIC** — Transport protocol used by the current network transport layer.
+**QUIC** — UDP-based transport protocol used for peer connections and NAT traversal coordination.
 
 ## S
 

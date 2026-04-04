@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 
@@ -72,7 +72,7 @@ curl -X POST http://127.0.0.1:8082/v1/data/public \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-### 5. Verify the direct-network CLI path separately if you use it
+### 5. Verify the CLI separately if you use it
 
 The `ant` CLI expects bootstrap peers and an EVM network setting for mainnet-style writes:
 

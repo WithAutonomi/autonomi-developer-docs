@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-The SDK path for Autonomi centers on `antd`, a local gateway daemon that exposes REST and gRPC APIs, plus language SDKs and local developer tooling around that daemon.
+The Autonomi SDKs center on `antd`, a local gateway daemon that exposes REST and gRPC APIs, plus language SDKs and local developer tooling around that daemon.
 
 ## Architecture
 
@@ -45,7 +45,7 @@ The daemon defaults are:
 - REST: `http://localhost:8082`
 - gRPC: `localhost:50051`
 
-On startup, `antd` writes a `daemon.port` file with the resolved REST and gRPC ports. The repo README documents these default locations:
+On startup, `antd` writes a `daemon.port` file with the resolved REST and gRPC ports. The default locations are:
 
 | Platform | `daemon.port` location |
 |------|------|
@@ -68,7 +68,7 @@ The `antd` REST surface groups into these areas:
 | Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
 | External signer flow | `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
 
-The current proto directory contains `health.proto`, `data.proto`, `chunks.proto`, `files.proto`, and `events.proto`.
+The proto directory contains `health.proto`, `data.proto`, `chunks.proto`, `files.proto`, and `events.proto`.
 
 ## Language SDKs
 

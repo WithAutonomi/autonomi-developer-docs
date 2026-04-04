@@ -16,7 +16,7 @@ In this guide, you use `antd`, the local daemon used by the SDKs, to store a sma
 - For write operations: start `antd` with `AUTONOMI_WALLET_KEY` set, or use `ant dev start` for a local devnet
 - Optional: Python, Node.js, or Rust toolchain if you want to use the SDK examples
 
-If you would rather use shell commands or direct Rust instead, see [Use the ant CLI](using-ant-client.md) and [Build Directly in Rust](build-directly-in-rust.md).
+If you would rather use shell commands or direct Rust instead, see [Use the ant CLI](using-ant-client.md) and [Build in Rust with ant-core](build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 

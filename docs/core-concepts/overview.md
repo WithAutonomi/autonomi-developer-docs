@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -45,13 +45,13 @@ Read more in [Self-Encryption](self-encryption.md).
 
 ## Post-quantum cryptography
 
-The cryptography stack in scope uses ML-DSA-65 for signatures and ML-KEM-768 for key encapsulation. Those algorithms matter most when you are reasoning about network identity, transport security, or the broader security model.
+The cryptography stack uses ML-DSA-65 for signatures and ML-KEM-768 for key encapsulation. Those algorithms matter most when you are reasoning about network identity, transport security, or the broader security model.
 
 Read more in [Post-Quantum Cryptography](post-quantum-cryptography.md).
 
 ## Payment model
 
-Autonomi is designed around pay-once, immutable storage. Upload flows are wallet-backed writes: you pay when you store data, then retrieve it later without a separate retrieval payment flow in the current developer tooling.
+Autonomi is designed around pay-once, immutable storage. Uploads are wallet-backed writes: you pay when you store data, then retrieve it later without recurring storage fees or retrieval payments.
 
 Read more in [Payment Model](payment-model.md).
 

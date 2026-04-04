@@ -26,7 +26,7 @@ Runs the MCP server in SSE mode for web-based clients.
 
 ## Installation
 
-The current upstream setup is:
+Use this setup:
 
 ```bash
 pip install "antd[rest]"

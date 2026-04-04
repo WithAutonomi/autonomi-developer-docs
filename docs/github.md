@@ -10,29 +10,29 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 8e9541b5bd5ae9791a1b9d037c62c76ff8a7d0c8
-  verified_date: 2026-04-02
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 6c5fb3cd67f621b4faeb9f6520a1498d3064b1d0
-  verified_date: 2026-04-02
+  source_commit: 75a663b60620096aa5989cf6e3b5040b79bc5ce9
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: a81dbb5bc3c7929537873c90e7a10678993d415e
-  verified_date: 2026-04-02
+  source_commit: b2c2280b88adb94203554bd2c80cb0c0fcb8ce6a
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -62,17 +62,17 @@ This documentation is assembled from several upstream GitHub repositories. If yo
 ## WithAutonomi
 
 - [`WithAutonomi`](https://github.com/WithAutonomi) — Main GitHub organization for the current Autonomi developer-facing repos
-- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) — SDK path: `antd`, language SDKs, local dev tooling, and `antd-mcp`
-- [`ant-client`](https://github.com/WithAutonomi/ant-client) — Direct CLI and native Rust path: `ant` and `ant-core`
-- [`ant-node`](https://github.com/WithAutonomi/ant-node) — Node runtime and network-facing node behavior
+- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) — `antd`, language SDKs, local dev tooling, and `antd-mcp`
+- [`ant-client`](https://github.com/WithAutonomi/ant-client) — Direct CLI and native Rust path: `ant`, `ant-core`, and local devnet tooling
+- [`ant-node`](https://github.com/WithAutonomi/ant-node) — Node runtime, chunk storage, payment verification, and replication behavior
 - [`self_encryption`](https://github.com/WithAutonomi/self_encryption) — Client-side self-encryption crate used for content processing before network storage
 - [`ant-keygen`](https://github.com/WithAutonomi/ant-keygen) — ML-DSA-65 release-signing utility
 
 ## saorsa-labs
 
 - [`saorsa-labs`](https://github.com/saorsa-labs) — Supporting transport, networking, and cryptography repos used by the current Autonomi stack
-- [`saorsa-core`](https://github.com/saorsa-labs/saorsa-core) — Core peer-to-peer node, DHT, and trust system
-- [`saorsa-transport`](https://github.com/saorsa-labs/saorsa-transport) — QUIC transport, NAT traversal, and post-quantum transport layer
+- [`saorsa-core`](https://github.com/saorsa-labs/saorsa-core) — Core peer-to-peer node, DHT, routing, and trust system
+- [`saorsa-transport`](https://github.com/saorsa-labs/saorsa-transport) — QUIC transport, NAT traversal, relay-assisted connectivity, and post-quantum transport layer
 - [`saorsa-pqc`](https://github.com/saorsa-labs/saorsa-pqc) — Post-quantum cryptography library used by the broader stack
 
 ## How to use these links

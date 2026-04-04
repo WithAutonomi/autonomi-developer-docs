@@ -10,29 +10,29 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 8e9541b5bd5ae9791a1b9d037c62c76ff8a7d0c8
-  verified_date: 2026-04-02
+  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 6c5fb3cd67f621b4faeb9f6520a1498d3064b1d0
-  verified_date: 2026-04-02
+  source_commit: 75a663b60620096aa5989cf6e3b5040b79bc5ce9
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: a81dbb5bc3c7929537873c90e7a10678993d415e
-  verified_date: 2026-04-02
+  source_commit: b2c2280b88adb94203554bd2c80cb0c0fcb8ce6a
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -87,13 +87,20 @@ These interfaces target the same network, but one uses a local daemon and the ot
 
 ## Network and node layer
 
-The current `ant-node` crate is a thin wrapper around `saorsa-core::P2PNode`. It adds configuration, chunk storage, payment verification, upgrade handling, and node runtime management on top of the core P2P layer.
+The `ant-node` crate is a thin wrapper around `saorsa-core::P2PNode`. It adds configuration, chunk storage, payment verification, replication, upgrade handling, and node runtime management on top of the core P2P layer.
 
 In the repos used for this page, `ant-node` documents chunk storage as its active network data type.
 
 ## Routing and transport
 
-`saorsa-core` provides the P2P node, DHT, bootstrap handling, and trust system. `saorsa-transport` provides QUIC transport, NAT traversal, and the documented pure post-quantum transport layer centered on ML-KEM-768 and ML-DSA-65.
+`saorsa-core` provides the P2P node, DHT, bootstrap handling, trust system, and routing-table logic around typed addresses and peer identity. `saorsa-transport` provides QUIC transport, NAT traversal, address discovery, and relay fallback where direct hole punching is not enough.
+
+The transport story includes:
+
+- observed-address discovery and address propagation across the network
+- peer-ID-based hole-punch coordination
+- relay fallback for some CGNAT cases
+- QUIC-based post-quantum transport centered on ML-KEM-768 and ML-DSA-65
 
 ## Data path
 

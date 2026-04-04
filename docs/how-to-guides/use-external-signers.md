@@ -7,8 +7,15 @@
   verified_date: 2026-04-02
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: ant-client
+  source_ref: main
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
+  verification_mode: current-merged-truth
+-->
 
-Use the current two-phase upload flow when your application signs EVM payment transactions outside `antd`.
+Use the two-phase upload flow when your application signs EVM payment transactions outside `antd`.
 
 ## Prerequisites
 
@@ -92,7 +99,9 @@ The `address` field is only present when `store_data_map` is `true`.
 
 ### 5. Know the current SDK limitation
 
-The Python, Node.js / TypeScript, and Rust SDKs include helper methods for prepare/finalize, but their finalize wrappers do not currently expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly for now.
+The Python, Node.js / TypeScript, and Rust daemon SDKs include helper methods for prepare/finalize, but their finalize wrappers do not expose the full raw REST response shape. If you need `store_data_map` or the returned `data_map`, use the REST API directly.
+
+If you are building in Rust with ant-core instead of the daemon, the library exposes native external-payment helpers such as `data_prepare_upload`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`.
 
 ## Verify it worked
 

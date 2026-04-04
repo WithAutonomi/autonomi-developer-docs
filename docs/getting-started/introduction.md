@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 727a75c46bebc6d5948ea7754debd4220ead9400
-  verified_date: 2026-04-02
+  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
+  verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -22,7 +22,7 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model use post-quantum cryptography. You pay in ANT token when you upload data, and the storage model is designed around pay-once uploads rather than ongoing storage fees.
+Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model uses post-quantum cryptography. You pay in Autonomi Network Token (ANT) when you upload data, and the storage model is designed around pay-once uploads rather than ongoing storage fees.
 
 ## What makes it different
 
@@ -43,17 +43,17 @@ This is the easiest starting point for most developers.
 - it exposes REST and gRPC endpoints
 - language SDKs talk to that daemon for you
 
-Choose this path if you want to build in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
+Choose the SDKs if you want to build in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
 
 ### 2. Use the ant CLI
 
-This path gives you direct command-line access to uploads, downloads, chunk operations, wallet inspection, and node-management workflows.
+The CLI gives you direct command-line access to uploads, downloads, chunk operations, wallet inspection, and node-management workflows.
 
 Choose it when you want shell access, automation scripts, or a daemon-free operational workflow.
 
-### 3. Build directly in Rust
+### 3. Build in Rust with ant-core
 
-This path uses `ant-core` directly instead of going through the daemon.
+This route uses `ant-core` instead of going through the daemon.
 
 Choose it when you want native Rust control over networking, payment flows, and upload logic.
 
@@ -71,4 +71,4 @@ You do not need to understand every network detail before storing and retrieving
 
 - [Build with the SDKs](install.md)
 - [Use the ant CLI](using-ant-client.md)
-- [Build Directly in Rust](build-directly-in-rust.md)
+- [Build in Rust with ant-core](build-directly-in-rust.md)

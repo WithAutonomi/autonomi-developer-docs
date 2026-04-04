@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: a81dbb5bc3c7929537873c90e7a10678993d415e
-  verified_date: 2026-04-02
+  source_commit: b2c2280b88adb94203554bd2c80cb0c0fcb8ce6a
+  verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -22,17 +22,17 @@
   verification_mode: current-merged-truth
 -->
 
-The current post-quantum cryptography stack in scope centers on `saorsa-pqc`, transport documentation built around ML-KEM-768 and ML-DSA-65, and `ant-keygen` release-signing with ML-DSA-65.
+The post-quantum cryptography described here centers on `saorsa-pqc`, transport documentation built around ML-KEM-768 and ML-DSA-65, and `ant-keygen` release-signing with ML-DSA-65.
 
 ## Why it matters
 
-If you are reasoning about security, transport identity, or release authenticity, you need to know which cryptographic primitives the current repos actually document and expose today.
+If you are reasoning about security, transport identity, or release authenticity, you need to know which cryptographic primitives the stack uses.
 
 ## How it works
 
 ### saorsa-pqc
 
-The current `saorsa-pqc` README describes a broader PQC library that includes:
+`saorsa-pqc` is a broader PQC library that includes:
 
 - ML-KEM key encapsulation variants
 - ML-DSA signature variants
@@ -43,16 +43,16 @@ So the library itself is broader than any single Autonomi-facing transport choic
 
 ### saorsa-transport
 
-The current `saorsa-transport` README describes its transport layer as pure post-quantum and highlights this pair for transport use:
+`saorsa-transport` describes its transport layer as pure post-quantum and highlights this pair for transport use:
 
 - ML-KEM-768 for key exchange
 - ML-DSA-65 for signatures
 
-That repo frames the transport surface as no classical fallback in its documented model.
+The transport layer has no classical fallback.
 
 ### ant-keygen
 
-`ant-keygen` is the concrete current CLI in scope that uses ML-DSA-65 today. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
+`ant-keygen` is the release-signing CLI that uses ML-DSA-65. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
 
 ## Practical example
 
