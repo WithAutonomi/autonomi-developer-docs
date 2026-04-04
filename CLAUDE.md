@@ -94,6 +94,7 @@ All documentation work follows `source audit -> draft -> verify`. Follow the det
 - Avoid time-relative or changelog-style wording in rendered docs unless the page is explicitly comparing versions. Prefer direct statements of fact over words like `current`, `now`, `currently`, or phrases such as `in the current implementation`.
 - Use `path` language only on pages where the reader is explicitly choosing between routes. In normal prose, prefer phrases like "using the SDKs", "using the CLI", or "building in Rust with ant-core".
 - Prefer system behavior and user-facing tool names over repo names in ordinary explanatory prose.
+- Avoid provenance terms such as `upstream` and `downstream` in rendered prose unless the page is explicitly about source repositories, contribution workflow, or source verification.
 - Expand important acronyms on first use when that helps a first-time reader.
 - See [Audience and objectives](#audience-and-objectives) for reader assumptions
 

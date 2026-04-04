@@ -18,7 +18,7 @@ dependencies {
 }
 ```
 
-The upstream README notes that, until published, you should use the project as a local dependency or composite build.
+The README notes that, until published, you should use the project as a local dependency or composite build.
 
 ## Connect to the daemon
 

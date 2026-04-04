@@ -80,7 +80,7 @@ tokio::spawn(async move {
 - `max_message_size`
 - `log_level`
 
-Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [upstream ant-node API](https://github.com/WithAutonomi/ant-node).
+Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [ant-node API](https://github.com/WithAutonomi/ant-node).
 
 ## Verify it worked
 

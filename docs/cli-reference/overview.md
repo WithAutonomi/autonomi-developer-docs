@@ -44,7 +44,7 @@ It also accepts global flags such as:
 
 ## Installation
 
-The upstream README documents install scripts for Linux, macOS, and Windows, plus source builds from the repo.
+The README documents install scripts for Linux, macOS, and Windows, plus source builds from the repo.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash

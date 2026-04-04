@@ -51,7 +51,7 @@ Read more in [Post-Quantum Cryptography](post-quantum-cryptography.md).
 
 ## Payment model
 
-Autonomi is designed around pay-once, immutable storage. Upload flows are wallet-backed writes: you pay when you store data, then retrieve it later without a separate retrieval payment flow in the documented developer tools.
+Autonomi is designed around pay-once, immutable storage. Uploads are wallet-backed writes: you pay when you store data, then retrieve it later without recurring storage fees or retrieval payments.
 
 Read more in [Payment Model](payment-model.md).
 
