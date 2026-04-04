@@ -1,13 +1,5 @@
 # CLI Overview
 
-<!-- verification:
-  source_repo: ant-client
-  source_ref: main
-  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-04
-  verification_mode: current-merged-truth
--->
-
 {% hint style="warning" %}
 This is preview documentation for Autonomi 2.0 ahead of the planned network launch on 7 April 2026. Content is under active review and may change before launch.
 {% endhint %}
@@ -18,9 +10,9 @@ This is preview documentation for Autonomi 2.0 ahead of the planned network laun
 
 Use the CLI when you want:
 
-- direct CLI access for file, chunk, wallet, or node-management workflows
-- direct control over bootstrap peers, devnet manifests, and EVM network selection
-- shell-first automation or operational workflows
+* Direct CLI access for file, chunk, wallet, or node-management workflows
+* Direct control over bootstrap peers, devnet manifests, and EVM network selection
+* Shell-first automation or operational workflows
 
 If you want SDK ergonomics in other languages, use the SDKs instead. If you want daemon-free programmatic Rust access, see [Developing in Rust](../rust-reference/overview.md).
 
@@ -28,23 +20,23 @@ If you want SDK ergonomics in other languages, use the SDKs instead. If you want
 
 The CLI has these top-level groups:
 
-- `ant file`
-- `ant chunk`
-- `ant wallet`
-- `ant node`
-- `ant update`
+* `ant file`
+* `ant chunk`
+* `ant wallet`
+* `ant node`
+* `ant update`
 
 It also accepts global flags such as:
 
-- `--json`
-- `-V`, `--version`
-- `--bootstrap`
-- `--devnet-manifest`
-- `--allow-loopback`
-- `--timeout-secs`
-- `--chunk-concurrency`
-- `--log-level`
-- `--evm-network`
+* `--json`
+* `-V`, `--version`
+* `--bootstrap`
+* `--devnet-manifest`
+* `--allow-loopback`
+* `--timeout-secs`
+* `--chunk-concurrency`
+* `--log-level`
+* `--evm-network`
 
 ## Installation
 
@@ -58,19 +50,19 @@ curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/instal
 
 The CLI, SDK, and native Rust paths reach the same network, but they have different shapes:
 
-| | SDKs | CLI | Native Rust |
-|---|---|---|---|
-| Interface model | daemon + SDK bindings | direct CLI | direct Rust library |
-| Best for | app development in many languages | shell workflows and operations | daemon-free Rust development |
-| Local process model | requires `antd` | no daemon for data commands | no daemon |
-| Main entry point | REST/gRPC via `antd` | `ant` command | `ant-core` crate |
+|                     | SDKs                              | CLI                            | Native Rust                  |
+| ------------------- | --------------------------------- | ------------------------------ | ---------------------------- |
+| Interface model     | daemon + SDK bindings             | direct CLI                     | direct Rust library          |
+| Best for            | app development in many languages | shell workflows and operations | daemon-free Rust development |
+| Local process model | requires `antd`                   | no daemon for data commands    | no daemon                    |
+| Main entry point    | REST/gRPC via `antd`              | `ant` command                  | `ant-core` crate             |
 
 ## Upstream sources
 
-- [ant-client](https://github.com/WithAutonomi/ant-client)
+* [ant-client](https://github.com/WithAutonomi/ant-client)
 
 ## Related pages
 
-- [Use the ant CLI](../getting-started/using-ant-client.md)
-- [CLI Command Reference](command-reference.md)
-- [Developing in Rust](../rust-reference/overview.md)
+* [Use the ant CLI](../getting-started/using-ant-client.md)
+* [CLI Command Reference](command-reference.md)
+* [Developing in Rust](../rust-reference/overview.md)

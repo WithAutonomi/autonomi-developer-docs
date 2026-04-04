@@ -1,26 +1,18 @@
-# Use antd as a Local Service
+# Use the Daemon as a Local Service
 
-<!-- verification:
-  source_repo: ant-sdk
-  source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
-  verification_mode: current-merged-truth
--->
-
-Run `antd` as a long-lived local service when you want one stable Autonomi gateway that multiple applications, scripts, or background processes can share.
+Run the Autonomi Daemon, `antd`, as a long-lived local service when you want one stable Autonomi gateway that multiple applications, scripts, or background processes can share.
 
 Use this setup if you want:
 
-- a persistent local REST and gRPC endpoint
-- one daemon shared by more than one app or tool
-- service-manager supervision instead of manually starting `antd` in a terminal
+* A persistent local REST and gRPC endpoint
+* One daemon shared by more than one app or tool
+* Service-manager supervision instead of manually starting `antd` in a terminal
 
 ## Prerequisites
 
-- `antd` built or installed on the target machine
-- A Linux host with `systemd` for the service example below
-- Optional wallet and EVM environment variables if the daemon will handle paid uploads
+* `antd` built or installed on the target machine
+* A Linux host with `systemd` for the service example below
+* Optional wallet and EVM environment variables if the daemon will handle paid uploads
 
 ## Steps
 
@@ -104,6 +96,6 @@ The daemon is healthy when `/health` returns `status: ok` and your application c
 
 ## Next steps
 
-- [Build with the SDKs](../getting-started/install.md)
-- [Daemon Command Reference](../sdk-reference/daemon-cli.md)
-- [REST API](../sdk-reference/rest-api.md)
+* [Build with the SDKs](../getting-started/install.md)
+* [Daemon Command Reference](../sdk-reference/daemon-cli.md)
+* [REST API](../sdk-reference/rest-api.md)
