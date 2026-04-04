@@ -26,53 +26,61 @@
 This is preview documentation for Autonomi 2.0 ahead of the planned network launch on 7 April 2026. Content is under active review and may change before launch.
 {% endhint %}
 
-Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted client-side before upload, and the network's transport and security model uses post-quantum cryptography. You pay in Autonomi Network Token (ANT) when you upload data, and the storage model is designed around pay-once uploads rather than ongoing storage fees.
+This is the developer documentation for building on the Autonomi Network.
 
-## What makes it different
+Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted before upload, stored using content-addressing, and paid for once when you write it to the network.
+
+## What makes Autonomi different
 
 At a high level, Autonomi gives you:
 
-- immutable data storage: changing the content produces a new address instead of mutating the old one
+- immutable storage, where changing the content produces a new address instead of mutating the old one
 - client-side encryption through self-encryption before chunks are stored on the network
 - public and private retrieval paths through addresses and DataMaps
-- pay-once storage: you pay when you upload, and downloads are free
+- pay-once storage, where you pay in Autonomi Network Token (ANT) when you upload and downloads are free
+- post-quantum cryptography in the transport and security model
 
-## Three ways to build on Autonomi
+## Ways to build on Autonomi
 
-### 1. Build an app with the SDKs
+You can build on Autonomi in several ways.
+
+### Build an app with the SDKs
 
 This is the easiest starting point for most developers.
 
 - `antd` runs as a local daemon on your machine
 - it exposes REST and gRPC endpoints
-- language SDKs talk to that daemon for you
+- SDKs are available in more than 15 languages
 
-Choose the SDKs if you want to build in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
+Choose this route if you want to build with Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
 
-### 2. Use the ant CLI
+### Use the ant CLI
 
 The CLI gives you direct command-line access to uploads, downloads, chunk operations, wallet inspection, and node-management workflows.
 
-Choose it when you want shell access, automation scripts, or a daemon-free operational workflow.
+Choose it when you want shell access, scripts, or a daemon-free operational workflow.
 
-### 3. Build in Rust with ant-core
+### Build in Rust with ant-core
 
-This route uses `ant-core` instead of going through the daemon.
+This route uses the native Rust library instead of the daemon.
 
-Choose it when you want native Rust control over networking, payment flows, and upload logic.
+Choose it when you want direct Rust control over networking, payment flows, and upload logic in your application.
 
-## What matters first as a developer
+## What to understand first
 
-Start with these concepts:
+Start with these core concepts:
 
 - [Data Types](../core-concepts/data-types.md)
 - [Self-Encryption](../core-concepts/self-encryption.md)
 - [Payment Model](../core-concepts/payment-model.md)
+- [Post-Quantum Cryptography](../core-concepts/post-quantum-cryptography.md)
+- [Key Derivation](../core-concepts/key-derivation.md)
 
-You do not need to understand every network detail before storing and retrieving data, but you do need to understand that uploads are content-addressed, immutable, and paid for at write time.
+You do not need to understand every network detail before you store and retrieve data, but it helps to understand that uploads are content-addressed, immutable, and paid for at write time.
 
 ## Next steps
 
 - [Build with the SDKs](install.md)
 - [Use the ant CLI](using-ant-client.md)
 - [Build in Rust with ant-core](build-directly-in-rust.md)
+- [GitHub](../github.md)
