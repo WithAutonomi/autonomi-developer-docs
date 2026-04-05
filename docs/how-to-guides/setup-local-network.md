@@ -138,4 +138,4 @@ The local network is working when `ant dev status` reports a healthy daemon, `an
 - [Prepare a Wallet for Uploads](manage-keys.md)
 - [Your First Upload with the SDKs](../getting-started/hello-world.md)
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
-- [Handle Payments](handle-payments.md)
+- [Estimate Costs and Handle Upload Payments](handle-payments.md)

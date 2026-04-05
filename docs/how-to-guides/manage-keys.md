@@ -23,7 +23,7 @@ It explains:
 - what changes on Arbitrum Sepolia and Arbitrum One
 - how to check the wallet, token balance, and gas balance before you upload
 
-If you want to understand public addresses and `DataMap` handling rather than upload wallets, see [Keys and Access Material](../core-concepts/keys-and-access-material.md).
+If you want to understand public addresses and `DataMap` handling rather than upload wallets, see [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md).
 
 ## Prerequisites
 
@@ -126,7 +126,7 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 ## Next steps
 
 - [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
-- [Handle Payments](handle-payments.md)
-- [Use External Signers](use-external-signers.md)
-- [Build a Read-Only Application](build-a-read-only-application.md)
-- [Keys and Access Material](../core-concepts/keys-and-access-material.md)
+- [Estimate Costs and Handle Upload Payments](handle-payments.md)
+- [Let Users Pay with External Signers](use-external-signers.md)
+- [Build Read-Only Features](build-a-read-only-application.md)
+- [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md)

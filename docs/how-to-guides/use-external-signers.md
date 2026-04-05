@@ -124,6 +124,6 @@ Finalize succeeds when the daemon accepts the `upload_id` and the external trans
 ## Next steps
 
 - [Prepare a Wallet for Uploads](manage-keys.md)
-- [Handle Payments](handle-payments.md)
+- [Estimate Costs and Handle Upload Payments](handle-payments.md)
 - [REST API](../sdk-reference/rest-api.md)
 - [Use antd as a Local Service](run-as-daemon.md)

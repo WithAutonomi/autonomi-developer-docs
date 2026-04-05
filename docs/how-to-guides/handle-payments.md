@@ -290,6 +290,6 @@ Check the wallet balance before and after a paid upload, then fetch the stored d
 - [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Prepare a Wallet for Uploads](manage-keys.md)
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
-- [Use External Signers](use-external-signers.md)
-- [Build a Read-Only Application](build-a-read-only-application.md)
+- [Let Users Pay with External Signers](use-external-signers.md)
+- [Build Read-Only Features](build-a-read-only-application.md)
 - [REST API](../sdk-reference/rest-api.md)

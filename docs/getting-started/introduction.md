@@ -45,7 +45,7 @@ Choose it when you want direct Rust control over networking, payment flows, and 
 Start with these core concepts:
 
 * [Data Types](../core-concepts/data-types.md)
-* [Keys and Access Material](../core-concepts/keys-and-access-material.md)
+* [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md)
 * [Self-Encryption](../core-concepts/self-encryption.md)
 * [Payment Model](../core-concepts/payment-model.md)
 * [Post-Quantum Cryptography](../core-concepts/post-quantum-cryptography.md)

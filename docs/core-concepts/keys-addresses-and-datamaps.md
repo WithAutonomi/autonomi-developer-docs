@@ -1,4 +1,4 @@
-# Keys and Access Material
+# Keys, Addresses, and DataMaps
 
 <!-- verification:
   source_repo: ant-sdk
@@ -22,21 +22,21 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi applications handle a few different kinds of key-like or secret material, and they are easy to confuse if you treat them as one thing.
+Autonomi applications handle a few different kinds of key-like or secret material, and each one has a different job.
 
 ## Why it matters
 
-If you are building on Autonomi, you need to know which material is used for:
+If you are building on Autonomi, you need to know which one is used for:
 
 - paying for uploads
 - retrieving public data
 - retrieving private data
 
-Those are different concerns, and the current developer-facing 2.0 stack does not reduce them to one user identity keypair.
+Those are different concerns.
 
-## What developers actually handle
+## What you handle
 
-In the current SDK, CLI, and native Rust surfaces, the main things you handle are:
+The main things you handle are:
 
 | Material | What it is for |
 |------|-----------------|
@@ -74,10 +74,6 @@ For private data:
 
 That means `DataMap` handling is closer to access material than to a payment wallet.
 
-## What this is not
-
-The current developer-facing Autonomi 2.0 surfaces do not expose the old v1-style model of per-user storage keypairs for signed mutable data types. The app-facing stack documented here is centered on content-addressed data, `DataMap` retrieval material, and EVM-backed upload payments.
-
 ## Practical example
 
 Here is the simplest way to think about the split:
@@ -97,4 +93,4 @@ Here is the simplest way to think about the split:
 - [Data Types](data-types.md)
 - [Self-Encryption](self-encryption.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
-- [Build a Read-Only Application](../how-to-guides/build-a-read-only-application.md)
+- [Build Read-Only Features](../how-to-guides/build-a-read-only-application.md)

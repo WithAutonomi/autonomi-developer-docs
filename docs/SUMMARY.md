@@ -17,10 +17,9 @@
 
 * [Overview](core-concepts/overview.md)
 * [Data Types](core-concepts/data-types.md)
-* [Keys and Access Material](core-concepts/keys-and-access-material.md)
+* [Keys, Addresses, and DataMaps](core-concepts/keys-addresses-and-datamaps.md)
 * [Self-Encryption](core-concepts/self-encryption.md)
 * [Post-Quantum Cryptography](core-concepts/post-quantum-cryptography.md)
-* [Key Derivation](core-concepts/key-derivation.md)
 * [Payment Model](core-concepts/payment-model.md)
 
 ## How-To Guides
@@ -29,7 +28,7 @@
 * [Store and Retrieve Data with the SDKs](how-to-guides/store-and-retrieve-data.md)
 * [Prepare a Wallet for Uploads](how-to-guides/manage-keys.md)
 * [Estimate Costs and Handle Upload Payments](how-to-guides/handle-payments.md)
-* [Build a Read-Only Application](how-to-guides/build-a-read-only-application.md)
+* [Build Read-Only Features](how-to-guides/build-a-read-only-application.md)
 * [Use the Daemon as a Local Service](how-to-guides/run-as-daemon.md)
 * [Let Users Pay with External Signers](how-to-guides/use-external-signers.md)
 * [Use the Autonomi MCP Server](how-to-guides/use-the-mcp-server.md)
