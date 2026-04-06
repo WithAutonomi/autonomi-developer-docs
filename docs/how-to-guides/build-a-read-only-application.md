@@ -79,11 +79,13 @@ Private retrieval through the daemon:
 curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
 ```
 
+The private retrieval response is JSON with the content returned as base64 in the `data` field.
+
 For the CLI route, public and private file retrieval use `ant file download` with either a public address or a local `.datamap` file:
 
 ```bash
-ant file download <public_address> -o downloaded.bin --bootstrap 1.2.3.4:12000 --evm-network arbitrum-one
-ant file download --datamap my_data.bin.datamap -o downloaded.bin --bootstrap 1.2.3.4:12000 --evm-network arbitrum-one
+ant file download <public_address> -o downloaded.bin --bootstrap 1.2.3.4:12000
+ant file download --datamap my_data.bin.datamap -o downloaded.bin --bootstrap 1.2.3.4:12000
 ```
 
 For native Rust, use the retrieval APIs in `ant-core` after connecting to the network client.
