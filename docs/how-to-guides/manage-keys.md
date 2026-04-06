@@ -4,31 +4,44 @@
   source_repo: ant-sdk
   source_ref: main
   source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  verified_date: 2026-04-05
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
   source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-04
+  verified_date: 2026-04-05
   verification_mode: current-merged-truth
 -->
+
 Use this guide when you need a wallet that can pay for uploads.
 
 It explains:
 
-- which tools need which wallet input
 - what local development gives you automatically
 - what changes on Arbitrum Sepolia and Arbitrum One
+- which tools need which wallet input
 - how to check the wallet, token balance, and gas balance before you upload
 
 If you want to understand public addresses and `DataMap` handling rather than upload wallets, see [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md).
 
+## Start with your environment
+
+The practical difference between environments is:
+
+| Environment | Wallet state |
+|------|--------------|
+| Local devnet | Wallet and balances are provisioned for you |
+| Arbitrum Sepolia | Use a test wallet funded with test ANT and test gas |
+| Arbitrum One | Use a production wallet funded with real ANT and gas on the selected EVM network |
+
+If you are only building read-only features, you do not need any of this wallet setup.
+
 ## Prerequisites
 
 - `antd` or `ant` installed (see [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md) for daemon setup)
-- A hex-encoded key you already control for payments and uploads
+- A hex-encoded key you already control for payments and uploads when you are not using the local devnet
 
 ## Steps
 
@@ -60,19 +73,7 @@ export SECRET_KEY="0x<hex_private_key>"
 ant --evm-network arbitrum-one wallet address
 ```
 
-### 4. Understand local, Sepolia, and mainnet
-
-The practical difference between environments is:
-
-| Environment | Wallet state |
-|------|--------------|
-| Local devnet | Wallet and balances are provisioned for you |
-| Arbitrum Sepolia | Use a test wallet funded with test ANT and test gas |
-| Arbitrum One | Use a production wallet funded with real ANT and gas |
-
-If you are only building a read-only application, you do not need any of this wallet setup.
-
-### 5. Verify the active wallet
+### 4. Verify the active wallet
 
 {% tabs %}
 {% tab title="antd" %}
@@ -89,7 +90,7 @@ SECRET_KEY=0x... ant --evm-network arbitrum-one wallet balance
 {% endtab %}
 {% endtabs %}
 
-### 6. Keep high-value keys outside the daemon when needed
+### 5. Keep high-value keys outside the daemon when needed
 
 If you do not want `antd` to hold a wallet key, run it without `AUTONOMI_WALLET_KEY` and use the external-signer flow instead.
 
@@ -100,16 +101,7 @@ EVM_DATA_PAYMENTS_ADDRESS=0x... \
 ./target/release/antd
 ```
 
-That keeps the signing step outside the daemon and pushes transaction submission into your wallet or signing service.
-
-### 7. Use ant-keygen only for release-signing keys
-
-`ant-keygen` is for ML-DSA-65 release signing, not for storage-payment wallets.
-
-```bash
-ant-keygen generate ./keys
-ant-keygen verify-key --hex "<hex_secret_key>"
-```
+That keeps signing outside the daemon and pushes transaction submission into your wallet or signer integration.
 
 ## Verify it worked
 
@@ -127,6 +119,6 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 
 - [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Estimate Costs and Handle Upload Payments](handle-payments.md)
-- [Let Users Pay with External Signers](use-external-signers.md)
+- [Use External Signers for Upload Payments](use-external-signers.md)
 - [Build Read-Only Features](build-a-read-only-application.md)
 - [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md)

@@ -30,7 +30,7 @@
 * [Estimate Costs and Handle Upload Payments](how-to-guides/handle-payments.md)
 * [Build Read-Only Features](how-to-guides/build-a-read-only-application.md)
 * [Use the Daemon as a Local Service](how-to-guides/run-as-daemon.md)
-* [Let Users Pay with External Signers](how-to-guides/use-external-signers.md)
+* [Use External Signers for Upload Payments](how-to-guides/use-external-signers.md)
 * [Use the Autonomi MCP Server](how-to-guides/use-the-mcp-server.md)
 * [Test Your Application](how-to-guides/test-your-application.md)
 * [Deploy to Mainnet](how-to-guides/deploy-to-mainnet.md)

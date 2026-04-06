@@ -54,6 +54,12 @@ The transport layer has no classical fallback.
 
 `ant-keygen` is the release-signing CLI that uses ML-DSA-65. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
 
+### Key separation and signing contexts
+
+`saorsa-pqc` provides HKDF-SHA3-256 and HKDF-SHA3-512 as key-derivation primitives.
+
+That means the crypto library can derive new key material from shared secrets or existing key material. `ant-keygen` also supports a signing context so one signing domain stays separate from another. The default context is `ant-node-release-v1`.
+
 ## Practical example
 
 ```bash
@@ -78,6 +84,5 @@ ant-keygen verify \
 
 ## Related pages
 
-- [Key Derivation](key-derivation.md)
 - [Self-Encryption](self-encryption.md)
 - [Core Concepts Overview](overview.md)

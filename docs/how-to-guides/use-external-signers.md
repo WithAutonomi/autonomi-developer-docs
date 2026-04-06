@@ -1,4 +1,4 @@
-# Let Users Pay with External Signers
+# Use External Signers for Upload Payments
 
 <!-- verification:
   source_repo: ant-sdk

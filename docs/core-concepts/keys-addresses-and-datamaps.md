@@ -22,27 +22,25 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi applications handle a few different kinds of key-like or secret material, and each one has a different job.
+Autonomi keeps upload payment, public retrieval, and private retrieval separate.
 
 ## Why it matters
 
-If you are building on Autonomi, you need to know which one is used for:
+If you are building on Autonomi, you need to understand three different things:
 
-- paying for uploads
-- retrieving public data
-- retrieving private data
+- wallet keys pay for uploads
+- public addresses retrieve public data
+- `DataMap` retrieves private data
 
-Those are different concerns.
+Treating those as one all-purpose developer key makes the rest of the system harder to understand.
 
 ## What you handle
 
-The main things you handle are:
-
-| Material | What it is for |
-|------|-----------------|
-| Wallet private key | Paying for uploads |
-| Public address | Retrieving public data |
-| DataMap | Retrieving private data |
+| Material | When you get it | What you do with it |
+|------|------------------|---------------------|
+| Wallet private key | You provide it | Pay for uploads |
+| Public address | Returned after a public upload or public DataMap store | Share or store it, then use it to retrieve public data |
+| `DataMap` | Returned after a private upload or saved locally by some tools | Store it safely, then use it to retrieve private data |
 
 ## Wallet private key
 
@@ -72,11 +70,11 @@ For private data:
 - the `DataMap` is returned to you instead of being stored publicly
 - if you lose that `DataMap`, you lose the practical ability to retrieve the private content
 
-That means `DataMap` handling is closer to access material than to a payment wallet.
+That means `DataMap` handling is a data-access concern, not a payment concern.
 
 ## Practical example
 
-Here is the simplest way to think about the split:
+The simplest way to think about the split is:
 
 - use a wallet key when you need to upload data
 - use a public address when you want to retrieve public data
