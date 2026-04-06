@@ -21,6 +21,13 @@
   verified_date: 2026-04-03
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: evmlib
+  source_ref: main
+  source_commit: 82f2fccff243b48de0e04ceb71ccb2aa17d810af
+  verified_date: 2026-04-06
+  verification_mode: current-merged-truth
+-->
 
 Autonomi uses a pay-once storage model. You pay in Autonomi Network Token (ANT) when you upload data, then retrieve it later without ongoing storage charges or download fees.
 
@@ -62,7 +69,7 @@ The `antd` surface exposes cost estimation explicitly:
 - `POST /v1/data/cost`
 - `POST /v1/cost/file`
 
-Those endpoints return string amounts in the smallest token units used by the daemon surface.
+Those endpoints return the estimated upload cost as a string amount in atto tokens.
 
 ### Payment modes
 
@@ -114,6 +121,9 @@ In both examples, payment happens as part of the upload flow, but the daemon exa
 
 ## Related pages
 
-- [Handle Payments](../how-to-guides/handle-payments.md)
-- [Use External Signers](../how-to-guides/use-external-signers.md)
+- [Keys, Addresses, and DataMaps](keys-addresses-and-datamaps.md)
+- [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
+- [Estimate Costs and Handle Upload Payments](../how-to-guides/handle-payments.md)
+- [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md)
+- [Build Read-Only Features](../how-to-guides/build-a-read-only-application.md)
 - [Data Types](data-types.md)

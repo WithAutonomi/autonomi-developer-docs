@@ -1,4 +1,4 @@
-# Use External Signers
+# Use External Signers for Upload Payments
 
 <!-- verification:
   source_repo: ant-sdk
@@ -14,8 +14,21 @@
   verified_date: 2026-04-04
   verification_mode: current-merged-truth
 -->
+<!-- verification:
+  source_repo: evmlib
+  source_ref: main
+  source_commit: 82f2fccff243b48de0e04ceb71ccb2aa17d810af
+  verified_date: 2026-04-06
+  verification_mode: current-merged-truth
+-->
 
-Use the two-phase upload flow when your application signs EVM payment transactions outside `antd`.
+Use the two-phase upload flow when your application needs a wallet outside `antd` to sign the payment transaction.
+
+This is the right approach when:
+
+- your users pay for their own uploads
+- your app should not custody a wallet key for them
+- you need to integrate with an external signer or wallet stack
 
 ## Prerequisites
 
@@ -33,8 +46,11 @@ The daemon does not have an `--external-signer` flag. External-signer mode is th
 EVM_RPC_URL=https://your-rpc-endpoint \
 EVM_PAYMENT_TOKEN_ADDRESS=0x... \
 EVM_DATA_PAYMENTS_ADDRESS=0x... \
+EVM_MERKLE_PAYMENTS_ADDRESS=0x... \
 ./target/release/antd
 ```
+
+Include `EVM_MERKLE_PAYMENTS_ADDRESS` when you want Merkle batch payment support in the external-signer flow.
 
 ### 2. Prepare the upload
 
@@ -117,6 +133,7 @@ Finalize succeeds when the daemon accepts the `upload_id` and the external trans
 
 ## Next steps
 
-- [Handle Payments](handle-payments.md)
+- [Prepare a Wallet for Uploads](manage-keys.md)
+- [Estimate Costs and Handle Upload Payments](handle-payments.md)
 - [REST API](../sdk-reference/rest-api.md)
 - [Use antd as a Local Service](run-as-daemon.md)

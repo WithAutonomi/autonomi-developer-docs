@@ -108,5 +108,5 @@ Mainnet deployment is working when the daemon reports healthy status, wallet end
 ## Next steps
 
 - [Use antd as a Local Service](run-as-daemon.md)
-- [Handle Payments](handle-payments.md)
-- [Use External Signers](use-external-signers.md)
+- [Estimate Costs and Handle Upload Payments](handle-payments.md)
+- [Use External Signers for Upload Payments](use-external-signers.md)
