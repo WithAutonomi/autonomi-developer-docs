@@ -98,6 +98,6 @@ antd --quote-timeout-secs 15 --store-timeout-secs 90 --quote-concurrency 32 --st
 ## Related pages
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Use antd as a Local Service](../how-to-guides/run-as-daemon.md)
 - [REST API](rest-api.md)

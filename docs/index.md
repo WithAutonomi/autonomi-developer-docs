@@ -14,17 +14,17 @@ Use the SDKs if you want the simplest integration model for application developm
 
 `antd` runs on your machine and exposes REST and gRPC endpoints so your application can use a stable local interface to the network.
 
-Start with [Build with the SDKs](getting-started/install.md), then [Using the Autonomi Daemon](getting-started/using-the-autonomi-daemon.md), then [Retrieve Data from the Network](getting-started/retrieve-data-from-the-network.md), then [Your First Upload with the SDKs](getting-started/hello-world.md).
+Start with [Build with the SDKs](getting-started/install.md), then [Start the Local Daemon](getting-started/using-the-autonomi-daemon.md), then [Retrieve Data from the Network](getting-started/retrieve-data-from-the-network.md), then [Store Data on the Network](getting-started/hello-world.md).
 
 ### Use the CLI
 
-[Use the ant CLI](getting-started/using-ant-client.md) when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
+[Use the CLI](getting-started/using-ant-client.md) when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
 
 ### Build directly in Rust
 
 Build in Rust without the daemon when you want direct programmatic control over networking, uploads, and payments in your application.
 
-Start with [Build in Rust with ant-core](getting-started/build-directly-in-rust.md).
+Start with [Build Directly in Rust](getting-started/build-directly-in-rust.md).
 
 ## Core Concepts
 

@@ -24,13 +24,13 @@ This is the simplest integration model for most application developers.
 
 Choose this route if you want to build with Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
 
-### Use the ant CLI
+### Use the CLI
 
 The CLI gives you direct command-line access to uploads, downloads, chunk operations, wallet inspection, and node-management workflows.
 
 Choose it when you want shell access, scripts, or a daemon-free operational workflow.
 
-### Build in Rust with ant-core
+### Build Directly in Rust
 
 This route uses the native Rust library instead of the daemon.
 
@@ -51,8 +51,8 @@ You do not need to understand every network detail before you store and retrieve
 ## Next steps
 
 * [Build with the SDKs](install.md)
-* [Using the Autonomi Daemon](using-the-autonomi-daemon.md)
+* [Start the Local Daemon](using-the-autonomi-daemon.md)
 * [Retrieve Data from the Network](retrieve-data-from-the-network.md)
-* [Use the ant CLI](using-ant-client.md)
-* [Build in Rust with ant-core](build-directly-in-rust.md)
+* [Use the CLI](using-ant-client.md)
+* [Build Directly in Rust](build-directly-in-rust.md)
 * [GitHub](../github.md)

@@ -31,13 +31,13 @@ Choose the SDKs if you want:
 
 Your application code can still be Python, Node.js / TypeScript, Go, Rust, or another supported language. The supported `antd` install route in these docs is to build the daemon from the `ant-sdk` repo, then connect to it from the SDK language you choose.
 
-If you would rather work directly from the terminal, use [the ant CLI](using-ant-client.md). If you want daemon-free Rust access, build in Rust with `ant-core` instead.
+If you would rather work directly from the terminal, use [the CLI](using-ant-client.md). If you want daemon-free Rust access, see [Build Directly in Rust](build-directly-in-rust.md).
 
 ## What to do next
 
-### 1. Install and start `antd`
+### 1. Start the local daemon
 
-Start with [Using the Autonomi Daemon](using-the-autonomi-daemon.md) to build `antd` from source, run it in read-only mode, and verify that it is healthy.
+Start with [Start the Local Daemon](using-the-autonomi-daemon.md) to build `antd` from source, run it in read-only mode, and verify that it is healthy.
 
 ### 2. Retrieve data from the network
 
@@ -51,9 +51,9 @@ If you need uploads after the read-only flow, choose one of these next steps:
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md) when your app should keep the signing key outside `antd`
 - [Set Up a Local Network](../how-to-guides/setup-local-network.md) if you want local services and test funds provisioned for you
 
-### 4. Your first upload
+### 4. Store data on the network
 
-Once the daemon is running and you have chosen a write path, continue to [Your First Upload with the SDKs](hello-world.md).
+Once the daemon is running and you have chosen a write path, continue to [Store Data on the Network](hello-world.md).
 
 ### 5. Language-specific references
 
@@ -61,9 +61,9 @@ If you already know your target language, use the [Language Bindings](../sdk-ref
 
 ## Related pages
 
-- [Using the Autonomi Daemon](using-the-autonomi-daemon.md)
+- [Start the Local Daemon](using-the-autonomi-daemon.md)
 - [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md)
-- [Your First Upload with the SDKs](hello-world.md)
+- [Store Data on the Network](hello-world.md)
 - [SDK Overview](../sdk-reference/overview.md)

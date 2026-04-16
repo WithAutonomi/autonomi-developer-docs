@@ -49,16 +49,16 @@ If you do not already have an address or `DataMap`, create one first by followin
 For SDKs and the local daemon:
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Retrieve Data from the Network](../getting-started/retrieve-data-from-the-network.md)
 
 For the CLI:
 
-- [Use the ant CLI](../getting-started/using-ant-client.md)
+- [Use the CLI](../getting-started/using-ant-client.md)
 
 For native Rust:
 
-- [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md)
+- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
 
 ### 2. Retrieve public or private data
 
@@ -116,4 +116,4 @@ Your read-only feature is configured correctly when it can retrieve the expected
 
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
 - [Payment Model](../core-concepts/payment-model.md)
-- [Use the ant CLI](../getting-started/using-ant-client.md)
+- [Use the CLI](../getting-started/using-ant-client.md)

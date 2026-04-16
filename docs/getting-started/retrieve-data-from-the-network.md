@@ -10,14 +10,14 @@
 
 Use `antd` to retrieve existing public data from the Autonomi Network without wallet setup. Choose this route when you want the simplest read-only flow through the daemon before you decide whether your application also needs uploads.
 
-If you would rather use shell commands without running `antd`, see [Use the ant CLI](using-ant-client.md). If you want daemon-free Rust access, see [Build in Rust with ant-core](build-directly-in-rust.md).
+If you would rather use shell commands without running `antd`, see [Use the CLI](using-ant-client.md). If you want daemon-free Rust access, see [Build Directly in Rust](build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Prerequisites
 
-- `antd` installed, running, and healthy on `http://localhost:8082` (see [Using the Autonomi Daemon](using-the-autonomi-daemon.md))
-- A known public address to retrieve
+- `antd` installed, running, and healthy on `http://localhost:8082` (see [Start the Local Daemon](using-the-autonomi-daemon.md))
+- An existing public address to retrieve. If you do not have one yet, follow [Store Data on the Network](hello-world.md) first.
 - Optional: the runtime or toolchain for the SDK examples you want to run, such as Python, Node.js, or Rust
 
 For private retrieval, you also need the `DataMap`. Use [Build Read-Only Features](../how-to-guides/build-a-read-only-application.md) if you want the broader read-only flow, including private data.
@@ -26,7 +26,7 @@ For private retrieval, you also need the `DataMap`. Use [Build Read-Only Feature
 
 {% stepper %}
 {% step %}
-### 1. Check the daemon is healthy
+### Check the daemon is healthy
 
 {% tabs %}
 {% tab title="cURL" %}
@@ -89,7 +89,9 @@ Expected REST response:
 ```
 {% endstep %}
 {% step %}
-### 2. Retrieve known public data
+### Retrieve public data from an existing address
+
+Use a public address from another application, another developer, or a previous write. If you do not already have one, follow [Store Data on the Network](hello-world.md) first, then come back to this page.
 
 {% tabs %}
 {% tab title="cURL" %}
@@ -142,7 +144,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 {% endtabs %}
 {% endstep %}
 {% step %}
-### 3. Confirm the response shape
+### Confirm the response shape
 
 The REST API returns base64 inside JSON:
 
@@ -166,5 +168,5 @@ If you need to retrieve private content next, continue to [Build Read-Only Featu
 
 - [Build Read-Only Features](../how-to-guides/build-a-read-only-application.md)
 - [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)
-- [Your First Upload with the SDKs](hello-world.md)
+- [Store Data on the Network](hello-world.md)
 - [REST API](../sdk-reference/rest-api.md)

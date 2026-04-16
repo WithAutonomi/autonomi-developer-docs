@@ -40,7 +40,7 @@ If you are only building read-only features, you do not need any of this wallet 
 
 ## Prerequisites
 
-- `antd` or `ant` installed (see [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md) for daemon setup)
+- `antd` or `ant` installed (see [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md) for daemon setup)
 - A hex-encoded key you already control for payments and uploads when you are not using the local devnet
 
 ## Steps
@@ -119,7 +119,7 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 
 ## Next steps
 
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Estimate Costs and Handle Upload Payments](handle-payments.md)
 - [Use External Signers for Upload Payments](use-external-signers.md)
 - [Build Read-Only Features](build-a-read-only-application.md)

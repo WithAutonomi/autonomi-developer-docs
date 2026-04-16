@@ -262,5 +262,5 @@ ant update --force
 ## Related pages
 
 - [CLI Overview](overview.md)
-- [Use the ant CLI](../getting-started/using-ant-client.md)
+- [Use the CLI](../getting-started/using-ant-client.md)
 - [Rust Library Reference](ant-core-library.md)

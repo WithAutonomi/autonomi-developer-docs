@@ -59,6 +59,6 @@ The CLI, SDK, and native Rust paths reach the same network, but they have differ
 
 ## Related pages
 
-* [Use the ant CLI](../getting-started/using-ant-client.md)
+* [Use the CLI](../getting-started/using-ant-client.md)
 * [CLI Command Reference](command-reference.md)
 * [Developing in Rust](../rust-reference/overview.md)

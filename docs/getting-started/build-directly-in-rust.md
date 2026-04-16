@@ -1,4 +1,4 @@
-# Build in Rust without the daemon
+# Build Directly in Rust
 
 <!-- verification:
   source_repo: ant-client
@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-You can build on Autonomi in Rust without running the local daemon. This approach uses the Rust library `ant-core` and gives your application direct access to networking, uploads, and payments.
+Use `ant-core` when you want to build on Autonomi in Rust without running the local daemon. This approach gives your application direct access to networking, uploads, and payments.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ You can build on Autonomi in Rust without running the local daemon. This approac
 - A local checkout of `ant-client`
 - A new or existing Rust application
 
-If you want a local REST or gRPC gateway instead, start with [Build with the SDKs](install.md) and [Using the Autonomi Daemon](using-the-autonomi-daemon.md). If you want shell access instead of writing Rust code, see [Use the ant CLI](using-ant-client.md).
+If you want a local REST or gRPC gateway instead, start with [Build with the SDKs](install.md) and [Start the Local Daemon](using-the-autonomi-daemon.md). If you want shell access instead of writing Rust code, see [Use the CLI](using-ant-client.md).
 
 ## Steps
 

@@ -1,4 +1,4 @@
-# Using the Autonomi Daemon
+# Start the Local Daemon
 
 <!-- verification:
   source_repo: ant-sdk
@@ -15,9 +15,7 @@
   verification_mode: current-merged-truth
 -->
 
-Build `antd` from source, start it on your machine, and choose whether you need a read-only gateway, default-network uploads, or a fully local devnet.
-
-`antd` is the local daemon used by the SDKs and MCP server. It runs on your machine, talks to the network for you, and exposes REST and gRPC so your applications can work through a stable local API.
+When you build on the Autonomi Network through the SDKs or MCP server, you use a local daemon called `antd`. It runs on your machine and gives your application a stable REST and gRPC interface to the network. This page shows you how to build it from source, start it in read-only mode, and then choose whether you need uploads or a local devnet.
 
 Use `antd` when you want:
 
@@ -136,10 +134,10 @@ You built `antd` and started a local gateway for the Autonomi SDKs. The health c
 ## Next steps
 
 - [Retrieve Data from the Network](retrieve-data-from-the-network.md)
-- [Your First Upload with the SDKs](hello-world.md)
+- [Store Data on the Network](hello-world.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md)
 - [Set Up a Local Network](../how-to-guides/setup-local-network.md)
 - [SDK Overview](../sdk-reference/overview.md)
 - [REST API](../sdk-reference/rest-api.md)
-- [Use the ant CLI](using-ant-client.md)
+- [Use the CLI](using-ant-client.md)
