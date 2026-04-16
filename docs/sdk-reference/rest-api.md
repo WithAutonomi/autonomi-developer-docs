@@ -492,6 +492,8 @@ Prepares an in-memory data upload for external signing.
 
 The response varies by `payment_type`.
 
+The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for uploads with 64 or more chunks.
+
 ```json
 {
   "upload_id": "<hex_id>",
@@ -535,6 +537,8 @@ Merkle variant:
   "rpc_url": "http://127.0.0.1:8545"
 }
 ```
+
+Each `pool_commitments` entry contains exactly 16 candidate payments. The example above shows one candidate for brevity.
 
 **Example:**
 

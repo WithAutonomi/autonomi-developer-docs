@@ -65,6 +65,8 @@ curl -X POST http://localhost:8082/v1/data/prepare \
 
 The prepare endpoints return a `payment_type` discriminator. Use that value to decide which on-chain call to make and which finalize payload to send back.
 
+The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for uploads with 64 or more chunks.
+
 Wave-batch prepare response:
 
 ```json
@@ -110,6 +112,8 @@ Merkle prepare response:
   "rpc_url": "https://your-rpc-endpoint"
 }
 ```
+
+Each `pool_commitments` entry contains exactly 16 candidate payments. The sample above shows one candidate for brevity.
 
 For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`.
 
