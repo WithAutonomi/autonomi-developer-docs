@@ -18,7 +18,7 @@ You can build on Autonomi in several ways.
 
 ### Build an app with the SDKs
 
-This is the easiest starting point for most developers.
+This is the simplest integration model for most application developers.
 
 `antd` runs as a local daemon on your machine. It exposes REST and gRPC endpoints, and SDKs are available in more than 15 languages.
 
