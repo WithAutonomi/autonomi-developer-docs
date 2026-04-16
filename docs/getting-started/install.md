@@ -39,25 +39,30 @@ If you would rather work directly from the terminal, use [the ant CLI](using-ant
 
 Start with [Using the Autonomi Daemon](using-the-autonomi-daemon.md) to build `antd` from source, run it in read-only mode, and verify that it is healthy.
 
-### 2. Choose an upload path when you need writes
+### 2. Retrieve data from the network
 
-If you only need read-only features, stop after the health check and connect your SDK. If you need uploads, choose one of these next steps:
+If you only need read-only features, continue to [Retrieve Data from the Network](retrieve-data-from-the-network.md).
+
+### 3. Choose an upload path when you need writes
+
+If you need uploads after the read-only flow, choose one of these next steps:
 
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md) for daemon-signed writes on the default network
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md) when your app should keep the signing key outside `antd`
 - [Set Up a Local Network](../how-to-guides/setup-local-network.md) if you want local services and test funds provisioned for you
 
-### 3. Your first upload
+### 4. Your first upload
 
 Once the daemon is running and you have chosen a write path, continue to [Your First Upload with the SDKs](hello-world.md).
 
-### 4. Language-specific references
+### 5. Language-specific references
 
 If you already know your target language, use the [Language Bindings](../sdk-reference/language-bindings/overview.md) section for setup and API details.
 
 ## Related pages
 
 - [Using the Autonomi Daemon](using-the-autonomi-daemon.md)
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md)
 - [Your First Upload with the SDKs](hello-world.md)

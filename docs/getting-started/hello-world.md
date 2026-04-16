@@ -18,6 +18,8 @@ In this guide, you use `antd`, the local daemon used by the SDKs, to store a sma
 
 If you would rather use shell commands or direct Rust instead, see [Use the ant CLI](using-ant-client.md) and [Build in Rust with ant-core](build-directly-in-rust.md). If your application should keep the signing key outside `antd`, start with [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md) instead of this guide.
 
+If you only need retrieval and do not need uploads yet, start with [Retrieve Data from the Network](retrieve-data-from-the-network.md).
+
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Steps
@@ -276,6 +278,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Next steps
 
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [REST API](../sdk-reference/rest-api.md)

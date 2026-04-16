@@ -84,6 +84,8 @@ Expected response:
 
 On startup, `antd` also writes a `daemon.port` file. SDKs can use that file to discover non-default ports automatically.
 
+If you only need retrieval, continue to [Retrieve Data from the Network](retrieve-data-from-the-network.md) before you think about upload payment setup.
+
 ### 4. Enable uploads when you need them
 
 Skip this step if you are only building read-only features.
@@ -133,6 +135,7 @@ You built `antd` and started a local gateway for the Autonomi SDKs. The health c
 
 ## Next steps
 
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Your First Upload with the SDKs](hello-world.md)
 - [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md)

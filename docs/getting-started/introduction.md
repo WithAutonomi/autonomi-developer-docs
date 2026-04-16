@@ -52,6 +52,7 @@ You do not need to understand every network detail before you store and retrieve
 
 * [Build with the SDKs](install.md)
 * [Using the Autonomi Daemon](using-the-autonomi-daemon.md)
+* [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 * [Use the ant CLI](using-ant-client.md)
 * [Build in Rust with ant-core](build-directly-in-rust.md)
 * [GitHub](../github.md)
