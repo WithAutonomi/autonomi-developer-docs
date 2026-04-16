@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-04
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -32,7 +32,7 @@ Use `antd` when you want:
 - Git
 - Rust toolchain
 - `protoc` (Protocol Buffers compiler) available on your machine
-- For write operations on the default network: a wallet private key exported as `AUTONOMI_WALLET_KEY`
+- For write operations on the default network: `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, and `EVM_PAYMENT_VAULT_ADDRESS`, plus `AUTONOMI_WALLET_KEY` if the daemon will sign payments directly
 - For a fully local devnet: Python 3.10+ and a sibling `ant-node` checkout if you plan to use `ant dev start`
 
 ## Steps
@@ -70,7 +70,20 @@ For a read-only local gateway on the default network:
 To enable write endpoints on the default network, restart it with a wallet key:
 
 ```bash
-AUTONOMI_WALLET_KEY="<hex_private_key>" ./target/release/antd
+AUTONOMI_WALLET_KEY="<hex_private_key>" \
+EVM_RPC_URL="https://your-rpc-endpoint" \
+EVM_PAYMENT_TOKEN_ADDRESS="0x..." \
+EVM_PAYMENT_VAULT_ADDRESS="0x..." \
+./target/release/antd
+```
+
+For external-signer uploads, omit `AUTONOMI_WALLET_KEY` and keep the EVM settings:
+
+```bash
+EVM_RPC_URL="https://your-rpc-endpoint" \
+EVM_PAYMENT_TOKEN_ADDRESS="0x..." \
+EVM_PAYMENT_VAULT_ADDRESS="0x..." \
+./target/release/antd
 ```
 
 If you want a local devnet instead, use the helper from the repo root:
@@ -115,7 +128,7 @@ On startup, `antd` also writes a `daemon.port` file. SDKs can use that file to d
 
 ## What happened
 
-You built `antd` and started a local gateway for the Autonomi SDKs. The health check confirms that the daemon is reachable; write endpoints stay unavailable until the daemon has wallet configuration or a local devnet helper has provisioned one.
+You built `antd` and started a local gateway for the Autonomi SDKs. The health check confirms that the daemon is reachable; write endpoints stay unavailable until the daemon has wallet configuration, external-signer EVM configuration, or a local devnet helper has provisioned both.
 
 ## Next steps
 

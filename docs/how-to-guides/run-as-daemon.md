@@ -1,5 +1,13 @@
 # Use the Daemon as a Local Service
 
+<!-- verification:
+  source_repo: ant-sdk
+  source_ref: main
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
+  verification_mode: current-merged-truth
+-->
+
 Run the Autonomi Daemon, `antd`, as a long-lived local service when you want one stable Autonomi gateway that multiple applications, scripts, or background processes can share.
 
 Use this setup if you want:
@@ -26,10 +34,10 @@ Create `/etc/antd.env`:
 AUTONOMI_WALLET_KEY=<hex_private_key>
 EVM_RPC_URL=https://your-rpc-endpoint
 EVM_PAYMENT_TOKEN_ADDRESS=0x...
-EVM_DATA_PAYMENTS_ADDRESS=0x...
+EVM_PAYMENT_VAULT_ADDRESS=0x...
 ```
 
-You only need the wallet and EVM settings if this daemon will perform paid writes.
+You only need the wallet and EVM settings if this daemon will perform paid writes. For external-signer uploads, omit `AUTONOMI_WALLET_KEY` but keep the EVM settings so the prepare/finalize endpoints can describe the payment work.
 
 ### 2. Create a systemd unit
 
@@ -90,7 +98,7 @@ The daemon is healthy when `/health` returns `status: ok` and your application c
 
 **Port already in use**: Change `--rest-addr`, `--grpc-addr`, `--rest-port`, or `--grpc-port`.
 
-**503 on write endpoints**: The daemon is running, but wallet configuration is missing.
+**503 on write endpoints**: The daemon is running, but wallet or EVM payment configuration is missing.
 
 **Startup loop in systemd**: Inspect `journalctl -u antd -f` for invalid addresses, missing binaries, or bad environment variables.
 

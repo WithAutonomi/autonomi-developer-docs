@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 0ceb761cf0511f5c4fd2bd0367dc6e1a34a1a2e6
-  verified_date: 2026-04-07
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-04
+  source_commit: eb29e99937b1aedba02db04e1ae59bd923b424a3
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -45,12 +45,11 @@ The daemon does not have an `--external-signer` flag. External-signer mode is th
 ```bash
 EVM_RPC_URL=https://your-rpc-endpoint \
 EVM_PAYMENT_TOKEN_ADDRESS=0x... \
-EVM_DATA_PAYMENTS_ADDRESS=0x... \
-EVM_MERKLE_PAYMENTS_ADDRESS=0x... \
+EVM_PAYMENT_VAULT_ADDRESS=0x... \
 ./target/release/antd
 ```
 
-Include `EVM_MERKLE_PAYMENTS_ADDRESS` when you want Merkle batch payment support in the external-signer flow.
+Use `EVM_PAYMENT_VAULT_ADDRESS` for both wave-batch and Merkle uploads in the external-signer flow.
 
 ### 2. Prepare the upload
 
@@ -80,7 +79,7 @@ Wave-batch prepare response:
     }
   ],
   "total_amount": "<atto_token_amount>",
-  "data_payments_address": "0x...",
+  "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
   "rpc_url": "https://your-rpc-endpoint"
 }
@@ -105,7 +104,7 @@ Merkle prepare response:
     }
   ],
   "merkle_payment_timestamp": 1744041600,
-  "merkle_payments_address": "0x...",
+  "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
   "rpc_url": "https://your-rpc-endpoint"
@@ -122,6 +121,8 @@ Use your signer stack to submit the EVM payment transaction described by the pre
 
 - For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`.
 - For `merkle`, call `payForMerkleTree()` with `depth`, `pool_commitments`, and `merkle_payment_timestamp`, then keep the `winner_pool_hash` from the `MerklePaymentMade` event.
+
+Both calls use the `payment_vault_address` returned by the prepare step.
 
 ### 4. Finalize the upload
 

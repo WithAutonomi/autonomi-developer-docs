@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -84,7 +84,7 @@ Do not assume perfect parity from this page alone. The SDKs expose the same daem
 - Python examples use `AntdClient()` from `antd`
 - some SDK READMEs document both REST and gRPC, while others are REST-only today
 
-At this commit, the daemon and some SDK response models are not perfectly aligned for upload cost fields. For data uploads, rely on the returned address and successful retrieval first; if you need authoritative cost information, use the explicit cost endpoints.
+Data and chunk writes still return `PutResult`-style shapes with `cost` plus an address or DataMap. File and directory uploads return richer results that include `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
 
 Use the binding-specific page when you need package names, constructors, or transport details.
 

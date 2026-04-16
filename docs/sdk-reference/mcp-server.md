@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 0ceb761cf0511f5c4fd2bd0367dc6e1a34a1a2e6
-  verified_date: 2026-04-07
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -158,7 +158,7 @@ Prepares a data upload for external signing. The input is base64-encoded.
 Both prepare tools return either:
 
 - `payment_type: "wave_batch"` with quote-level `payments`
-- `payment_type: "merkle"` with `depth`, `pool_commitments`, `merkle_payment_timestamp`, and `merkle_payments_address`
+- `payment_type: "merkle"` with `depth`, `pool_commitments`, `merkle_payment_timestamp`, and `payment_vault_address`
 
 ### Finalize a Wave-Batch Upload
 
@@ -198,7 +198,10 @@ Examples:
 ```json
 {
   "address": "abc123...",
-  "cost": "1000000",
+  "storage_cost_atto": "1000000",
+  "gas_cost_wei": "42000000000000",
+  "chunks_stored": 7,
+  "payment_mode_used": "auto",
   "network": "local"
 }
 ```

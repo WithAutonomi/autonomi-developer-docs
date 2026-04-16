@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -30,6 +30,10 @@ Runs the local REST and gRPC gateway daemon for Autonomi.
 | `--peers <MULTIADDRS>` | string | No | Comma-separated bootstrap peer multiaddrs |
 | `--cors` | boolean | No | Enable localhost CORS headers |
 | `--log-level <LEVEL>` | string | No | Log level: `trace`, `debug`, `info`, `warn`, `error` |
+| `--quote-timeout-secs <SECONDS>` | integer | No | Override the quote and DHT timeout for lightweight network operations |
+| `--store-timeout-secs <SECONDS>` | integer | No | Override the timeout for chunk store and retrieve operations |
+| `--quote-concurrency <COUNT>` | integer | No | Override quote and DHT lookup concurrency |
+| `--store-concurrency <COUNT>` | integer | No | Override chunk-store concurrency |
 
 **Environment variables:**
 
@@ -43,11 +47,14 @@ Runs the local REST and gRPC gateway daemon for Autonomi.
 | `ANTD_PEERS` | Comma-separated bootstrap peer multiaddrs |
 | `ANTD_CORS` | Enable CORS |
 | `ANTD_LOG_LEVEL` | Log level |
+| `ANTD_QUOTE_TIMEOUT_SECS` | Quote and DHT timeout override |
+| `ANTD_STORE_TIMEOUT_SECS` | Chunk store and retrieve timeout override |
+| `ANTD_QUOTE_CONCURRENCY` | Quote and DHT concurrency override |
+| `ANTD_STORE_CONCURRENCY` | Chunk-store concurrency override |
 | `AUTONOMI_WALLET_KEY` | Direct-wallet private key for paid uploads |
 | `EVM_RPC_URL` | EVM RPC endpoint |
 | `EVM_PAYMENT_TOKEN_ADDRESS` | Payment token contract |
-| `EVM_DATA_PAYMENTS_ADDRESS` | Data payments contract |
-| `EVM_MERKLE_PAYMENTS_ADDRESS` | Optional Merkle payments contract |
+| `EVM_PAYMENT_VAULT_ADDRESS` | Payment vault contract |
 
 **Examples:**
 
@@ -66,6 +73,9 @@ antd --rest-port 0 --grpc-port 0
 
 # Run with debug logging
 antd --log-level debug
+
+# Tune quote and store behavior for slower networks
+antd --quote-timeout-secs 15 --store-timeout-secs 90 --quote-concurrency 32 --store-concurrency 8
 ```
 
 **Response:** None. The daemon keeps running until it is stopped.
@@ -74,6 +84,7 @@ antd --log-level debug
 
 - The CLI does not include an `--external-signer` flag.
 - External-signer mode is handled through environment configuration and the prepare/finalize upload endpoints.
+- Use `EVM_PAYMENT_VAULT_ADDRESS` for current paid-write and external-signer setups.
 - On startup, `antd` writes a `daemon.port` file so SDKs can discover the active ports.
 
 ## Error codes

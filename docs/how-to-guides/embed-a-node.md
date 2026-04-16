@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
-  verified_date: 2026-04-07
+  source_commit: d3f5ba969b8ccf98ca0c50b661a3762aec904634
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -24,7 +24,7 @@ Use the published `ant-node` crate from crates.io:
 
 ```toml
 [dependencies]
-ant-node = "0.9.0"
+ant-node = "0.10.0"
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -81,6 +81,8 @@ tokio::spawn(async move {
 - `close_group_cache_dir`
 - `max_message_size`
 - `log_level`
+
+`payment.evm_network` can target `ArbitrumOne`, `ArbitrumSepolia`, or a private EVM with `Custom { rpc_url, payment_token_address, payment_vault_address }`.
 
 Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [ant-node API](https://github.com/WithAutonomi/ant-node).
 

@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 0ceb761cf0511f5c4fd2bd0367dc6e1a34a1a2e6
-  verified_date: 2026-04-07
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -283,12 +283,13 @@ Uploads a local file and stores its DataMap publicly.
 
 ```json
 {
-  "cost": "",
-  "address": "<64_hex_address>"
+  "address": "<64_hex_address>",
+  "storage_cost_atto": "<atto_token_amount>",
+  "gas_cost_wei": "<wei_amount>",
+  "chunks_stored": 42,
+  "payment_mode_used": "auto"
 }
 ```
-
-At this commit the handler returns a `cost` field but does not populate it for file and directory uploads.
 
 **Example:**
 
@@ -338,8 +339,11 @@ Uploads a local directory recursively.
 
 ```json
 {
-  "cost": "",
-  "address": "<64_hex_address>"
+  "address": "<64_hex_address>",
+  "storage_cost_atto": "<atto_token_amount>",
+  "gas_cost_wei": "<wei_amount>",
+  "chunks_stored": 42,
+  "payment_mode_used": "auto"
 }
 ```
 
@@ -500,7 +504,7 @@ The response varies by `payment_type`.
     }
   ],
   "total_amount": "<atto_token_amount>",
-  "data_payments_address": "0x...",
+  "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
   "rpc_url": "http://127.0.0.1:8545"
 }
@@ -525,7 +529,7 @@ Merkle variant:
     }
   ],
   "merkle_payment_timestamp": 1744041600,
-  "merkle_payments_address": "0x...",
+  "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
   "rpc_url": "http://127.0.0.1:8545"
