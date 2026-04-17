@@ -4,20 +4,20 @@
   source_repo: ant-sdk
   source_ref: main
   source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
-  verified_date: 2026-04-16
+  verified_date: 2026-04-17
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: eb29e99937b1aedba02db04e1ae59bd923b424a3
-  verified_date: 2026-04-16
+  source_commit: d46a73d38731a31fbd9815394fe8a2943eb38246
+  verified_date: 2026-04-17
   verification_mode: current-merged-truth
 -->
 
 Build read-only Autonomi features when you only need to retrieve data that has already been stored and paid for.
 
-This can describe a small read-only feature inside a larger application or an entire application that only retrieves existing data.
+This guide is intentionally cross-route. It helps you compare the SDK, CLI, and direct Rust retrieval paths so you can choose the right read-only architecture for your application.
 
 ## Why this matters
 
@@ -46,17 +46,17 @@ If you do not already have an address or `DataMap`, create one first by followin
 
 ### 1. Choose the route you want to use
 
-For SDKs and the local daemon:
+For the SDK route:
 
 - [Build with the SDKs](../getting-started/install.md)
 - [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Retrieve Data from the Network](../getting-started/retrieve-data-from-the-network.md)
 
-For the CLI:
+For the CLI route:
 
 - [Use the CLI](../getting-started/using-ant-client.md)
 
-For native Rust:
+For the Direct Rust route:
 
 - [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
 

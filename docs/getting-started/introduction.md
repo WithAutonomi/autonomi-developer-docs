@@ -12,11 +12,11 @@ At a high level, Autonomi gives you:
 * pay-once storage, where you pay in Autonomi Network Token (ANT) when you upload and downloads are free
 * post-quantum cryptography in the transport and security model
 
-## Ways to build on Autonomi
+## Choose how you want to build
 
-You can build on Autonomi in several ways.
+You can build on Autonomi through four main interfaces. Choose the one that matches how you want to work, then stay in that path until you need something more advanced.
 
-### Build an app with the SDKs
+### SDK
 
 This is the simplest integration model for most application developers.
 
@@ -24,13 +24,21 @@ This is the simplest integration model for most application developers.
 
 Choose this route if you want to build with Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported SDK language.
 
-### Use the CLI
+### MCP
+
+This is the best fit when you want AI tools to interact with Autonomi through structured tool calls.
+
+The MCP server talks to `antd` for you, so you still use the daemon-backed path under the hood, but the interface is an MCP-compatible client such as Claude Desktop or Claude Code.
+
+Choose this route when you want AI-assisted storage and retrieval rather than a traditional application or shell workflow.
+
+### CLI
 
 The CLI gives you direct command-line access to uploads, downloads, chunk operations, wallet inspection, and node-management workflows.
 
 Choose it when you want shell access, scripts, or a daemon-free operational workflow.
 
-### Build Directly in Rust
+### Direct Rust
 
 This route uses the native Rust library instead of the daemon.
 
@@ -51,8 +59,7 @@ You do not need to understand every network detail before you store and retrieve
 ## Next steps
 
 * [Build with the SDKs](install.md)
-* [Start the Local Daemon](using-the-autonomi-daemon.md)
-* [Retrieve Data from the Network](retrieve-data-from-the-network.md)
+* [Use MCP with AI Tools](use-mcp-with-ai-tools.md)
 * [Use the CLI](using-ant-client.md)
 * [Build Directly in Rust](build-directly-in-rust.md)
 * [GitHub](../github.md)

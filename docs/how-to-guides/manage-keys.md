@@ -3,19 +3,21 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
-  verified_date: 2026-04-16
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-17
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: eb29e99937b1aedba02db04e1ae59bd923b424a3
-  verified_date: 2026-04-16
+  source_commit: d46a73d38731a31fbd9815394fe8a2943eb38246
+  verified_date: 2026-04-17
   verification_mode: current-merged-truth
 -->
 
 Use this guide when you need a wallet that can pay for uploads.
+
+This guide is intentionally cross-route. It covers the shared wallet setup concerns across the SDK, CLI, and direct Rust paths.
 
 It explains:
 
