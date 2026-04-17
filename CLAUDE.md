@@ -132,6 +132,9 @@ On first mention in rendered prose, expand important acronyms when that helps a 
 - An agent reading any single page via llms.txt should understand the topic without needing other pages.
 - Link to related pages at the end, not inline as prerequisites.
 - When you mention another supported tool, route, or approach that is not explained on the current page, add an inline link to the relevant page if one exists.
+- Treat route as a required second-level axis under Getting Started and How-to Guides. Use the four primary route labels consistently: SDK, MCP, CLI, and Direct Rust.
+- Keep pages route-pure unless they are explicitly comparison or chooser pages. Use `Common Tasks` for pages that genuinely apply across more than one route.
+- Use tabs for languages or equivalent interfaces within one route, never for switching between routes.
 - Getting Started and How-to pages must explain what tool or route they cover, why you would choose it, and where the alternatives live when multiple supported routes exist.
 - Explain a tool or interface before telling the reader to install, run, or configure it.
 - Titles should describe user outcomes or choices, not internal mechanisms, unless the mechanism name itself is the thing the page teaches.

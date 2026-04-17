@@ -7,11 +7,16 @@
 ## Getting Started
 
 * [What is Autonomi?](getting-started/introduction.md)
+### SDK
 * [Build with the SDKs](getting-started/install.md)
 * [Start the Local Daemon](getting-started/using-the-autonomi-daemon.md)
 * [Retrieve Data from the Network](getting-started/retrieve-data-from-the-network.md)
 * [Store Data on the Network](getting-started/hello-world.md)
+### MCP
+* [Use MCP with AI Tools](getting-started/use-mcp-with-ai-tools.md)
+### CLI
 * [Use the CLI](getting-started/using-ant-client.md)
+### Direct Rust
 * [Build Directly in Rust](getting-started/build-directly-in-rust.md)
 
 ## Core Concepts
@@ -25,24 +30,27 @@
 
 ## How-To Guides
 
-* [Set Up a Local Network](how-to-guides/setup-local-network.md)
+### SDK
 * [Store and Retrieve Data with the SDKs](how-to-guides/store-and-retrieve-data.md)
+* [Use the Daemon as a Local Service](how-to-guides/run-as-daemon.md)
+* [Use External Signers for Upload Payments](how-to-guides/use-external-signers.md)
+### MCP
+* [Use the Autonomi MCP Server](how-to-guides/use-the-mcp-server.md)
+### Direct Rust
+* [Embed a Node in Your Application](how-to-guides/embed-a-node.md)
+### Common Tasks
+* [Set Up a Local Network](how-to-guides/setup-local-network.md)
 * [Prepare a Wallet for Uploads](how-to-guides/manage-keys.md)
 * [Estimate Costs and Handle Upload Payments](how-to-guides/handle-payments.md)
 * [Build Read-Only Features](how-to-guides/build-a-read-only-application.md)
-* [Use the Daemon as a Local Service](how-to-guides/run-as-daemon.md)
-* [Use External Signers for Upload Payments](how-to-guides/use-external-signers.md)
-* [Use the Autonomi MCP Server](how-to-guides/use-the-mcp-server.md)
 * [Test Your Application](how-to-guides/test-your-application.md)
 * [Deploy to Mainnet](how-to-guides/deploy-to-mainnet.md)
-* [Embed a Node in Your Application](how-to-guides/embed-a-node.md)
 
 ## SDK Reference
 
 * [SDK Overview](sdk-reference/overview.md)
 * [REST API](sdk-reference/rest-api.md)
 * [gRPC Services](sdk-reference/grpc-services.md)
-* [MCP Server Reference](sdk-reference/mcp-server.md)
 * [Daemon Command Reference](sdk-reference/daemon-cli.md)
 * [Language Bindings](sdk-reference/language-bindings/README.md)
   * [How Bindings Work](sdk-reference/language-bindings/overview.md)
@@ -60,6 +68,10 @@
   * [C++](sdk-reference/language-bindings/cpp.md)
   * [Dart](sdk-reference/language-bindings/dart.md)
   * [Zig](sdk-reference/language-bindings/zig.md)
+
+## MCP Reference
+
+* [MCP Server Reference](sdk-reference/mcp-server.md)
 
 ## CLI Reference
 

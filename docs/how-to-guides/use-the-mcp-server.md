@@ -3,12 +3,12 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-17
   verification_mode: current-merged-truth
 -->
 
-Use the Autonomi MCP server when you want an MCP-compatible client such as Claude Desktop or Claude Code to call the `antd` daemon through structured tools instead of raw HTTP requests.
+Use this guide when you have already chosen the MCP path and you want to install and configure the Autonomi MCP server against a running `antd` instance. It is the deeper setup guide for AI clients that talk to Autonomi through MCP tools instead of raw HTTP requests.
 
 ## Prerequisites
 
@@ -92,6 +92,7 @@ Your MCP client is configured correctly when it can see the `antd-autonomi` serv
 
 ## Next steps
 
+- [Use MCP with AI Tools](../getting-started/use-mcp-with-ai-tools.md)
 - [MCP Server Reference](../sdk-reference/mcp-server.md)
 - [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [REST API](../sdk-reference/rest-api.md)
