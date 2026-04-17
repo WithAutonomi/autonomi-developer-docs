@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -87,6 +87,8 @@ Stores a raw chunk.
 
 Uploads a local file path.
 
+`UploadPublicResponse` returns `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and `payment_mode_used`.
+
 ### Download Public
 
 **Signature:** `DownloadPublic(DownloadPublicRequest) -> DownloadResponse`
@@ -98,6 +100,8 @@ Downloads a public file to a local destination path.
 **Signature:** `DirUploadPublic(UploadFileRequest) -> UploadPublicResponse`
 
 Uploads a local directory path.
+
+`DirUploadPublic` returns the same `UploadPublicResponse` shape as file uploads.
 
 ### Download Public Directory
 
@@ -138,7 +142,7 @@ The proto files define these shared shapes:
 | `HealthCheckResponse` | `status`, `network` |
 | `PutPublicDataResponse` | `cost`, `address` |
 | `PutPrivateDataResponse` | `cost`, `data_map` |
-| `UploadPublicResponse` | `cost`, `address` |
+| `UploadPublicResponse` | `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
 
 ## Related pages
 

@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -283,12 +283,13 @@ Uploads a local file and stores its DataMap publicly.
 
 ```json
 {
-  "cost": "",
-  "address": "<64_hex_address>"
+  "address": "<64_hex_address>",
+  "storage_cost_atto": "<atto_token_amount>",
+  "gas_cost_wei": "<wei_amount>",
+  "chunks_stored": 42,
+  "payment_mode_used": "auto"
 }
 ```
-
-At this commit the handler returns a `cost` field but does not populate it for file and directory uploads.
 
 **Example:**
 
@@ -338,8 +339,11 @@ Uploads a local directory recursively.
 
 ```json
 {
-  "cost": "",
-  "address": "<64_hex_address>"
+  "address": "<64_hex_address>",
+  "storage_cost_atto": "<atto_token_amount>",
+  "gas_cost_wei": "<wei_amount>",
+  "chunks_stored": 42,
+  "payment_mode_used": "auto"
 }
 ```
 
@@ -486,9 +490,14 @@ Prepares an in-memory data upload for external signing.
 
 **Response:**
 
+The response varies by `payment_type`.
+
+The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for uploads with 64 or more chunks.
+
 ```json
 {
   "upload_id": "<hex_id>",
+  "payment_type": "wave_batch",
   "payments": [
     {
       "quote_hash": "0x...",
@@ -497,11 +506,39 @@ Prepares an in-memory data upload for external signing.
     }
   ],
   "total_amount": "<atto_token_amount>",
-  "data_payments_address": "0x...",
+  "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
   "rpc_url": "http://127.0.0.1:8545"
 }
 ```
+
+Merkle variant:
+
+```json
+{
+  "upload_id": "<hex_id>",
+  "payment_type": "merkle",
+  "depth": 6,
+  "pool_commitments": [
+    {
+      "pool_hash": "0x...",
+      "candidates": [
+        {
+          "rewards_address": "0x...",
+          "amount": "<atto_token_amount>"
+        }
+      ]
+    }
+  ],
+  "merkle_payment_timestamp": 1744041600,
+  "payment_vault_address": "0x...",
+  "total_amount": "0",
+  "payment_token_address": "0x...",
+  "rpc_url": "http://127.0.0.1:8545"
+}
+```
+
+Each `pool_commitments` entry contains exactly 16 candidate payments. The example above shows one candidate for brevity.
 
 **Example:**
 
@@ -525,7 +562,7 @@ Prepares a file upload for external signing.
 |------|------|----------|-------------|
 | `path` | string | Yes | Local file path |
 
-**Response:** Same shape as `POST /v1/data/prepare`
+**Response:** Same `payment_type`-based shape as `POST /v1/data/prepare`
 
 **Example:**
 
@@ -539,15 +576,18 @@ curl -X POST http://localhost:8082/v1/upload/prepare \
 
 **Endpoint:** `POST /v1/upload/finalize`
 
-Finalizes a prepared upload after the external signer has submitted payment transactions.
+Finalizes a prepared upload after the external signer has submitted the matching payment transaction.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `upload_id` | string | Yes | Value returned by a prepare endpoint |
-| `tx_hashes` | object | Yes | Map of `quote_hash` to `tx_hash` |
+| `tx_hashes` | object | No | Wave-batch only: map of `quote_hash` to `tx_hash` |
+| `winner_pool_hash` | string | No | Merkle only: winner pool hash emitted by `MerklePaymentMade` |
 | `store_data_map` | boolean | No | If `true`, also stores the DataMap on-network |
+
+Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batch"`. Provide `winner_pool_hash` when it returned `payment_type: "merkle"`.
 
 **Response:**
 
@@ -561,12 +601,18 @@ Finalizes a prepared upload after the external signer has submitted payment tran
 
 The `address` field is only present when `store_data_map` is `true`.
 
-**Example:**
+**Examples:**
 
 ```bash
 curl -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"},"store_data_map":true}'
+```
+
+```bash
+curl -X POST http://localhost:8082/v1/upload/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","winner_pool_hash":"0x...","store_data_map":true}'
 ```
 
 ## Error codes
@@ -584,6 +630,6 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
 ## Related pages
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
-- [Your First Upload with the SDKs](../getting-started/hello-world.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Store Data on the Network](../getting-started/hello-world.md)
 - [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)

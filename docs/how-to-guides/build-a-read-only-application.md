@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-05
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-05
+  source_commit: eb29e99937b1aedba02db04e1ae59bd923b424a3
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -49,15 +49,16 @@ If you do not already have an address or `DataMap`, create one first by followin
 For SDKs and the local daemon:
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Retrieve Data from the Network](../getting-started/retrieve-data-from-the-network.md)
 
 For the CLI:
 
-- [Use the ant CLI](../getting-started/using-ant-client.md)
+- [Use the CLI](../getting-started/using-ant-client.md)
 
 For native Rust:
 
-- [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md)
+- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
 
 ### 2. Retrieve public or private data
 
@@ -115,4 +116,4 @@ Your read-only feature is configured correctly when it can retrieve the expected
 
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
 - [Payment Model](../core-concepts/payment-model.md)
-- [Use the ant CLI](../getting-started/using-ant-client.md)
+- [Use the CLI](../getting-started/using-ant-client.md)

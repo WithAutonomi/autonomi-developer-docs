@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -64,9 +64,10 @@ main().catch((error) => {
 |------|------|
 | `HealthStatus` | `{ ok: boolean, network: string }` |
 | `PutResult` | `{ cost: string, address: string }` |
+| `FileUploadResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string, gasBalance: string }` |
-| `PrepareUploadResult` | object with `uploadId`, `payments`, `totalAmount`, `dataPaymentsAddress`, `paymentTokenAddress`, `rpcUrl` |
+| `PrepareUploadResult` | object with `uploadId`, `paymentType`, `totalAmount`, `paymentVaultAddress`, `paymentTokenAddress`, `rpcUrl`, plus `payments` for wave-batch uploads or `depth`, `poolCommitments`, and `merklePaymentTimestamp` for Merkle uploads |
 | `FinalizeUploadResult` | `{ address: string, chunksStored: number }` |
 | Raw data | `Buffer` |
 

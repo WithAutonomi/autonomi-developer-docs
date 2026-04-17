@@ -1,22 +1,24 @@
-# Your First Upload with the SDKs
+# Store Data on the Network
 
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
-In this guide, you use `antd`, the local daemon used by the SDKs, to store a small public payload and read it back again so you can see how the SDKs and the network fit together.
+Use `antd` to store a small public payload on the Autonomi Network and read it back again so you can see how the daemon route handles writes.
 
 ## Prerequisites
 
-- `antd` installed and running on `http://localhost:8082` (see [Using the Autonomi Daemon](using-the-autonomi-daemon.md))
-- For write operations: start `antd` with `AUTONOMI_WALLET_KEY` set, or use `ant dev start` for a local devnet
-- Optional: Python, Node.js, or Rust toolchain if you want to use the SDK examples
+- `antd` installed and running on `http://localhost:8082` (see [Start the Local Daemon](using-the-autonomi-daemon.md))
+- A write-enabled daemon. On the default network, restart `antd` with wallet configuration before you continue. On a local devnet, `ant dev start` provisions the upload settings for you. See [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md) for the default-network path.
+- Optional: the runtime or toolchain for the SDK examples you want to run, such as Python, Node.js, or Rust
 
-If you would rather use shell commands or direct Rust instead, see [Use the ant CLI](using-ant-client.md) and [Build in Rust with ant-core](build-directly-in-rust.md).
+If you would rather use shell commands or direct Rust instead, see [Use the CLI](using-ant-client.md) and [Build Directly in Rust](build-directly-in-rust.md). If your application should keep the signing key outside `antd`, start with [Use External Signers for Upload Payments](../how-to-guides/use-external-signers.md) instead of this guide.
+
+If you only need retrieval and do not need uploads yet, start with [Retrieve Data from the Network](retrieve-data-from-the-network.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
@@ -85,6 +87,8 @@ Expected REST response:
 ```
 
 ### 2. Store a public payload
+
+Public uploads are still paid writes. If `antd` is running on the default network, make sure you restarted it with wallet configuration before you continue. If `antd` is running on a local devnet, `ant dev start` already provisioned the payment settings.
 
 The REST API expects binary data as base64 inside JSON.
 
@@ -274,6 +278,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Next steps
 
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)
+- [Prepare a Wallet for Uploads](../how-to-guides/manage-keys.md)
 - [REST API](../sdk-reference/rest-api.md)
 - [SDK Overview](../sdk-reference/overview.md)

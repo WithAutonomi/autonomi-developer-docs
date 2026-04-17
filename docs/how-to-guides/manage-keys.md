@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-05
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-05
+  source_commit: eb29e99937b1aedba02db04e1ae59bd923b424a3
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -40,7 +40,7 @@ If you are only building read-only features, you do not need any of this wallet 
 
 ## Prerequisites
 
-- `antd` or `ant` installed (see [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md) for daemon setup)
+- `antd` or `ant` installed (see [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md) for daemon setup)
 - A hex-encoded key you already control for payments and uploads when you are not using the local devnet
 
 ## Steps
@@ -97,12 +97,11 @@ If you do not want `antd` to hold a wallet key, run it without `AUTONOMI_WALLET_
 ```bash
 EVM_RPC_URL=https://your-rpc-endpoint \
 EVM_PAYMENT_TOKEN_ADDRESS=0x... \
-EVM_DATA_PAYMENTS_ADDRESS=0x... \
-EVM_MERKLE_PAYMENTS_ADDRESS=0x... \
+EVM_PAYMENT_VAULT_ADDRESS=0x... \
 ./target/release/antd
 ```
 
-Include `EVM_MERKLE_PAYMENTS_ADDRESS` when you want Merkle batch payment support in this configuration.
+Use `EVM_PAYMENT_VAULT_ADDRESS` for both wave-batch and Merkle external-signer uploads in this configuration.
 
 That keeps signing outside the daemon and pushes transaction submission into your wallet or signer integration.
 
@@ -112,7 +111,7 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 
 ## Common errors
 
-**503 Service Unavailable**: `antd` is running but `AUTONOMI_WALLET_KEY` is not set.
+**503 Service Unavailable**: `antd` is running, but the wallet key is missing for direct-wallet writes or the EVM payment settings are missing for external-signer uploads.
 
 **Unsupported local wallet command**: `ant wallet` with `--evm-network local` requires a devnet manifest.
 
@@ -120,7 +119,7 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 
 ## Next steps
 
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Estimate Costs and Handle Upload Payments](handle-payments.md)
 - [Use External Signers for Upload Payments](use-external-signers.md)
 - [Build Read-Only Features](build-a-read-only-application.md)

@@ -41,7 +41,7 @@ Choose native Rust with ant-core if you want:
 - no daemon process between your code and the network
 - access to native Rust types and local devnet helpers
 
-See [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md) and [Rust Library Reference](../cli-reference/ant-core-library.md).
+See [Build Directly in Rust](../getting-started/build-directly-in-rust.md) and [Rust Library Reference](../cli-reference/ant-core-library.md).
 
 ## How the two Rust paths differ
 
@@ -59,6 +59,6 @@ See [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md) 
 
 ## Related pages
 
-- [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md)
+- [Build Directly in Rust](../getting-started/build-directly-in-rust.md)
 - [Rust SDK](../sdk-reference/language-bindings/rust.md)
 - [Rust Library Reference](../cli-reference/ant-core-library.md)

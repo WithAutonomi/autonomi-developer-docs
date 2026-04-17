@@ -17,13 +17,13 @@
 
 In this guide, you use `antd`, the local daemon used by the SDKs, to estimate costs, check balances, approve token spend, and choose a payment mode before you upload data.
 
-If you want to work from the command line instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct Rust access, see [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md).
+If you want to work from the command line instead, see [Use the CLI](../getting-started/using-ant-client.md). If you want direct Rust access, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Prerequisites
 
-- `antd` running on `http://localhost:8082` (see [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md))
+- `antd` running on `http://localhost:8082` (see [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md))
 - A configured wallet for write operations, or a local devnet started with `ant dev start`
 
 ## Steps
@@ -296,7 +296,7 @@ Check the wallet balance before and after a paid upload, then fetch the stored d
 
 ## Next steps
 
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Prepare a Wallet for Uploads](manage-keys.md)
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
 - [Use External Signers for Upload Payments](use-external-signers.md)

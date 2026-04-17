@@ -3,22 +3,24 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
 In this guide, you use `antd`, the local daemon used by the SDKs, to store public data, private data, files, and directories through language SDKs.
 
-If you want direct shell access instead, see [Use the ant CLI](../getting-started/using-ant-client.md). If you want direct programmatic Rust access without the daemon, see [Build in Rust with ant-core](../getting-started/build-directly-in-rust.md).
+If you want direct shell access instead, see [Use the CLI](../getting-started/using-ant-client.md). If you want direct programmatic Rust access without the daemon, see [Build Directly in Rust](../getting-started/build-directly-in-rust.md).
 
 Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk-reference/language-bindings/overview.md) section.
 
 ## Prerequisites
 
-- `antd` running on `http://localhost:8082` (see [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md))
-- A configured wallet for write operations, or a local devnet started with `ant dev start`
-- Optional: Python, Node.js, or Rust toolchain if you want to use the SDK examples
+- `antd` running on `http://localhost:8082` (see [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md))
+- For the write examples on this page, a write-enabled daemon. On the default network, restart `antd` with wallet configuration first. On a local devnet, `ant dev start` provisions that for you. See [Prepare a Wallet for Uploads](manage-keys.md) for the default-network path.
+- Optional: the runtime or toolchain for the SDK examples you want to run, such as Python, Node.js, or Rust
+
+The read examples work with any running daemon if you already have an address or DataMap. The write examples on this page require the write-enabled setup above.
 
 ## Steps
 
@@ -390,7 +392,8 @@ For raw data, compare the retrieved bytes to the original payload. For files and
 
 ## Next steps
 
-- [Your First Upload with the SDKs](../getting-started/hello-world.md)
+- [Store Data on the Network](../getting-started/hello-world.md)
+- [Prepare a Wallet for Uploads](manage-keys.md)
 - [REST API](../sdk-reference/rest-api.md)
 - [SDK Overview](../sdk-reference/overview.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)

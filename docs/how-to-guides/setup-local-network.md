@@ -134,8 +134,8 @@ The local network is working when `ant dev status` reports a healthy daemon, `an
 
 ## Next steps
 
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
 - [Prepare a Wallet for Uploads](manage-keys.md)
-- [Your First Upload with the SDKs](../getting-started/hello-world.md)
+- [Store Data on the Network](../getting-started/hello-world.md)
 - [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
 - [Estimate Costs and Handle Upload Payments](handle-payments.md)

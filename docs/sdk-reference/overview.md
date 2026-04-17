@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: 125dce8c33cfdd739ec58f492004922215809a1b
+  verified_date: 2026-04-16
   verification_mode: current-merged-truth
 -->
 
@@ -80,7 +80,9 @@ Do not assume perfect parity from this page alone. The SDKs expose the same daem
 - Python examples use `AntdClient()` from `antd`
 - some SDK READMEs document both REST and gRPC, while others are REST-only today
 
-At this commit, the daemon and some SDK response models are not perfectly aligned for upload cost fields. For data uploads, rely on the returned address and successful retrieval first; if you need authoritative cost information, use the explicit cost endpoints.
+Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File and directory uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
+
+When you need authoritative pricing separate from the write itself, use the explicit cost endpoints such as `POST /v1/data/cost` and `POST /v1/cost/file`.
 
 Use the binding-specific page when you need package names, constructors, or transport details.
 
@@ -91,8 +93,8 @@ Use the binding-specific page when you need package names, constructors, or tran
 ## Related pages
 
 - [Build with the SDKs](../getting-started/install.md)
-- [Using the Autonomi Daemon](../getting-started/using-the-autonomi-daemon.md)
-- [Your First Upload with the SDKs](../getting-started/hello-world.md)
+- [Start the Local Daemon](../getting-started/using-the-autonomi-daemon.md)
+- [Store Data on the Network](../getting-started/hello-world.md)
 - [Use the Autonomi MCP Server](../how-to-guides/use-the-mcp-server.md)
 - [MCP Server Reference](mcp-server.md)
 - [REST API](rest-api.md)
