@@ -22,7 +22,7 @@ Use the SDK when you want to build an application in Python, Node.js / TypeScrip
 
 The SDK uses a local daemon called `antd`, which exposes REST and gRPC and keeps the network-facing work out of your application.
 
-Start with [Build with the SDKs](getting-started/install.md).
+Start with [Build with the SDKs](sdk/install.md).
 
 ### MCP
 
@@ -30,19 +30,19 @@ Use the MCP server when you want an AI tool such as Claude Desktop, Claude Code,
 
 The MCP server also talks to `antd`, but it presents Autonomi through an AI-tool interface rather than through language bindings.
 
-Start with [Use MCP with AI Tools](getting-started/use-mcp-with-ai-tools.md).
+Start with [Use MCP with AI Tools](mcp/use-mcp-with-ai-tools.md).
 
 ### CLI
 
 Use the CLI when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
 
-Start with [Use the CLI](getting-started/using-ant-client.md).
+Start with [Use the CLI](cli/use-the-cli.md).
 
 ### Direct Rust
 
 Build directly in Rust when you want in-process control over networking, uploads, and downloads without using `antd`.
 
-Start with [Build Directly in Rust](getting-started/build-directly-in-rust.md).
+Start with [Build Directly in Rust](rust/build-directly-in-rust.md).
 
 ## Core concepts
 
@@ -55,4 +55,4 @@ Start with [Build Directly in Rust](getting-started/build-directly-in-rust.md).
 ## Go deeper
 
 - [System Overview](architecture/system-overview.md)
-- [Source Repositories](github.md)
+- [Source Repositories](reference/source-repositories.md)
