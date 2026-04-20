@@ -11,7 +11,7 @@ The guides are grouped by the main ways people work with Autonomi:
 
 CLI-specific task guides are still limited. For now, start with [Use the CLI](../getting-started/using-ant-client.md) and the [CLI Command Reference](../cli-reference/command-reference.md).
 
-If you are still deciding how you want to build, start with [What is Autonomi?](../getting-started/introduction.md).
+If you are still deciding how you want to build, start with [What is Autonomi?](../index.md).
 
 ## What is here
 
@@ -25,7 +25,7 @@ Use Common Tasks for setup, deployment, testing, and other guides that apply acr
 
 ## Next steps
 
-- [What is Autonomi?](../getting-started/introduction.md)
+- [What is Autonomi?](../index.md)
 - [Build with the SDKs](../getting-started/install.md)
 - [Use MCP with AI Tools](../getting-started/use-mcp-with-ai-tools.md)
 - [Use the CLI](../getting-started/using-ant-client.md)

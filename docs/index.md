@@ -1,37 +1,58 @@
-# Introduction
+# What is Autonomi?
 
-Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted before upload, stored using content-addressing, and paid for once at upload.\
-\
-These guides will help you get started building with the Autonomi Network!
+Autonomi is a decentralized peer-to-peer network for permanent, immutable data storage. Data is encrypted before upload, stored using content-addressing, and paid for once when you write it to the network.
 
-## Start here
+## What makes Autonomi different
 
-To understand what Autonomi is and choose how you want to build with it, start with [What is Autonomi?](getting-started/introduction.md).
+At a high level, Autonomi gives you:
 
-If you already know the interface you want to use, go straight to one of these entry points:
+- immutable storage, where changing the content produces a new address instead of mutating the old one
+- client-side encryption through self-encryption before chunks are stored on the network
+- public and private retrieval through addresses and DataMaps
+- pay-once storage, where you pay in Autonomi Network Token (ANT) when you upload and downloads are free
+- post-quantum cryptography in the transport and security model
 
-- [Build with the SDKs](getting-started/install.md)
-- [Use MCP with AI Tools](getting-started/use-mcp-with-ai-tools.md)
-- [Use the CLI](getting-started/using-ant-client.md)
-- [Build Directly in Rust](getting-started/build-directly-in-rust.md)
+## How you can build on Autonomi
 
-## Core Concepts
+You can work with Autonomi in four main ways.
 
-* [Data Types](core-concepts/data-types.md)
-* [Keys, Addresses, and DataMaps](core-concepts/keys-addresses-and-datamaps.md)
-* [Self-Encryption](core-concepts/self-encryption.md)
-* [Payment Model](core-concepts/payment-model.md)
-* [Post-Quantum Cryptography](core-concepts/post-quantum-cryptography.md)
+### SDK
 
-## Reference
+Use the SDK when you want to build an application in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, or another supported language.
 
-* [REST API](sdk-reference/rest-api.md)
-* [SDK Overview](sdk-reference/overview.md)
-* [MCP Server Reference](sdk-reference/mcp-server.md)
-* [CLI Command Reference](cli-reference/command-reference.md)
-* [Rust Library Reference](cli-reference/ant-core-library.md)
+The SDK uses a local daemon called `antd`, which exposes REST and gRPC and keeps the network-facing work out of your application.
 
-## Go Deeper
+Start with [Build with the SDKs](getting-started/install.md).
 
-* [System Overview](architecture/system-overview.md)
-* [GitHub](github.md)
+### MCP
+
+Use the MCP server when you want an AI tool such as Claude Desktop, Claude Code, or another MCP-compatible client to interact with Autonomi through structured tools.
+
+The MCP server also talks to `antd`, but it presents Autonomi through an AI-tool interface rather than through language bindings.
+
+Start with [Use MCP with AI Tools](getting-started/use-mcp-with-ai-tools.md).
+
+### CLI
+
+Use the CLI when you want direct shell access for uploads, downloads, wallet checks, chunk operations, or node-management workflows.
+
+Start with [Use the CLI](getting-started/using-ant-client.md).
+
+### Direct Rust
+
+Build directly in Rust when you want in-process control over networking, uploads, and downloads without using `antd`.
+
+Start with [Build Directly in Rust](getting-started/build-directly-in-rust.md).
+
+## Core concepts
+
+- [Data Types](core-concepts/data-types.md)
+- [Keys, Addresses, and DataMaps](core-concepts/keys-addresses-and-datamaps.md)
+- [Self-Encryption](core-concepts/self-encryption.md)
+- [Payment Model](core-concepts/payment-model.md)
+- [Post-Quantum Cryptography](core-concepts/post-quantum-cryptography.md)
+
+## Go deeper
+
+- [System Overview](architecture/system-overview.md)
+- [Source Repositories](github.md)

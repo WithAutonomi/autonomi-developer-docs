@@ -22,12 +22,11 @@ Thanks for helping improve the Autonomi developer docs.
 - Use `current-merged-truth` unless a task explicitly activates `target-manifest`.
 - Update verification blocks when you change a verified page.
 - Use terminology from `CLAUDE.md` exactly.
-- Keep code examples complete, runnable, and explicit about which developer route they cover.
-- Treat route as a required second-level axis under Getting Started and How-to Guides.
-- Use the four primary route labels consistently: SDK, MCP, CLI, and Direct Rust.
-- Keep pages route-pure unless they are explicitly comparison or chooser pages.
-- Use `Common Tasks` for pages that genuinely apply across more than one route.
-- Use tabs for languages or equivalent interfaces within one route, not for switching between routes.
+- Keep code examples complete, runnable, and explicit about which developer interface they cover.
+- Use the four primary interface labels consistently in navigation and overview pages: SDK, MCP, CLI, and Direct Rust.
+- Keep Core Concepts tool-neutral and use `How-To Guides` for shared or cross-interface task pages.
+- Keep pages interface-pure unless they are explicitly comparison or chooser pages.
+- Use tabs for languages or equivalent interfaces within one interface, not for switching between interfaces.
 - In user-facing prose, name the specific tool or interface rather than using abstract words like `route` or `path`.
 
 ## Pull Requests
