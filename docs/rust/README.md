@@ -29,7 +29,7 @@ Choose the Rust SDK if you want:
 - REST or gRPC access through a stable local gateway
 - a Rust app that fits into the broader SDK workflow
 
-See [Rust SDK](../../sdk/reference/language-bindings/rust.md).
+See [Rust SDK](../sdk/reference/language-bindings/rust.md).
 
 ### Native Rust with ant-core
 
@@ -59,6 +59,6 @@ See [Build Directly in Rust](../build-directly-in-rust.md) and [Rust Library Ref
 
 ## Related pages
 
-- [Build Directly in Rust](../build-directly-in-rust.md)
-- [Rust SDK](../../sdk/reference/language-bindings/rust.md)
+- [Build Directly in Rust](build-directly-in-rust.md)
+- [Rust SDK](../sdk/reference/language-bindings/rust.md)
 - [Rust Library Reference](library-reference.md)

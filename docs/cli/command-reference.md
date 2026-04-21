@@ -350,4 +350,4 @@ ant update --force
 
 - [CLI Overview](overview.md)
 - [Use the CLI](../use-the-cli.md)
-- [Rust Library Reference](../../rust/reference/library-reference.md)
+- [Rust Library Reference](../rust/library-reference.md)

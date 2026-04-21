@@ -395,5 +395,5 @@ For raw data, compare the retrieved bytes to the original payload. For files and
 - [Store Data on the Network](../sdk/store-data-on-the-network.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
 - [REST API](../sdk/reference/rest-api.md)
-- [SDK Overview](../sdk/reference/overview.md)
+- [SDK Overview](../reference/overview.md)
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)

@@ -6,8 +6,8 @@ If you are looking for tasks that are specific to one interface, look inside tha
 
 - SDK-specific task guides live under [SDK](../sdk/install.md).
 - MCP-specific task guides live under [MCP](../mcp/use-mcp-with-ai-tools.md).
-- Direct Rust-specific task guides live under [Direct Rust](../rust/build-directly-in-rust.md).
-- CLI task recipes are still limited. Start with [Use the CLI](../cli/use-the-cli.md) and the [CLI Command Reference](../cli/reference/command-reference.md).
+- Rust-specific task guides live under [Developing in Rust](../rust/README.md).
+- CLI task recipes are still limited. Start with [Using the Autonomi CLI](../cli/use-the-cli.md) and the [CLI Command Reference](../cli/command-reference.md).
 
 ## What is here
 
@@ -30,4 +30,4 @@ Start with [What is Autonomi?](../index.md) for a short introduction to the netw
 - [Build with the SDKs](../sdk/install.md)
 - [Use MCP with AI Tools](../mcp/use-mcp-with-ai-tools.md)
 - [Use the CLI](../cli/use-the-cli.md)
-- [Build Directly in Rust](../rust/build-directly-in-rust.md)
+- [Developing in Rust](../rust/README.md)

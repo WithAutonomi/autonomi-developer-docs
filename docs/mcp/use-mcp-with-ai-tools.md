@@ -62,5 +62,5 @@ Your AI client talks to `antd-mcp`, and the MCP server calls `antd` on your beha
 ## Next steps
 
 - [Use the Autonomi MCP Server](../mcp/use-the-autonomi-mcp-server.md)
-- [MCP Server Reference](../mcp/reference/mcp-server-reference.md)
+- [MCP Server Reference](mcp-server-reference.md)
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)

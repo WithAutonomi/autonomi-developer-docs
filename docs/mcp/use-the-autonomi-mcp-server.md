@@ -93,6 +93,6 @@ Your MCP client is configured correctly when it can see the `antd-autonomi` serv
 ## Next steps
 
 - [Use MCP with AI Tools](../mcp/use-mcp-with-ai-tools.md)
-- [MCP Server Reference](../mcp/reference/mcp-server-reference.md)
+- [MCP Server Reference](mcp-server-reference.md)
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)
 - [REST API](../sdk/reference/rest-api.md)

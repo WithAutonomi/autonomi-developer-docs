@@ -182,6 +182,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## Related pages
 
-- [Developing in Rust](overview.md)
+- [Developing in Rust](README.md)
 - [Build Directly in Rust](../build-directly-in-rust.md)
 - [Rust SDK](../../sdk/reference/language-bindings/rust.md)

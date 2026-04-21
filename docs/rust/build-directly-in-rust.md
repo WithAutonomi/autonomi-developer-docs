@@ -76,6 +76,6 @@ Your Rust application talked to the network through `ant-core`, without `antd` o
 
 ## Next steps
 
-- [Developing in Rust](../rust/reference/overview.md)
-- [Rust Library Reference](../rust/reference/library-reference.md)
+- [Developing in Rust](README.md)
+- [Rust Library Reference](library-reference.md)
 - [Rust SDK](../sdk/reference/language-bindings/rust.md)

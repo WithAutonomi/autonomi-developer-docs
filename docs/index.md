@@ -38,11 +38,11 @@ Use the CLI when you want direct shell access for uploads, downloads, wallet che
 
 Start with [Use the CLI](cli/use-the-cli.md).
 
-### Direct Rust
+### Developing in Rust
 
 Build directly in Rust when you want in-process control over networking, uploads, and downloads without using `antd`.
 
-Start with [Build Directly in Rust](rust/build-directly-in-rust.md).
+Start with [Developing in Rust](rust/README.md).
 
 ## Core concepts
 

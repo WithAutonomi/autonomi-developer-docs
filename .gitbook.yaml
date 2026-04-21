@@ -49,9 +49,14 @@ redirects:
   sdk/store-and-retrieve-data: sdk/how-to-guides/store-and-retrieve-data.md
   sdk/use-the-daemon-as-a-local-service: sdk/how-to-guides/use-the-daemon-as-a-local-service.md
   sdk/use-external-signers-for-upload-payments: sdk/how-to-guides/use-external-signers-for-upload-payments.md
-  cli-reference/overview: cli/reference/overview.md
-  cli-reference/command-reference: cli/reference/command-reference.md
-  cli-reference/ant-core-library: rust/reference/library-reference.md
-  rust-reference/overview: rust/reference/overview.md
+  cli-reference/overview: cli/use-the-cli.md
+  cli-reference/command-reference: cli/command-reference.md
+  cli-reference/ant-core-library: rust/library-reference.md
+  rust-reference/overview: rust/README.md
+  cli/reference/overview: cli/use-the-cli.md
+  cli/reference/command-reference: cli/command-reference.md
+  mcp/reference/mcp-server-reference: mcp/mcp-server-reference.md
+  rust/reference/overview: rust/README.md
+  rust/reference/library-reference: rust/library-reference.md
   github: reference/source-repositories.md
   glossary: reference/glossary.md

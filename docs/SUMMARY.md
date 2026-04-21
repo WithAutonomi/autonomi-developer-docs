@@ -46,23 +46,20 @@
 ## MCP
 
 * [Use MCP with AI Tools](mcp/use-mcp-with-ai-tools.md)
-  * [How to Use the MCP Server](mcp/use-the-autonomi-mcp-server.md)
-  * [MCP Server Reference](mcp/reference/mcp-server-reference.md)
+* [How to Use the MCP Server](mcp/use-the-autonomi-mcp-server.md)
+* [MCP Server Reference](mcp/mcp-server-reference.md)
 
 ## CLI
 
 * [Using the Autonomi CLI](cli/use-the-cli.md)
-  * [CLI Reference](cli/reference/README.md "Reference")
-    * [CLI Overview](cli/reference/overview.md)
-    * [CLI Command Reference](cli/reference/command-reference.md)
+* [CLI Command Reference](cli/command-reference.md)
 
-## Direct Rust
+## Developing in Rust
 
+* [Developing in Rust](rust/README.md)
 * [Build Directly in Rust](rust/build-directly-in-rust.md)
-  * [How to Embed a Node in Your Application](rust/embed-a-node-in-your-application.md)
-  * [Rust Reference](rust/reference/README.md "Reference")
-    * [Developing in Rust](rust/reference/overview.md)
-    * [Rust Library Reference](rust/reference/library-reference.md)
+* [How to Embed a Node in Your Application](rust/embed-a-node-in-your-application.md)
+* [Rust Library Reference](rust/library-reference.md)
 
 ## Guides
 

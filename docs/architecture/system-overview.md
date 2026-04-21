@@ -120,5 +120,5 @@ On the client side, `self_encryption` turns uploaded content into a `DataMap` pl
 
 - [Core Concepts Overview](../core-concepts/overview.md)
 - [SDK Overview](../sdk/reference/overview.md)
-- [CLI Overview](../cli/reference/overview.md)
-- [Developing in Rust](../rust/reference/overview.md)
+- [Using the Autonomi CLI](../cli/use-the-cli.md)
+- [Developing in Rust](../rust/README.md)

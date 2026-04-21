@@ -88,4 +88,4 @@ async fn main() {
 
 ## Full API reference
 
-For all available daemon endpoints, see the [REST API](../rest-api.md). For the native Rust interface, see [Developing in Rust](../../../rust/reference/overview.md).
+For all available daemon endpoints, see the [REST API](../rest-api.md). For the native Rust interface, see [Developing in Rust](../../../rust/README.md).

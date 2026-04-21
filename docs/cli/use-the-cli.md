@@ -10,6 +10,12 @@
 
 Install `ant`, confirm it works, retrieve public data from the network, and then move into uploads or local devnet testing when you need them. Choose the CLI when you want shell-first workflows without needing to run the local daemon, [`antd`](../sdk/start-the-local-daemon.md), first.
 
+The CLI can be a good fit when you want:
+
+- direct shell access to file, chunk, wallet, or node-management workflows
+- shell-first automation or operational workflows
+- direct control over bootstrap peers, local devnet manifests, and EVM network selection
+
 ## Prerequisites
 
 - `curl` or PowerShell to run the installer, or a Rust toolchain if you prefer to build from source
@@ -106,7 +112,6 @@ You installed `ant`, used the configured bootstrap source to reach the Autonomi 
 
 ## Next steps
 
-- [CLI Overview](../cli/reference/overview.md)
-- [CLI Command Reference](../cli/reference/command-reference.md)
+- [CLI Command Reference](command-reference.md)
 - [Set Up a Local Network](../guides/set-up-a-local-network.md)
 - [Build Directly in Rust](../rust/build-directly-in-rust.md)
