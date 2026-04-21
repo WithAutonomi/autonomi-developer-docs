@@ -1,4 +1,4 @@
-# Embed a Node in Your Application
+# How to Embed a Node in Your Application
 
 <!-- verification:
   source_repo: ant-node

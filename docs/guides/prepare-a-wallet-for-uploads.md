@@ -123,6 +123,6 @@ You are correctly configured when the chosen tool reports the expected wallet ad
 
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)
 - [Estimate Costs and Handle Upload Payments](estimate-costs-and-handle-upload-payments.md)
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md)
+- [Use External Signers for Upload Payments](../sdk/how-to-guides/use-external-signers-for-upload-payments.md)
 - [Build Read-Only Features](build-read-only-features.md)
 - [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md)

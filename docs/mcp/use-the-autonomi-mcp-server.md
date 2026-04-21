@@ -1,4 +1,4 @@
-# Use the Autonomi MCP Server
+# How to Use the MCP Server
 
 <!-- verification:
   source_repo: ant-sdk

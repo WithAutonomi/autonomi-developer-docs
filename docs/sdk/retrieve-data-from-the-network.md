@@ -167,6 +167,6 @@ If you need to retrieve private content next, continue to [Build Read-Only Featu
 ## Next steps
 
 - [Build Read-Only Features](../guides/build-read-only-features.md)
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](how-to-guides/store-and-retrieve-data.md)
 - [Store Data on the Network](store-data-on-the-network.md)
 - [REST API](../sdk/reference/rest-api.md)

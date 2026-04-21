@@ -137,5 +137,5 @@ The local network is working when `ant dev status` reports a healthy daemon, `an
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)
 - [Prepare a Wallet for Uploads](prepare-a-wallet-for-uploads.md)
 - [Store Data on the Network](../sdk/store-data-on-the-network.md)
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md)
 - [Estimate Costs and Handle Upload Payments](estimate-costs-and-handle-upload-payments.md)

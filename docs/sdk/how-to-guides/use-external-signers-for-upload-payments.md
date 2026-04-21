@@ -182,7 +182,7 @@ Finalize succeeds when the daemon accepts the `upload_id` plus either the `tx_ha
 
 ## Next steps
 
-- [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
-- [Estimate Costs and Handle Upload Payments](../guides/estimate-costs-and-handle-upload-payments.md)
+- [Prepare a Wallet for Uploads](../../guides/prepare-a-wallet-for-uploads.md)
+- [Estimate Costs and Handle Upload Payments](../../guides/estimate-costs-and-handle-upload-payments.md)
 - [REST API](../sdk/reference/rest-api.md)
 - [Use the Daemon as a Local Service](use-the-daemon-as-a-local-service.md)

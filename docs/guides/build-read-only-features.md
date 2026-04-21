@@ -40,7 +40,7 @@ That can make retrieval-only tools, dashboards, content browsers, and other read
   - the `ant` CLI
   - native Rust with `ant-core`
 
-If you do not already have an address or `DataMap`, create one first by following [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md) or by storing data through the CLI or direct Rust.
+If you do not already have an address or `DataMap`, create one first by following [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md) or by storing data through the CLI or direct Rust.
 
 ## Steps
 
@@ -114,6 +114,6 @@ Your read-only feature is configured correctly when it can retrieve the expected
 
 ## Next steps
 
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md)
 - [Payment Model](../core-concepts/payment-model.md)
 - [Use the CLI](../cli/use-the-cli.md)

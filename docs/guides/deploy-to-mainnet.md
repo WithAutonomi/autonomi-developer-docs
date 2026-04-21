@@ -107,6 +107,6 @@ Mainnet deployment is working when the daemon reports healthy status, wallet end
 
 ## Next steps
 
-- [Use the Daemon as a Local Service](../sdk/use-the-daemon-as-a-local-service.md)
+- [Use the Daemon as a Local Service](../sdk/how-to-guides/use-the-daemon-as-a-local-service.md)
 - [Estimate Costs and Handle Upload Payments](estimate-costs-and-handle-upload-payments.md)
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md)
+- [Use External Signers for Upload Payments](../sdk/how-to-guides/use-external-signers-for-upload-payments.md)

@@ -48,7 +48,7 @@ If you only need read-only features, continue to [Retrieve Data from the Network
 If you need uploads after the read-only flow, choose one of these next steps:
 
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) for daemon-signed writes on the default network
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md) when your app should keep the signing key outside `antd`
+- [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md) when your app should keep the signing key outside `antd`
 - [Set Up a Local Network](../guides/set-up-a-local-network.md) if you want local services and test funds provisioned for you
 
 ### 4. Store data on the network
@@ -64,6 +64,6 @@ If you already know your target language, use the [Language Bindings](../sdk/ref
 - [Start the Local Daemon](start-the-local-daemon.md)
 - [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md)
+- [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md)
 - [Store Data on the Network](store-data-on-the-network.md)
 - [SDK Overview](../sdk/reference/overview.md)

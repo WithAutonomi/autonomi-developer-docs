@@ -227,6 +227,6 @@ Unexpected errors include `error`, `message`, and `network`, but may not include
 
 ## Related pages
 
-- [Use the Autonomi MCP Server](../mcp/use-the-autonomi-mcp-server.md)
+- [How to Use the MCP Server](../use-the-autonomi-mcp-server.md)
 - [SDK Overview](overview.md)
 - [REST API](rest-api.md)

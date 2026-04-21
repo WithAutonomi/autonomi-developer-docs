@@ -1,4 +1,4 @@
-# Use the CLI
+# Using the Autonomi CLI
 
 <!-- verification:
   source_repo: ant-client

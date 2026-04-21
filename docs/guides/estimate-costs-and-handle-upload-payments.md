@@ -298,7 +298,7 @@ Check the wallet balance before and after a paid upload, then fetch the stored d
 
 - [Start the Local Daemon](../sdk/start-the-local-daemon.md)
 - [Prepare a Wallet for Uploads](prepare-a-wallet-for-uploads.md)
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md)
+- [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md)
+- [Use External Signers for Upload Payments](../sdk/how-to-guides/use-external-signers-for-upload-payments.md)
 - [Build Read-Only Features](build-read-only-features.md)
 - [REST API](../sdk/reference/rest-api.md)

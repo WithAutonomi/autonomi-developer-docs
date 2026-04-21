@@ -26,7 +26,7 @@ Use `antd` when you want:
 ## Prerequisites
 
 - Rust toolchain and `protoc` (Protocol Buffers compiler) to build `antd` from source
-- For paid uploads on the default network: access to wallet and payment configuration. See [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) and [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md).
+- For paid uploads on the default network: access to wallet and payment configuration. See [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) and [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md).
 - For a fully local devnet: Python 3.10+ and a sibling `ant-node` checkout if you plan to use `ant dev start`. See [Set Up a Local Network](../guides/set-up-a-local-network.md).
 
 ## Steps
@@ -109,7 +109,7 @@ EVM_PAYMENT_VAULT_ADDRESS="0x..." \
 ./target/release/antd
 ```
 
-This mode is for the two-phase prepare and finalize upload flow described in [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md).
+This mode is for the two-phase prepare and finalize upload flow described in [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md).
 
 ### 5. Start a local devnet when you need a full local stack
 
@@ -136,7 +136,7 @@ You built `antd` and started a local gateway for the Autonomi SDKs. The health c
 - [Retrieve Data from the Network](retrieve-data-from-the-network.md)
 - [Store Data on the Network](store-data-on-the-network.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
-- [Use External Signers for Upload Payments](../sdk/use-external-signers-for-upload-payments.md)
+- [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md)
 - [Set Up a Local Network](../guides/set-up-a-local-network.md)
 - [SDK Overview](../sdk/reference/overview.md)
 - [REST API](../sdk/reference/rest-api.md)

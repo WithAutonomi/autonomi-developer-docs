@@ -14,9 +14,9 @@ redirects:
   getting-started/using-ant-client: cli/use-the-cli.md
   getting-started/build-directly-in-rust: rust/build-directly-in-rust.md
   how-to-guides/overview: guides/overview.md
-  how-to-guides/store-and-retrieve-data: sdk/store-and-retrieve-data.md
-  how-to-guides/run-as-daemon: sdk/use-the-daemon-as-a-local-service.md
-  how-to-guides/use-external-signers: sdk/use-external-signers-for-upload-payments.md
+  how-to-guides/store-and-retrieve-data: sdk/how-to-guides/store-and-retrieve-data.md
+  how-to-guides/run-as-daemon: sdk/how-to-guides/use-the-daemon-as-a-local-service.md
+  how-to-guides/use-external-signers: sdk/how-to-guides/use-external-signers-for-upload-payments.md
   how-to-guides/use-the-mcp-server: mcp/use-the-autonomi-mcp-server.md
   how-to-guides/embed-a-node: rust/embed-a-node-in-your-application.md
   how-to-guides/setup-local-network: guides/set-up-a-local-network.md
@@ -46,6 +46,9 @@ redirects:
   sdk-reference/language-bindings/cpp: sdk/reference/language-bindings/cpp.md
   sdk-reference/language-bindings/dart: sdk/reference/language-bindings/dart.md
   sdk-reference/language-bindings/zig: sdk/reference/language-bindings/zig.md
+  sdk/store-and-retrieve-data: sdk/how-to-guides/store-and-retrieve-data.md
+  sdk/use-the-daemon-as-a-local-service: sdk/how-to-guides/use-the-daemon-as-a-local-service.md
+  sdk/use-external-signers-for-upload-payments: sdk/how-to-guides/use-external-signers-for-upload-payments.md
   cli-reference/overview: cli/reference/overview.md
   cli-reference/command-reference: cli/reference/command-reference.md
   cli-reference/ant-core-library: rust/reference/library-reference.md

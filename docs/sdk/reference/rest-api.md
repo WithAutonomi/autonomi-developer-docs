@@ -632,4 +632,4 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
 - [Build with the SDKs](../install.md)
 - [Start the Local Daemon](../start-the-local-daemon.md)
 - [Store Data on the Network](../store-data-on-the-network.md)
-- [Store and Retrieve Data with the SDKs](../store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](../how-to-guides/store-and-retrieve-data.md)

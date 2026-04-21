@@ -196,4 +196,4 @@ Your local integration environment is healthy when `ant dev status` reports a ru
 
 - [Set Up a Local Network](setup-local-network.md)
 - [Deploy to Mainnet](deploy-to-mainnet.md)
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md)

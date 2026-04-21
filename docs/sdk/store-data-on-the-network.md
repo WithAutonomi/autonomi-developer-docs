@@ -279,7 +279,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ## Next steps
 
 - [Retrieve Data from the Network](retrieve-data-from-the-network.md)
-- [Store and Retrieve Data with the SDKs](../sdk/store-and-retrieve-data.md)
+- [Store and Retrieve Data with the SDKs](how-to-guides/store-and-retrieve-data.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
 - [REST API](../sdk/reference/rest-api.md)
 - [SDK Overview](../sdk/reference/overview.md)
