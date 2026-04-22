@@ -4,28 +4,28 @@
   source_repo: ant-sdk
   source_ref: main
   source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
-  verified_date: 2026-04-21
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
   source_commit: 0b104d1e8e5a8dab08a24eeb8c81b25702548c96
-  verified_date: 2026-04-21
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
   source_commit: 5a5d7d4fed766cd56d0f97f337fcd5ff049bea6a
-  verified_date: 2026-04-21
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
   source_commit: 82f2fccff243b48de0e04ceb71ccb2aa17d810af
-  verified_date: 2026-04-21
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 
@@ -81,11 +81,11 @@ The supported payment modes are:
 | `merkle` | Force Merkle batch payment |
 | `single` | Force per-chunk payment |
 
-In `ant-core`, the Merkle threshold is `64` chunks.
+In `ant-core`, the current Merkle threshold is `64` chunks.
 
 Nodes verify the payment proof that arrives with each write. That includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the chunk store.
 
-Node-side storage pricing is currently a baseline plus a quadratic term keyed to how many close records a node is already storing. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
+Node-side storage pricing currently follows `BASELINE + K × (n / D)^2`, where `n` is the number of close records the node is already storing and `D` is a fixed divisor. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
 
 ### What happens on retrieval
 
