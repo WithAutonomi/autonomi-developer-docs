@@ -3,29 +3,29 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
+  source_commit: bf541ccd4ae1fd3e174fb7b5bb21deef38d999ce
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 796d0df75d748419a004aec6f5e288b41d8b496e
-  verified_date: 2026-04-04
+  source_commit: 0b104d1e8e5a8dab08a24eeb8c81b25702548c96
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 2a6e9f2a2066d80c072a7cc2cb644e35def9add3
-  verified_date: 2026-04-03
+  source_commit: 5a5d7d4fed766cd56d0f97f337fcd5ff049bea6a
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
   source_commit: 82f2fccff243b48de0e04ceb71ccb2aa17d810af
-  verified_date: 2026-04-06
+  verified_date: 2026-04-22
   verification_mode: current-merged-truth
 -->
 
@@ -81,9 +81,11 @@ The supported payment modes are:
 | `merkle` | Force Merkle batch payment |
 | `single` | Force per-chunk payment |
 
-In `ant-core`, the Merkle threshold is `64` chunks.
+In `ant-core`, the current Merkle threshold is `64` chunks.
 
 Nodes verify the payment proof that arrives with each write. That includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the chunk store.
+
+Node-side storage pricing currently follows `BASELINE + K × (n / D)^2`, where `n` is the number of close records the node is already storing and `D` is a fixed divisor. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
 
 ### What happens on retrieval
 
