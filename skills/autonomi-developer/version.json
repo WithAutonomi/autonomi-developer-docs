@@ -1,0 +1,24 @@
+{
+  "skill": "autonomi-developer",
+  "version": "0.1.0-draft",
+  "published_date": "2026-04-22",
+  "status": "draft",
+  "canonical_skill_url": "https://raw.githubusercontent.com/WithAutonomi/autonomi-developer-docs/main/skills/autonomi-developer/SKILL.md",
+  "canonical_docs_url": "https://docs.autonomi.com/developers",
+  "repository": "https://github.com/WithAutonomi/autonomi-developer-docs",
+  "verification_mode": "current-merged-truth",
+  "verified_commits": {
+    "ant-sdk": "2ed9b14bda42fbdc604a173cc1af27be0964908f",
+    "ant-client": "b0c501a163c1a95bdbfc703892b88a8a91f7e482",
+    "ant-node": "5a5d7d4fed766cd56d0f97f337fcd5ff049bea6a",
+    "self_encryption": "5f9d1646231da7ca2ce60e84d010acfb6d9c29d0",
+    "evmlib": "82f2fccff243b48de0e04ceb71ccb2aa17d810af"
+  },
+  "covers_paths": [
+    "sdk",
+    "cli",
+    "direct-rust",
+    "mcp"
+  ],
+  "notes": "Initial in-repo operational draft. Re-verify before promoting to a non-draft version."
+}

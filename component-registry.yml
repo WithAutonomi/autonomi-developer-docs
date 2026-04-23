@@ -1,5 +1,5 @@
 # Component Registry — Autonomi Developer Documentation
-# Maps components within each repo to the documentation pages they feed.
+# Maps components within each repo to the documentation pages and skills they feed.
 # See CLAUDE.md for how agents use this during writing and auditing.
 # See repo-registry.yml for repo-level scope and behaviour.
 
@@ -21,6 +21,8 @@ components:
       - sdk-reference/overview.md
       - sdk-reference/rest-api.md
       - sdk-reference/daemon-cli.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   openapi:
     repo: ant-sdk
@@ -30,6 +32,8 @@ components:
       - rest-api
     feeds_pages:
       - sdk-reference/rest-api.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   proto:
     repo: ant-sdk
@@ -39,6 +43,8 @@ components:
       - grpc
     feeds_pages:
       - sdk-reference/grpc-services.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-rust:
     repo: ant-sdk
@@ -48,6 +54,8 @@ components:
       - rust-binding
     feeds_pages:
       - sdk-reference/language-bindings/rust.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-py:
     repo: ant-sdk
@@ -57,6 +65,8 @@ components:
       - python-binding
     feeds_pages:
       - sdk-reference/language-bindings/python.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-js:
     repo: ant-sdk
@@ -66,6 +76,8 @@ components:
       - javascript-binding
     feeds_pages:
       - sdk-reference/language-bindings/javascript.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-go:
     repo: ant-sdk
@@ -75,6 +87,8 @@ components:
       - go-binding
     feeds_pages:
       - sdk-reference/language-bindings/go.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-java:
     repo: ant-sdk
@@ -84,6 +98,8 @@ components:
       - java-binding
     feeds_pages:
       - sdk-reference/language-bindings/java.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-csharp:
     repo: ant-sdk
@@ -93,6 +109,8 @@ components:
       - csharp-binding
     feeds_pages:
       - sdk-reference/language-bindings/csharp.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-kotlin:
     repo: ant-sdk
@@ -102,6 +120,8 @@ components:
       - kotlin-binding
     feeds_pages:
       - sdk-reference/language-bindings/kotlin.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-swift:
     repo: ant-sdk
@@ -111,6 +131,8 @@ components:
       - swift-binding
     feeds_pages:
       - sdk-reference/language-bindings/swift.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-ruby:
     repo: ant-sdk
@@ -120,6 +142,8 @@ components:
       - ruby-binding
     feeds_pages:
       - sdk-reference/language-bindings/ruby.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-php:
     repo: ant-sdk
@@ -129,6 +153,8 @@ components:
       - php-binding
     feeds_pages:
       - sdk-reference/language-bindings/php.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-cpp:
     repo: ant-sdk
@@ -138,6 +164,8 @@ components:
       - cpp-binding
     feeds_pages:
       - sdk-reference/language-bindings/cpp.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-dart:
     repo: ant-sdk
@@ -147,6 +175,8 @@ components:
       - dart-binding
     feeds_pages:
       - sdk-reference/language-bindings/dart.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   antd-zig:
     repo: ant-sdk
@@ -156,6 +186,8 @@ components:
       - zig-binding
     feeds_pages:
       - sdk-reference/language-bindings/zig.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   # === ant-client ===
 
@@ -173,6 +205,8 @@ components:
       - how-to-guides/store-and-retrieve-data.md
       - how-to-guides/handle-payments.md
       - cli-reference/ant-core-library.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   ant-cli:
     repo: ant-client
@@ -185,6 +219,8 @@ components:
       - cli-reference/overview.md
       - cli-reference/command-reference.md
       - getting-started/using-ant-client.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   # === ant-node ===
 
@@ -200,6 +236,8 @@ components:
       - core-concepts/payment-model.md
       - how-to-guides/setup-local-network.md
       - how-to-guides/embed-a-node.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   ant-devnet:
     repo: ant-node
@@ -209,6 +247,8 @@ components:
       - devnet-launcher
     feeds_pages:
       - how-to-guides/setup-local-network.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   # === Foundational single-crate repos ===
 
@@ -256,6 +296,8 @@ components:
     feeds_pages:
       - core-concepts/self-encryption.md
       - core-concepts/data-types.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   evmlib:
     repo: evmlib
@@ -268,6 +310,8 @@ components:
       - core-concepts/payment-model.md
       - how-to-guides/handle-payments.md
       - how-to-guides/manage-keys.md
+    feeds_skills:
+      - skills/autonomi-developer/SKILL.md
 
   ant-merkle:
     repo: ant-merkle
