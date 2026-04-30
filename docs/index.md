@@ -73,6 +73,10 @@ Build directly in Rust when you want in-process control over networking, uploads
 
 Start with [Developing in Rust](rust/README.md).
 
+## Build with an AI coding tool
+
+If you are working in Claude Code or another AI coding tool, install the [Autonomi Developer Skill](developer-skill.md). It gives your tool a verified, focused guide to building on Autonomi, so it picks the right path, uses real APIs, and avoids common mistakes.
+
 ## Core concepts
 
 - [Data Types](core-concepts/data-types.md)

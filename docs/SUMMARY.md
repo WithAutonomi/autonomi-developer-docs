@@ -1,6 +1,7 @@
 # Table of contents
 
 * [What is Autonomi?](index.md)
+* [Use the Autonomi Developer Skill](developer-skill.md)
 
 ## Core Concepts
 
