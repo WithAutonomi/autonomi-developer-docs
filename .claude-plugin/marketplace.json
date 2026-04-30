@@ -1,0 +1,26 @@
+{
+  "name": "autonomi",
+  "description": "Plugins and skills for building on the Autonomi Network.",
+  "owner": {
+    "name": "Autonomi"
+  },
+  "plugins": [
+    {
+      "name": "autonomi-developer",
+      "source": "./",
+      "description": "Build, integrate, and deploy applications on the Autonomi Network with verified guidance for the SDK, CLI, Direct Rust, and MCP paths.",
+      "homepage": "https://docs.autonomi.com/developers/developer-skill",
+      "repository": "https://github.com/WithAutonomi/autonomi-developer-docs",
+      "license": "MIT",
+      "keywords": [
+        "autonomi",
+        "ant-sdk",
+        "antd",
+        "ant-client",
+        "ant-core",
+        "mcp",
+        "decentralized-storage"
+      ]
+    }
+  ]
+}
