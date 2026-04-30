@@ -11,12 +11,13 @@ All notable changes to this skill are recorded here.
 - Added `ant-protocol` to the skill's verification scope for protocol-adjacent operational guidance.
 - Refreshed SDK guidance to point at the current file-cost endpoint and current shared prepare/finalize semantics.
 - Updated the maintenance guide to match the current component mapping and re-verification triggers.
+- Refreshed the pinned `ant-client` and `ant-protocol` verification commits and clarified `LocalDevnet::create_funded_client(...)` in the Direct Rust playbook.
 
 ### Verified Against
 - ant-sdk: 1cbfb3e92cb4309f29e92b5609837812027f0a67
-- ant-client: 97587c248ce6410edc1c6ee28846216ef82145eb
+- ant-client: 8b2c9c606a1223f105fed9aa2b56310b6a6763da
 - ant-node: 23aee15cae33a17257ba833b2b98ed8a7a12e684
-- ant-protocol: 87071931a982e8a90494353007a3f4e6ebb3de3c
+- ant-protocol: 65651f3a3243af8299a3e8d63385cba846ef88a4
 - self_encryption: 5f9d1646231da7ca2ce60e84d010acfb6d9c29d0
 - evmlib: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
 
