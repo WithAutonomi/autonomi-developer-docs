@@ -4,7 +4,7 @@ All notable changes to this skill are recorded here.
 
 ## [Unreleased]
 
-## [0.1.1-draft] - 2026-04-30
+## [0.1.2-draft] - 2026-04-30
 
 ### Changed
 - Reverified the skill against the current docs layout and current upstream source heads.
@@ -14,7 +14,7 @@ All notable changes to this skill are recorded here.
 - Refreshed the pinned `ant-client` and `ant-protocol` verification commits and clarified `LocalDevnet::create_funded_client(...)` in the Direct Rust playbook.
 
 ### Verified Against
-- ant-sdk: 1cbfb3e92cb4309f29e92b5609837812027f0a67
+- ant-sdk: d7652ec3da82dfbe2107778e5223dc413d95815b
 - ant-client: 8b2c9c606a1223f105fed9aa2b56310b6a6763da
 - ant-node: 23aee15cae33a17257ba833b2b98ed8a7a12e684
 - ant-protocol: 65651f3a3243af8299a3e8d63385cba846ef88a4
