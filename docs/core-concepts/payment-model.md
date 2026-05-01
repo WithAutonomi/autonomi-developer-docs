@@ -88,11 +88,11 @@ The supported payment modes are:
 | `merkle` | Force Merkle batch payment |
 | `single` | Force per-chunk payment |
 
-In `ant-core`, the current Merkle threshold is `64` chunks.
+In `ant-core`, the Merkle threshold is `64` chunks.
 
 Nodes verify the payment proof that arrives with each write. That includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the chunk store.
 
-Node-side storage pricing currently follows `BASELINE + K × (n / D)^2`, where `n` is the number of close records the node is already storing and `D` is a fixed divisor. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
+Node-side storage pricing follows `BASELINE + K × (n / D)^2`, where `n` is the number of close records the node is already storing and `D` is a fixed divisor. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
 
 ### What happens on retrieval
 

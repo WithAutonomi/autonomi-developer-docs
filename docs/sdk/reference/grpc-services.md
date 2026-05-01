@@ -45,7 +45,7 @@ Stores public data.
 
 **Signature:** `StreamPublic(StreamPublicDataRequest) -> stream DataChunk`
 
-Current merged code exposes this RPC, but the handler is still stubbed and currently returns `UNIMPLEMENTED`.
+This RPC is exposed, but the handler returns `UNIMPLEMENTED`.
 
 ### Get Private
 
@@ -121,9 +121,9 @@ Estimates file upload cost.
 
 **Signature:** `Subscribe(SubscribeRequest) -> stream ClientEventProto`
 
-Current merged code exposes this RPC, but the stream is still stubbed and currently stays open without emitting events.
+This RPC is exposed, but the stream stays open without emitting events.
 
-`ClientEventProto` currently includes:
+`ClientEventProto` includes:
 
 | Name | Type | Description |
 |------|------|-------------|

@@ -41,7 +41,7 @@ cd ant-sdk/antd
 cargo build --release
 ```
 
-`antd` currently needs `protoc` during the build. On macOS, one working setup is:
+`antd` needs `protoc` during the build. On macOS, one working setup is:
 
 ```bash
 brew install protobuf
@@ -121,7 +121,7 @@ pip install -e ant-dev/
 ant dev start --ant-node-dir ../ant-node
 ```
 
-The `ant` command installed by `ant-dev` is separate from the direct-network `ant` CLI in `ant-client`. Use a virtualenv, `pipx`, or a separate `PATH` setup if you need both workflows on the same machine.
+The `ant` command installed by `ant-dev` is separate from [the direct-network CLI](../cli/use-the-cli.md). Use a virtualenv, `pipx`, or a separate `PATH` setup if you need both workflows on the same machine.
 
 If you just built `antd` in `ant-sdk/antd`, `cd ..` first to get back to the repo root.
 

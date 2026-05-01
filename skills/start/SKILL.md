@@ -264,7 +264,7 @@ Run the editable install from an `ant-sdk` checkout root.
   - `daemon.port`
   - `http://127.0.0.1:8082`
 
-`ANTD_BASE_URL` is the reliable MCP setup path because `antd` writes `ant/sdk/daemon.port` while `antd-mcp` still reads `ant/daemon.port`.
+`ANTD_BASE_URL` is the reliable MCP setup path because `antd` writes `ant/sdk/daemon.port` while `antd-mcp` reads `ant/daemon.port`.
 
 Do not memorize MCP tool names or schemas in this skill. Fetch the MCP server reference when the task is MCP-specific.
 
@@ -369,7 +369,7 @@ Check whether the test expects raw bytes over REST. Current REST binary payloads
 ## Hard Constraints
 
 - Do not reference Autonomi 1.0 as if it were current.
-- Do not reference `ant-quic` in current Autonomi work.
+- Do not reference `ant-quic` in Autonomi 2.0 work.
 - Do not guess endpoints, flags, method names, or contract details.
 - Do not put real wallet keys into committed code.
 - Do not walk a user into public-network uploads without checking that they understand the money and irreversibility involved.

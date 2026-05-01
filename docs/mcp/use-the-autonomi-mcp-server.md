@@ -34,7 +34,7 @@ The `antd-mcp` package installs a command named `antd-mcp`.
 
 The server still attempts `daemon.port` discovery before falling back to the default REST URL.
 
-`antd` writes `ant/sdk/daemon.port`, while `antd-mcp` still reads `ant/daemon.port`. Treat `ANTD_BASE_URL` as the reliable setup path unless you have already confirmed port-file discovery works in your environment.
+`antd` writes `ant/sdk/daemon.port`, while `antd-mcp` reads `ant/daemon.port`. Treat `ANTD_BASE_URL` as the reliable setup path unless you have already confirmed port-file discovery works in your environment.
 
 If no environment variable or readable port file is available, it falls back to:
 

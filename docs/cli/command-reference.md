@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-Reference for the `ant` CLI command tree and its current flags. The command tree below follows the current direct-network CLI surface, and the option tables stay grouped by command family for easier scanning. A few hidden or advanced flags are included where they matter for troubleshooting.
+Reference for the `ant` CLI command tree and its flags. The command tree below follows the direct-network CLI surface, and the option tables stay grouped by command family for easier scanning. Hidden or advanced flags are called out where they matter for troubleshooting.
 
 ## Command tree
 
@@ -53,10 +53,10 @@ The root command accepts the global flags used across data and node operations. 
 | `--devnet-manifest <PATH>` | path | No | Path to a local devnet manifest JSON file |
 | `--allow-loopback` | boolean | No | Allow loopback connections for local devnet or local testing |
 | `--ipv4-only` | boolean | No | Disable dual-stack and force IPv4-only mode |
-| `--quote-timeout-secs <N>` | integer | No | Hidden advanced flag for lightweight network-operation timeouts such as DHT lookups |
-| `--store-timeout-secs <N>` | integer | No | Hidden advanced flag for chunk store and retrieve timeouts |
-| `--quote-concurrency <N>` | integer | No | Hidden advanced flag that caps the quote channel only. It does not affect store or download concurrency. |
-| `--store-concurrency <N>` | integer | No | Hidden advanced flag for upload chunk concurrency. `--chunk-concurrency` is accepted as an alias. |
+| `--quote-timeout-secs <N>` | integer | No | Hidden. Controls lightweight network-operation timeouts such as DHT lookups. |
+| `--store-timeout-secs <N>` | integer | No | Hidden. Controls chunk store and retrieve timeouts. |
+| `--quote-concurrency <N>` | integer | No | Hidden. Caps the quote channel only. It does not affect store or download concurrency. |
+| `--store-concurrency <N>` | integer | No | Hidden. Controls upload chunk concurrency. `--chunk-concurrency` is accepted as an alias. |
 | `-v, --verbose...` | count | No | Increase log verbosity: `-v`, `-vv`, or `-vvv` |
 | `--evm-network <NET>` | string | No | EVM network for payments: `arbitrum-one`, `arbitrum-sepolia`, or `local` |
 | `-h, --help` | boolean | No | Print help |
@@ -88,9 +88,9 @@ Uploads a file with self-encryption and EVM payment.
 | `--public` | boolean | No | Store the DataMap on-network so anyone with the address can download the file |
 | `--merkle` | boolean | No | Force Merkle batch payment |
 | `--no-merkle` | boolean | No | Force single per-chunk payments |
-| `--store-timeout <N>` | integer | No | Hidden advanced flag that overrides the chunk store timeout for this upload |
-| `--store-concurrency <N>` | integer | No | Hidden advanced flag that overrides upload chunk concurrency for this upload |
-| `--overwrite` | boolean | No | Replace an existing `<filename>.datamap` instead of writing a suffixed datamap filename |
+| `--store-timeout <N>` | integer | No | Hidden. Overrides the chunk store timeout for this upload. |
+| `--store-concurrency <N>` | integer | No | Hidden. Overrides upload chunk concurrency for this upload. |
+| `--overwrite` | boolean | No | Replace any existing `<filename>.datamap` instead of writing a suffixed `<filename>-2.datamap`. |
 
 **Example:**
 

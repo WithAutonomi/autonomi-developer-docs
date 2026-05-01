@@ -31,7 +31,7 @@ This guide focuses on the shared testing progression that applies across SDK, CL
 - A test framework for your language
 - `ant-dev` installed from an `ant-sdk` checkout, or a direct-network local devnet if you are testing `ant-core`
 
-If you also use the direct-network `ant` CLI from `ant-client`, isolate `ant-dev` in a virtualenv, `pipx`, or a separate `PATH` so the two `ant` commands do not shadow each other.
+If you also use [the direct-network CLI](../cli/use-the-cli.md), isolate `ant-dev` in a virtualenv, `pipx`, or a separate `PATH` so the two `ant` commands do not shadow each other.
 
 ## Steps
 

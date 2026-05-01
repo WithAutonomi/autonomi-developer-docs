@@ -100,7 +100,7 @@ On public EVM networks, both values matter:
 
 Fresh wallets may need an approval transaction before uploads can spend tokens through the payment contracts.
 
-This approval currently grants the payment contracts an unlimited token allowance.
+This approval grants the payment contracts an unlimited token allowance.
 
 {% tabs %}
 {% tab title="cURL" %}

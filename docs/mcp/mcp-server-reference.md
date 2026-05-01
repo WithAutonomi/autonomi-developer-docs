@@ -35,7 +35,7 @@ pip install -e antd-mcp/
 
 Run the editable install from an `ant-sdk` checkout root.
 
-The package metadata currently declares:
+The package metadata declares:
 
 - Python `>=3.10`
 - dependency on `mcp>=1.2.0`
@@ -59,7 +59,7 @@ At startup, the server resolves the daemon base URL in this order:
 
 The discovery helper still checks a `daemon.port` file before falling back to the default URL.
 
-`antd` writes `ant/sdk/daemon.port`, while `antd-mcp` still reads `ant/daemon.port`. Treat `ANTD_BASE_URL` as the reliable configuration path unless you have already confirmed port-file discovery works in your environment.
+`antd` writes `ant/sdk/daemon.port`, while `antd-mcp` reads `ant/daemon.port`. Treat `ANTD_BASE_URL` as the reliable configuration path unless you have already confirmed port-file discovery works in your environment.
 
 ## Claude Desktop configuration
 

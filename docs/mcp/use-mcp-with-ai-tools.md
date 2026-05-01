@@ -26,7 +26,7 @@ The MCP server talks to `antd`, so start there first:
 ./target/release/antd
 ```
 
-Run that command from the `ant-sdk/antd` build directory. If `antd` is already on your `PATH`, use `antd` instead.
+Run that command from the `ant-sdk/antd` build directory, or use `antd` if the binary is already on your `PATH`.
 
 If you have not built `antd` yet, follow [Build with the SDKs](../sdk/install.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md) first.
 

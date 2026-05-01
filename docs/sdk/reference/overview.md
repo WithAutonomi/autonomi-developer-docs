@@ -53,7 +53,7 @@ On startup, `antd` writes a `daemon.port` file with the resolved REST and gRPC p
 | Linux | `~/.local/share/ant/sdk/daemon.port` or `$XDG_DATA_HOME/ant/sdk/daemon.port` |
 | macOS | `~/Library/Application Support/ant/sdk/daemon.port` |
 
-Several current SDKs can use that file to discover non-default ports instead of hardcoding `8082`. Check the language-specific page when you need to know whether discovery is automatic or exposed through an explicit helper.
+Some SDKs expose a helper that reads this file instead of hardcoding `8082`. Check the language-specific page when you need to know whether discovery is automatic or exposed through an explicit helper.
 
 ## Current shared surfaces
 

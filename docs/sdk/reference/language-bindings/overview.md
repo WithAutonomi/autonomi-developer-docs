@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-The language bindings in `ant-sdk` are clients for the `antd` daemon. They share the same daemon surface, but they do not currently expose identical constructors, transports, or helper APIs.
+The language bindings in `ant-sdk` are clients for the `antd` daemon. They share the same daemon surface, but they do not expose identical constructors, transports, or helper APIs.
 
 ## Architecture
 
@@ -30,8 +30,6 @@ The daemon defaults are:
 Bindings usually default to those same endpoints when you do not supply an override.
 
 ## Current transport split
-
-At this commit:
 
 - JavaScript and TypeScript are documented as REST-based
 - Python, Go, and Rust document both REST and gRPC support

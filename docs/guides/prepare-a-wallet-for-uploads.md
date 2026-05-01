@@ -71,7 +71,7 @@ export EVM_PAYMENT_VAULT_ADDRESS="0x..."
 ./target/release/antd
 ```
 
-If `antd` is already on your `PATH`, use `antd` instead.
+If `antd` is already on your `PATH`, replace `./target/release/antd` with `antd`.
 
 ### 3. Configure a wallet for ant
 
@@ -112,7 +112,7 @@ EVM_PAYMENT_VAULT_ADDRESS=0x... \
 ./target/release/antd
 ```
 
-If `antd` is already on your `PATH`, use `antd` instead.
+If `antd` is already on your `PATH`, replace `./target/release/antd` with `antd`.
 
 Use `EVM_PAYMENT_VAULT_ADDRESS` for both wave-batch and Merkle external-signer uploads in this configuration.
 

@@ -47,7 +47,7 @@ cd ant-sdk
 pip install -e ant-dev/
 ```
 
-The `ant` command installed by `ant-dev` is separate from the direct-network `ant` CLI in `ant-client`. Use a virtualenv, `pipx`, or a separate `PATH` setup if you need both workflows on the same machine.
+The `ant` command installed by `ant-dev` is separate from [the direct-network CLI](../cli/use-the-cli.md). Use a virtualenv, `pipx`, or a separate `PATH` setup if you need both workflows on the same machine.
 
 This installs the `ant` command provided by the current `ant-dev` package.
 
