@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 <!-- verification:
