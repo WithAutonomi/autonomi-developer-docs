@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e0dfa2c384ea17f49490d3d5110c3d226ac5233b
-  verified_date: 2026-05-16
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -94,15 +94,15 @@ Retrieves text from the network by address or DataMap.
 
 ### Upload a File
 
-**Tool:** `upload_file(path, is_directory=false, payment_mode="auto")`
+**Tool:** `upload_file(path, payment_mode="auto")`
 
-Uploads a local file or directory as public content.
+Uploads a local file as public content.
 
 ### Download a File
 
-**Tool:** `download_file(address, dest_path, is_directory=false)`
+**Tool:** `download_file(address, dest_path)`
 
-Downloads a public file or directory to a local path.
+Downloads a public file to a local path.
 
 ### Estimate Cost
 
@@ -212,7 +212,7 @@ Examples:
 }
 ```
 
-Example `upload_file(..., is_directory=true)` response:
+Example `upload_file` response:
 
 ```json
 {

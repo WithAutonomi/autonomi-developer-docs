@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -274,7 +274,7 @@ Retrieves a raw chunk by address.
 curl http://localhost:8082/v1/chunks/<addr>
 ```
 
-## Files and directories
+## Files
 
 These endpoints work on paths visible to the machine running `antd`.
 
@@ -332,62 +332,6 @@ Downloads a file to a local destination path.
 curl -X POST http://localhost:8082/v1/files/download/public \
   -H "Content-Type: application/json" \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/downloaded.pdf"}'
-```
-
-### Upload a Public Directory
-
-**Endpoint:** `POST /v1/dirs/upload/public`
-
-Uploads a local directory recursively.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | Yes | Local directory path |
-| `payment_mode` | string | No | `auto`, `merkle`, or `single` |
-
-**Response:**
-
-```json
-{
-  "address": "<64_hex_address>",
-  "storage_cost_atto": "<atto_token_amount>",
-  "gas_cost_wei": "<wei_amount>",
-  "chunks_stored": 42,
-  "payment_mode_used": "auto"
-}
-```
-
-**Example:**
-
-```bash
-curl -X POST http://localhost:8082/v1/dirs/upload/public \
-  -H "Content-Type: application/json" \
-  -d '{"path":"/absolute/path/to/my-folder"}'
-```
-
-### Download a Public Directory
-
-**Endpoint:** `POST /v1/dirs/download/public`
-
-Downloads a directory to a local destination path.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `address` | string | Yes | 64-character hex directory address |
-| `dest_path` | string | Yes | Local destination path |
-
-**Response:** HTTP `200 OK` with no JSON body
-
-**Example:**
-
-```bash
-curl -X POST http://localhost:8082/v1/dirs/download/public \
-  -H "Content-Type: application/json" \
-  -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/output-folder"}'
 ```
 
 ### Estimate File Cost
