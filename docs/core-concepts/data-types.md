@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 3df6764298b10dcc51287f43b1b5742a25785bff
-  verified_date: 2026-05-16
+  source_commit: 76763d686f6e2c27f3a4535146bbab8913190132
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -22,11 +22,11 @@
   verification_mode: current-merged-truth
 -->
 
-Autonomi stores content as immutable, content-addressed chunks. As a developer, you usually work with higher-level interfaces such as public data, private data, files, directories, and DataMaps.
+Autonomi stores content as immutable, content-addressed chunks. As a developer, you usually work with higher-level interfaces such as public data, private data, files, and DataMaps.
 
 ## Why it matters
 
-Because Autonomi stores content as immutable, content-addressed chunks, developers need to understand the higher-level interfaces they use to package, publish, and retrieve that data. This page explains how public data, private data, files, directories, and DataMap handling fit together.
+Because Autonomi stores content as immutable, content-addressed chunks, developers need to understand the higher-level interfaces they use to package, publish, and retrieve that data. This page explains how public data, private data, files, and DataMap handling fit together.
 
 ## One storage primitive underneath
 
@@ -58,7 +58,6 @@ This is why Autonomi is immutable rather than update-in-place.
 | Private data | Chunks plus a client-held `DataMap` | Encrypted content you keep client-side |
 | Chunk | A single chunk stored directly | Small payloads and low-level tooling |
 | File | Self-encrypted chunks plus a file-oriented `DataMap` flow | Uploading and downloading files from disk |
-| Directory | Self-encrypted file trees plus directory-oriented `DataMap` flow | Folder uploads and downloads |
 | `DataMap` | Retrieval metadata for chunked content | Private retrieval, public file addressing, later downloads |
 
 ## Public and private data
@@ -81,13 +80,13 @@ Chunks are the low-level storage unit. The CLI exposes them through `ant chunk p
 
 Use chunk operations when you are building low-level tooling or want explicit control over single-chunk payloads. For most application data, use public/private data or file uploads instead.
 
-## Files and directories
+## Files
 
-File and directory uploads wrap the same chunk-and-DataMap model for content that already lives on disk.
+File uploads wrap the same chunk-and-DataMap model for content that already lives on disk.
 
 Behavior differs slightly by interface:
 
-- `antd` exposes public file and directory upload/download endpoints
+- `antd` exposes public file upload/download endpoints
 - `ant` supports both public file uploads and private uploads that keep a local `.datamap` file
 
 Use these surfaces when you want the tooling to handle file-system input and output directly instead of working with raw byte arrays.
