@@ -63,10 +63,10 @@ The `antd` REST surface groups into these areas:
 |------|------|
 | Health | `/health` |
 | Data | `/v1/data/public`, `/v1/data/private`, `/v1/data/cost` |
-| Chunks | `/v1/chunks` |
+| Chunks | `/v1/chunks`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
 | Files | `/v1/files/upload/public`, `/v1/files/download/public`, `/v1/files/cost` |
 | Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
-| External signer flow | `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
+| External signer flow | `/v1/chunks/prepare`, `/v1/chunks/finalize`, `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
 
 The proto directory contains `health.proto`, `data.proto`, `chunks.proto`, `files.proto`, and `events.proto`.
 
@@ -80,7 +80,7 @@ Do not assume perfect parity from this page alone. The SDKs expose the same daem
 - Python examples use `AntdClient()` from `antd`
 - some SDK READMEs document both REST and gRPC, while others are REST-only today
 
-Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File and directory uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
+Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
 
 When you need authoritative pricing separate from the write itself, use the explicit cost endpoints such as `POST /v1/data/cost` and `POST /v1/files/cost`.
 

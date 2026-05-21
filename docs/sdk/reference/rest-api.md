@@ -274,6 +274,90 @@ Retrieves a raw chunk by address.
 curl http://localhost:8082/v1/chunks/<addr>
 ```
 
+### Prepare a Single-Chunk Upload
+
+**Endpoint:** `POST /v1/chunks/prepare`
+
+Prepares one raw chunk for the external-signer flow. The daemon computes the chunk address, checks whether the chunk is already stored, and returns either the existing address or the payment details needed before finalizing.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `data` | string | Yes | Base64-encoded raw chunk bytes |
+
+**Response:**
+
+When the chunk already exists on the network:
+
+```json
+{
+  "address": "<64_hex_address>",
+  "already_stored": true
+}
+```
+
+When payment is required:
+
+```json
+{
+  "address": "<64_hex_address>",
+  "already_stored": false,
+  "upload_id": "<hex_id>",
+  "payment_type": "wave_batch",
+  "payments": [
+    {
+      "quote_hash": "0x...",
+      "rewards_address": "0x...",
+      "amount": "<atto_token_amount>"
+    }
+  ],
+  "total_amount": "<atto_token_amount>",
+  "payment_vault_address": "0x...",
+  "payment_token_address": "0x...",
+  "rpc_url": "http://127.0.0.1:8545"
+}
+```
+
+**Example:**
+
+```bash
+CHUNK_B64=$(printf 'chunk bytes' | base64)
+
+curl -X POST http://localhost:8082/v1/chunks/prepare \
+  -H "Content-Type: application/json" \
+  -d "{\"data\":\"$CHUNK_B64\"}"
+```
+
+### Finalize a Single-Chunk Upload
+
+**Endpoint:** `POST /v1/chunks/finalize`
+
+Stores a chunk prepared by `POST /v1/chunks/prepare` after the external signer has submitted the matching payment transaction.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `upload_id` | string | Yes | Value returned by `POST /v1/chunks/prepare` |
+| `tx_hashes` | object | Yes | Map of `quote_hash` to the transaction hash returned by the external payment |
+
+**Response:**
+
+```json
+{
+  "address": "<64_hex_address>"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8082/v1/chunks/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
+```
+
 ## Files
 
 These endpoints work on paths visible to the machine running `antd`.
@@ -585,7 +669,7 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
 | `400` | Bad request | Check base64 encoding, address length, data map format, and local paths |
 | `402` | Payment required | Fund the configured wallet or reduce the upload size |
 | `404` | Not found | Check the address or `upload_id` |
-| `413` | Payload too large | Split the upload or switch to file/directory endpoints |
+| `413` | Payload too large | Split the upload or switch to file endpoints |
 | `500` | Internal server error | Check daemon logs and retry |
 | `501` | Not implemented | `visibility:"public"` is not supported on `/v1/data/prepare`; use `/v1/upload/prepare` with a file path instead |
 | `502` | Network unreachable | Confirm the daemon can reach the Autonomi network |
