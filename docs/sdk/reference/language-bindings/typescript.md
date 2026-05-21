@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e0dfa2c384ea17f49490d3d5110c3d226ac5233b
-  verified_date: 2026-05-16
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -55,12 +55,18 @@ main().catch((error) => {
 
 | Autonomi type | TypeScript type |
 |------|------|
-| `HealthStatus` | `{ ok: boolean; network: string }` |
+| `HealthStatus` | `{ ok: boolean; network: string; version: string; evmNetwork: string; uptimeSeconds: number; buildCommit: string; paymentTokenAddress: string; paymentVaultAddress: string }` |
 | `PutResult` | `{ cost: string; address: string }` |
+| `FileUploadResult` | `{ address: string; storageCostAtto: string; gasCostWei: string; chunksStored: number; paymentModeUsed: string }` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string; gasBalance: string }` |
-| `PrepareUploadResult` | typed object exported from `antd` |
-| `FinalizeUploadResult` | `{ address: string; chunksStored: number }` |
+| `PaymentInfo` | `{ quoteHash: string; rewardsAddress: string; amount: string }` |
+| `CandidateNodeEntry` | `{ rewardsAddress: string; amount: string }` |
+| `PoolCommitmentEntry` | `{ poolHash: string; candidates: CandidateNodeEntry[] }` |
+| `PrepareUploadResult` | object with `uploadId`, `paymentType`, `payments`, `totalAmount`, `paymentVaultAddress`, `paymentTokenAddress`, `rpcUrl`, plus optional `depth`, `poolCommitments`, and `merklePaymentTimestamp` for Merkle uploads |
+| `FinalizeUploadResult` | `{ address: string; chunksStored: number; dataMap: string; dataMapAddress: string }` |
+| `PrepareChunkResult` | `{ address: string; alreadyStored: boolean; uploadId: string; paymentType: string; payments: PaymentInfo[]; totalAmount: string; paymentVaultAddress: string; paymentTokenAddress: string; rpcUrl: string }` |
+| `UploadCostEstimate` | `{ cost: string; fileSize: number; chunkCount: number; estimatedGasCostWei: string; paymentMode: string }` |
 | Raw data | `Buffer` |
 
 ## Error handling
