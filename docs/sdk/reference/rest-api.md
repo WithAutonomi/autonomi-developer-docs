@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -274,7 +274,91 @@ Retrieves a raw chunk by address.
 curl http://localhost:8082/v1/chunks/<addr>
 ```
 
-## Files and directories
+### Prepare a Single-Chunk Upload
+
+**Endpoint:** `POST /v1/chunks/prepare`
+
+Prepares one raw chunk for the external-signer flow. The daemon computes the chunk address, checks whether the chunk is already stored, and returns either the existing address or the payment details needed before finalizing.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `data` | string | Yes | Base64-encoded raw chunk bytes |
+
+**Response:**
+
+When the chunk already exists on the network:
+
+```json
+{
+  "address": "<64_hex_address>",
+  "already_stored": true
+}
+```
+
+When payment is required:
+
+```json
+{
+  "address": "<64_hex_address>",
+  "already_stored": false,
+  "upload_id": "<hex_id>",
+  "payment_type": "wave_batch",
+  "payments": [
+    {
+      "quote_hash": "0x...",
+      "rewards_address": "0x...",
+      "amount": "<atto_token_amount>"
+    }
+  ],
+  "total_amount": "<atto_token_amount>",
+  "payment_vault_address": "0x...",
+  "payment_token_address": "0x...",
+  "rpc_url": "http://127.0.0.1:8545"
+}
+```
+
+**Example:**
+
+```bash
+CHUNK_B64=$(printf 'chunk bytes' | base64)
+
+curl -X POST http://localhost:8082/v1/chunks/prepare \
+  -H "Content-Type: application/json" \
+  -d "{\"data\":\"$CHUNK_B64\"}"
+```
+
+### Finalize a Single-Chunk Upload
+
+**Endpoint:** `POST /v1/chunks/finalize`
+
+Stores a chunk prepared by `POST /v1/chunks/prepare` after the external signer has submitted the matching payment transaction.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `upload_id` | string | Yes | Value returned by `POST /v1/chunks/prepare` |
+| `tx_hashes` | object | Yes | Map of `quote_hash` to the transaction hash returned by the external payment |
+
+**Response:**
+
+```json
+{
+  "address": "<64_hex_address>"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8082/v1/chunks/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
+```
+
+## Files
 
 These endpoints work on paths visible to the machine running `antd`.
 
@@ -332,62 +416,6 @@ Downloads a file to a local destination path.
 curl -X POST http://localhost:8082/v1/files/download/public \
   -H "Content-Type: application/json" \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/downloaded.pdf"}'
-```
-
-### Upload a Public Directory
-
-**Endpoint:** `POST /v1/dirs/upload/public`
-
-Uploads a local directory recursively.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | Yes | Local directory path |
-| `payment_mode` | string | No | `auto`, `merkle`, or `single` |
-
-**Response:**
-
-```json
-{
-  "address": "<64_hex_address>",
-  "storage_cost_atto": "<atto_token_amount>",
-  "gas_cost_wei": "<wei_amount>",
-  "chunks_stored": 42,
-  "payment_mode_used": "auto"
-}
-```
-
-**Example:**
-
-```bash
-curl -X POST http://localhost:8082/v1/dirs/upload/public \
-  -H "Content-Type: application/json" \
-  -d '{"path":"/absolute/path/to/my-folder"}'
-```
-
-### Download a Public Directory
-
-**Endpoint:** `POST /v1/dirs/download/public`
-
-Downloads a directory to a local destination path.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `address` | string | Yes | 64-character hex directory address |
-| `dest_path` | string | Yes | Local destination path |
-
-**Response:** HTTP `200 OK` with no JSON body
-
-**Example:**
-
-```bash
-curl -X POST http://localhost:8082/v1/dirs/download/public \
-  -H "Content-Type: application/json" \
-  -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/output-folder"}'
 ```
 
 ### Estimate File Cost
@@ -641,7 +669,7 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
 | `400` | Bad request | Check base64 encoding, address length, data map format, and local paths |
 | `402` | Payment required | Fund the configured wallet or reduce the upload size |
 | `404` | Not found | Check the address or `upload_id` |
-| `413` | Payload too large | Split the upload or switch to file/directory endpoints |
+| `413` | Payload too large | Split the upload or switch to file endpoints |
 | `500` | Internal server error | Check daemon logs and retry |
 | `501` | Not implemented | `visibility:"public"` is not supported on `/v1/data/prepare`; use `/v1/upload/prepare` with a file path instead |
 | `502` | Network unreachable | Confirm the daemon can reach the Autonomi network |

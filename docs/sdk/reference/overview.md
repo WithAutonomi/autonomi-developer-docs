@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -63,10 +63,10 @@ The `antd` REST surface groups into these areas:
 |------|------|
 | Health | `/health` |
 | Data | `/v1/data/public`, `/v1/data/private`, `/v1/data/cost` |
-| Chunks | `/v1/chunks` |
-| Files and directories | `/v1/files/upload/public`, `/v1/files/download/public`, `/v1/dirs/upload/public`, `/v1/dirs/download/public`, `/v1/files/cost` |
+| Chunks | `/v1/chunks`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
+| Files | `/v1/files/upload/public`, `/v1/files/download/public`, `/v1/files/cost` |
 | Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
-| External signer flow | `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
+| External signer flow | `/v1/chunks/prepare`, `/v1/chunks/finalize`, `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
 
 The proto directory contains `health.proto`, `data.proto`, `chunks.proto`, `files.proto`, and `events.proto`.
 
@@ -80,7 +80,7 @@ Do not assume perfect parity from this page alone. The SDKs expose the same daem
 - Python examples use `AntdClient()` from `antd`
 - some SDK READMEs document both REST and gRPC, while others are REST-only today
 
-Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File and directory uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
+Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
 
 When you need authoritative pricing separate from the write itself, use the explicit cost endpoints such as `POST /v1/data/cost` and `POST /v1/files/cost`.
 

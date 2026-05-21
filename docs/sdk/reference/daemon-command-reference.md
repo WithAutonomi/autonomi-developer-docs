@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
@@ -22,8 +22,8 @@ Runs the local REST and gRPC gateway daemon for Autonomi.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `--rest-addr <ADDR>` | string | No | REST listen address, default `0.0.0.0:8082` |
-| `--grpc-addr <ADDR>` | string | No | gRPC listen address, default `0.0.0.0:50051` |
+| `--rest-addr <ADDR>` | string | No | REST listen address, default `127.0.0.1:8082` (loopback only — pass `0.0.0.0:8082` to expose on the network) |
+| `--grpc-addr <ADDR>` | string | No | gRPC listen address, default `127.0.0.1:50051` (loopback only — pass `0.0.0.0:50051` to expose on the network) |
 | `--rest-port <PORT>` | integer | No | Override the REST port from `--rest-addr` |
 | `--grpc-port <PORT>` | integer | No | Override the gRPC port from `--grpc-addr` |
 | `--network <MODE>` | string | No | Network mode, default `default`; also supports `local` |
@@ -65,8 +65,8 @@ antd
 # Local network with explicit peers
 ANTD_PEERS="/ip4/127.0.0.1/udp/12000/quic-v1/p2p/12D3Koo..." antd --network local
 
-# Bind to localhost only
-antd --rest-addr 127.0.0.1:8082 --grpc-addr 127.0.0.1:50051
+# Expose on all network interfaces (opt in deliberately — antd has no auth)
+antd --rest-addr 0.0.0.0:8082 --grpc-addr 0.0.0.0:50051
 
 # Let the OS assign free ports
 antd --rest-port 0 --grpc-port 0

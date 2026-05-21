@@ -64,13 +64,18 @@ main().catch((error) => {
 
 | Autonomi type | JavaScript type |
 |------|------|
-| `HealthStatus` | `{ ok: boolean, network: string }` |
+| `HealthStatus` | object with `ok`, `network`, `version`, `evmNetwork`, `uptimeSeconds`, `buildCommit`, `paymentTokenAddress`, and `paymentVaultAddress` |
 | `PutResult` | `{ cost: string, address: string }` |
 | `FileUploadResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string, gasBalance: string }` |
-| `PrepareUploadResult` | object with `uploadId`, `paymentType`, `totalAmount`, `paymentVaultAddress`, `paymentTokenAddress`, `rpcUrl`, plus `payments` for wave-batch uploads or `depth`, `poolCommitments`, and `merklePaymentTimestamp` for Merkle uploads |
-| `FinalizeUploadResult` | `{ address: string, chunksStored: number }` |
+| `PaymentInfo` | `{ quoteHash: string, rewardsAddress: string, amount: string }` |
+| `CandidateNodeEntry` | `{ rewardsAddress: string, amount: string }` |
+| `PoolCommitmentEntry` | `{ poolHash: string, candidates: CandidateNodeEntry[] }` |
+| `PrepareUploadResult` | object with `uploadId`, `paymentType`, `payments`, `totalAmount`, `paymentVaultAddress`, `paymentTokenAddress`, `rpcUrl`, plus optional `depth`, `poolCommitments`, and `merklePaymentTimestamp` for Merkle uploads |
+| `FinalizeUploadResult` | `{ address: string, chunksStored: number, dataMap: string, dataMapAddress: string }` |
+| `PrepareChunkResult` | `{ address: string, alreadyStored: boolean, uploadId: string, paymentType: string, payments: PaymentInfo[], totalAmount: string, paymentVaultAddress: string, paymentTokenAddress: string, rpcUrl: string }` |
+| `UploadCostEstimate` | `{ cost: string, fileSize: number, chunkCount: number, estimatedGasCostWei: string, paymentMode: string }` |
 | Raw data | `Buffer` |
 
 ## Error handling

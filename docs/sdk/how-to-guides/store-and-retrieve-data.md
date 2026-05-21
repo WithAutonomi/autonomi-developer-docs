@@ -3,12 +3,12 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 4021000b552175394bcfe04f1c7712467887d539
+  verified_date: 2026-05-21
   verification_mode: current-merged-truth
 -->
 
-In this guide, you use `antd`, the local daemon used by the SDKs, to store public data, private data, files, and directories through language SDKs.
+In this guide, you use `antd`, the local daemon used by the SDKs, to store public data, private data, and files through language SDKs.
 
 If you want direct shell access instead, see [Use the CLI](../../cli/use-the-cli.md). If you want direct programmatic Rust access without the daemon, see [Build Directly in Rust](../../rust/build-directly-in-rust.md).
 
@@ -315,72 +315,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 {% endtab %}
 {% endtabs %}
 
-### 6. Upload and download a directory
-
-{% tabs %}
-{% tab title="cURL" %}
-```bash
-curl -X POST http://localhost:8082/v1/dirs/upload/public \
-  -H "Content-Type: application/json" \
-  -d '{"path":"/absolute/path/to/my-folder"}'
-
-curl -X POST http://localhost:8082/v1/dirs/download/public \
-  -H "Content-Type: application/json" \
-  -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/output-folder"}'
-```
-{% endtab %}
-{% tab title="Python" %}
-```python
-from antd import AntdClient
-
-client = AntdClient()
-result = client.dir_upload_public("/absolute/path/to/my-folder")
-client.dir_download_public(result.address, "/absolute/path/to/output-folder")
-
-print(result.address)
-```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { createClient } from "antd";
-
-async function main() {
-  const client = createClient();
-  const result = await client.dirUploadPublic("/absolute/path/to/my-folder");
-  await client.dirDownloadPublic(result.address, "/absolute/path/to/output-folder");
-  console.log(result.address);
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-```
-{% endtab %}
-{% tab title="Rust" %}
-```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new(DEFAULT_BASE_URL);
-    let result = client
-        .dir_upload_public("/absolute/path/to/my-folder", None)
-        .await?;
-    client
-        .dir_download_public(&result.address, "/absolute/path/to/output-folder")
-        .await?;
-
-    println!("{}", result.address);
-    Ok(())
-}
-```
-{% endtab %}
-{% endtabs %}
-
 ## Verify it worked
 
-For raw data, compare the retrieved bytes to the original payload. For files and directories, compare the downloaded output on disk with the original local source before you uploaded it.
+For raw data, compare the retrieved bytes to the original payload. For files, compare the downloaded output on disk with the original local source before you uploaded it.
 
 ## Common errors
 

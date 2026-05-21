@@ -55,12 +55,18 @@ main().catch((error) => {
 
 | Autonomi type | TypeScript type |
 |------|------|
-| `HealthStatus` | `{ ok: boolean; network: string }` |
+| `HealthStatus` | `{ ok: boolean; network: string; version: string; evmNetwork: string; uptimeSeconds: number; buildCommit: string; paymentTokenAddress: string; paymentVaultAddress: string }` |
 | `PutResult` | `{ cost: string; address: string }` |
+| `FileUploadResult` | `{ address: string; storageCostAtto: string; gasCostWei: string; chunksStored: number; paymentModeUsed: string }` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string; gasBalance: string }` |
-| `PrepareUploadResult` | typed object exported from `antd` |
-| `FinalizeUploadResult` | `{ address: string; chunksStored: number }` |
+| `PaymentInfo` | `{ quoteHash: string; rewardsAddress: string; amount: string }` |
+| `CandidateNodeEntry` | `{ rewardsAddress: string; amount: string }` |
+| `PoolCommitmentEntry` | `{ poolHash: string; candidates: CandidateNodeEntry[] }` |
+| `PrepareUploadResult` | object with `uploadId`, `paymentType`, `payments`, `totalAmount`, `paymentVaultAddress`, `paymentTokenAddress`, `rpcUrl`, plus optional `depth`, `poolCommitments`, and `merklePaymentTimestamp` for Merkle uploads |
+| `FinalizeUploadResult` | `{ address: string; chunksStored: number; dataMap: string; dataMapAddress: string }` |
+| `PrepareChunkResult` | `{ address: string; alreadyStored: boolean; uploadId: string; paymentType: string; payments: PaymentInfo[]; totalAmount: string; paymentVaultAddress: string; paymentTokenAddress: string; rpcUrl: string }` |
+| `UploadCostEstimate` | `{ cost: string; fileSize: number; chunkCount: number; estimatedGasCostWei: string; paymentMode: string }` |
 | Raw data | `Buffer` |
 
 ## Error handling

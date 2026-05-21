@@ -33,7 +33,7 @@ This page introduces the concepts that matter most when you build on Autonomi.
 
 ## Storage model
 
-Autonomi stores data as immutable, content-addressed chunks. The developer-facing storage surfaces in this docs set are public data, private data, chunks, files, directories, and DataMaps. Public workflows return an address that can be shared; private workflows return retrieval metadata that you keep client-side.
+Autonomi stores data as immutable, content-addressed chunks. The developer-facing storage surfaces in this docs set are public data, private data, chunks, files, and DataMaps. Public workflows return an address that can be shared; private workflows return retrieval metadata that you keep client-side.
 
 Read more in [Data Types](data-types.md).
 

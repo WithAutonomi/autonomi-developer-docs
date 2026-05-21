@@ -96,7 +96,7 @@ Node-side storage pricing follows `BASELINE + K × (n / D)^2`, where `n` is the 
 
 ### What happens on retrieval
 
-Downloads do not require a separate payment step. Payments are tied to storage writes such as storing data, chunks, files, or directories.
+Downloads do not require a separate payment step. Payments are tied to storage writes such as storing data, chunks, or files.
 
 ## Practical example
 
