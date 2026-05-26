@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -94,21 +94,21 @@ Retrieves text from the network by address or DataMap.
 
 ### Upload a File
 
-**Tool:** `upload_file(path, payment_mode="auto")`
+**Tool:** `upload_file(path, private=False, payment_mode="auto")`
 
-Uploads a local file as public content.
+Uploads a local file to the network. When `private=True`, the returned `address` is the caller-held DataMap and is not stored on-network. When `private=False` (default), the DataMap is stored on-network and `address` is the public retrieval address.
 
 ### Download a File
 
-**Tool:** `download_file(address, dest_path)`
+**Tool:** `download_file(address, dest_path, private=False)`
 
-Downloads a public file to a local path.
+Downloads a file to a local path. Pass the on-network address when `private=False` (default) or the caller-held DataMap when `private=True`.
 
 ### Estimate Cost
 
-**Tool:** `get_cost(text=None, file_path=None)`
+**Tool:** `get_cost(text=None, file_path=None, payment_mode="auto")`
 
-Estimates storage cost for text or a local file path.
+Estimates storage cost for text or a local file path. Pass `payment_mode` to reflect the cost of a specific payment strategy.
 
 Provide exactly one of `text` or `file_path`.
 
@@ -248,7 +248,8 @@ Example `store_data` response:
 ```json
 {
   "address": "abc123...",
-  "cost": "1000000",
+  "chunks_stored": 1,
+  "payment_mode_used": "auto",
   "network": "local"
 }
 ```

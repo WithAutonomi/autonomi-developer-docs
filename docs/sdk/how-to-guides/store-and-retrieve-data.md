@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -132,14 +132,14 @@ The REST response uses base64 in the `data` field. The Python, Node.js / TypeScr
 
 ### 3. Store private data
 
-Private uploads return a serialized DataMap instead of a public address.
+Private uploads return a serialized DataMap. The DataMap is not stored on the network — keep it to retrieve the data later.
 
 {% tabs %}
 {% tab title="cURL" %}
 ```bash
 DATA_B64=$(printf 'Secret message' | base64)
 
-curl -X POST http://localhost:8082/v1/data/private \
+curl -X POST http://localhost:8082/v1/data \
   -H "Content-Type: application/json" \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
@@ -158,9 +158,9 @@ Expected response shape:
 from antd import AntdClient
 
 client = AntdClient()
-result = client.data_put_private(b"Secret message")
+result = client.data_put(b"Secret message")
 
-data_map = result.address
+data_map = result.data_map
 print(data_map)
 ```
 {% endtab %}
@@ -170,8 +170,8 @@ import { createClient } from "antd";
 
 async function main() {
   const client = createClient();
-  const result = await client.dataPutPrivate(Buffer.from("Secret message"));
-  const dataMap = result.address;
+  const result = await client.dataPut(Buffer.from("Secret message"));
+  const dataMap = result.dataMap;
   console.log(dataMap);
 }
 
@@ -183,14 +183,14 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
-    let result = client.data_put_private(b"Secret message", None).await?;
+    let result = client.data_put(b"Secret message", PaymentMode::Auto).await?;
 
-    let data_map = result.address;
+    let data_map = result.data_map;
     println!("{}", data_map);
     Ok(())
 }
@@ -198,14 +198,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 {% endtab %}
 {% endtabs %}
 
-In the Python, Node.js / TypeScript, and Rust SDKs, the returned private `data_map` is surfaced through `PutResult.address`.
+The Python and Rust SDKs surface the DataMap through `DataPutResult.data_map`; the Node.js / TypeScript SDK uses `DataPutResult.dataMap`.
 
 ### 4. Retrieve private data
 
 {% tabs %}
 {% tab title="cURL" %}
 ```bash
-curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
+curl -X POST http://localhost:8082/v1/data/get \
+  -H "Content-Type: application/json" \
+  -d '{"data_map":"<hex_encoded_datamap>"}'
 ```
 {% endtab %}
 {% tab title="Python" %}
@@ -213,7 +215,7 @@ curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
 from antd import AntdClient
 
 client = AntdClient()
-data = client.data_get_private("<hex_encoded_datamap>")
+data = client.data_get("<hex_encoded_datamap>")
 
 print(data.decode())
 ```
@@ -224,7 +226,7 @@ import { createClient } from "antd";
 
 async function main() {
   const client = createClient();
-  const data = await client.dataGetPrivate("<hex_encoded_datamap>");
+  const data = await client.dataGet("<hex_encoded_datamap>");
   console.log(data.toString());
 }
 
@@ -241,7 +243,7 @@ use antd_client::{Client, DEFAULT_BASE_URL};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
-    let data = client.data_get_private("<hex_encoded_datamap>").await?;
+    let data = client.data_get("<hex_encoded_datamap>").await?;
 
     println!("{}", String::from_utf8_lossy(&data));
     Ok(())
@@ -257,11 +259,11 @@ These endpoints work on paths visible to the machine running `antd`.
 {% tabs %}
 {% tab title="cURL" %}
 ```bash
-curl -X POST http://localhost:8082/v1/files/upload/public \
+curl -X POST http://localhost:8082/v1/files/public \
   -H "Content-Type: application/json" \
   -d '{"path":"/absolute/path/to/document.pdf"}'
 
-curl -X POST http://localhost:8082/v1/files/download/public \
+curl -X POST http://localhost:8082/v1/files/public/get \
   -H "Content-Type: application/json" \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/downloaded-document.pdf"}'
 ```
@@ -271,8 +273,8 @@ curl -X POST http://localhost:8082/v1/files/download/public \
 from antd import AntdClient
 
 client = AntdClient()
-result = client.file_upload_public("/absolute/path/to/document.pdf")
-client.file_download_public(result.address, "/absolute/path/to/downloaded-document.pdf")
+result = client.file_put_public("/absolute/path/to/document.pdf")
+client.file_get_public(result.address, "/absolute/path/to/downloaded-document.pdf")
 
 print(result.address)
 ```
@@ -283,8 +285,8 @@ import { createClient } from "antd";
 
 async function main() {
   const client = createClient();
-  const result = await client.fileUploadPublic("/absolute/path/to/document.pdf");
-  await client.fileDownloadPublic(result.address, "/absolute/path/to/downloaded-document.pdf");
+  const result = await client.filePutPublic("/absolute/path/to/document.pdf");
+  await client.fileGetPublic(result.address, "/absolute/path/to/downloaded-document.pdf");
   console.log(result.address);
 }
 
@@ -296,16 +298,16 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
     let result = client
-        .file_upload_public("/absolute/path/to/document.pdf", None)
+        .file_put_public("/absolute/path/to/document.pdf", PaymentMode::Auto)
         .await?;
     client
-        .file_download_public(&result.address, "/absolute/path/to/downloaded-document.pdf")
+        .file_get_public(&result.address, "/absolute/path/to/downloaded-document.pdf")
         .await?;
 
     println!("{}", result.address);

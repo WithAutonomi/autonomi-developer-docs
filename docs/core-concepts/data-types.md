@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 76763d686f6e2c27f3a4535146bbab8913190132
-  verified_date: 2026-05-21
+  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -70,7 +70,7 @@ Public and private data are not two different low-level storage systems.
 In the daemon APIs, you can see this difference clearly:
 
 - `POST /v1/data/public` returns a public address
-- `POST /v1/data/private` returns a serialized `DataMap`
+- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on the network)
 
 In both cases, the underlying content is still stored as chunks.
 
@@ -107,8 +107,8 @@ This is one of the main differences between public and private workflows.
 The tooling maps cleanly onto these interfaces:
 
 - use `POST /v1/data/public` or `client.data_put_public(...)` when you want the `DataMap` stored publicly and returned as an address
-- use `POST /v1/data/private` or `client.data_put_private(...)` when you want the `DataMap` returned to you directly
-- use `POST /v1/files/upload/public` or `ant file upload ... --public` when you want file content to be publicly retrievable
+- use `POST /v1/data` or `client.data_put(...)` when you want the `DataMap` returned to you directly
+- use `POST /v1/files/public` or `ant file upload ... --public` when you want file content to be publicly retrievable
 - use `ant file upload ...` without `--public` when you want the CLI to keep the `.datamap` file locally instead
 
 ## Related pages

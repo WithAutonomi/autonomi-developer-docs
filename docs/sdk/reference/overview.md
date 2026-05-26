@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -62,9 +62,9 @@ The `antd` REST surface groups into these areas:
 | Group | Routes |
 |------|------|
 | Health | `/health` |
-| Data | `/v1/data/public`, `/v1/data/private`, `/v1/data/cost` |
+| Data | `/v1/data/public`, `/v1/data`, `/v1/data/get`, `/v1/data/cost` |
 | Chunks | `/v1/chunks`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
-| Files | `/v1/files/upload/public`, `/v1/files/download/public`, `/v1/files/cost` |
+| Files | `/v1/files/public`, `/v1/files/public/get`, `/v1/files`, `/v1/files/get`, `/v1/files/cost` |
 | Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
 | External signer flow | `/v1/chunks/prepare`, `/v1/chunks/finalize`, `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
 
