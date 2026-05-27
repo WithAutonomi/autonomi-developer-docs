@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -65,8 +65,12 @@ main().catch((error) => {
 | Autonomi type | JavaScript type |
 |------|------|
 | `HealthStatus` | object with `ok`, `network`, `version`, `evmNetwork`, `uptimeSeconds`, `buildCommit`, `paymentTokenAddress`, and `paymentVaultAddress` |
-| `PutResult` | `{ cost: string, address: string }` |
-| `FileUploadResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `PutResult` | `{ cost: string, address: string }` for chunk writes |
+| `DataPutPublicResult` | `{ address: string, chunksStored: number, paymentModeUsed: string }` |
+| `DataPutResult` | `{ dataMap: string, chunksStored: number, paymentModeUsed: string }` |
+| `FilePutPublicResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `FilePutResult` | `{ dataMap: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `PaymentMode` | string values: `auto`, `merkle`, or `single` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string, gasBalance: string }` |
 | `PaymentInfo` | `{ quoteHash: string, rewardsAddress: string, amount: string }` |

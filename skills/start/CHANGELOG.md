@@ -4,6 +4,20 @@ All notable changes to this skill are recorded here.
 
 ## [Unreleased]
 
+## [0.1.6-draft] - 2026-05-26
+
+### Changed
+- Updated shared daemon surfaces: `POST /v1/data/private` renamed to `POST /v1/data`; `GET /v1/data/private` replaced by `POST /v1/data/get` (DataMap now in request body, not query parameter); `POST /v1/files/upload/public` renamed to `POST /v1/files/public`; `POST /v1/files/download/public` renamed to `POST /v1/files/public/get`; added `POST /v1/files` (private file upload) and `POST /v1/files/get` (private file download).
+- Corrected the "keep these rules straight" bullet points to reflect the endpoint renames.
+
+### Verified Against
+- ant-sdk: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+- ant-client: e67472424f94acd4b9188a342271210d4ab9f94d
+- ant-node: 2a8b91deada5506c72b7d234655119b2ab803d92
+- ant-protocol: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
+- self_encryption: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
+- evmlib: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
+
 ## [0.1.5-draft] - 2026-05-16
 
 ### Changed

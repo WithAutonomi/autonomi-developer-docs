@@ -8,7 +8,7 @@ description: |
   in Rust with `ant-core`, or expose Autonomi through an MCP-compatible client.
   Do not use for Autonomi 1.0, the MaidSafe-era network, `ant-quic`, or
   general EVM work that is not part of building on Autonomi.
-version: 0.1.5-draft
+version: 0.1.6-draft
 license: MIT
 repository: https://github.com/WithAutonomi/autonomi-developer-docs
 homepage: https://docs.autonomi.com/developers
@@ -29,13 +29,13 @@ keywords:
   - read-only
 
 # Verification block. Re-verify before changing stable claims or examples.
-verified_date: "2026-05-18"
+verified_date: "2026-05-26"
 verification_mode: current-merged-truth
 verified_commits:
-  ant-sdk: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  ant-client: 3df6764298b10dcc51287f43b1b5742a25785bff
-  ant-node: f38fdcacbeb3318e4524f4534e2d5bd87dcca467
-  ant-protocol: cbaf710dc51c7e436120ced5d60f07b0aa14a8ee
+  ant-sdk: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  ant-client: e67472424f94acd4b9188a342271210d4ab9f94d
+  ant-node: 2a8b91deada5506c72b7d234655119b2ab803d92
+  ant-protocol: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
   self_encryption: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
   evmlib: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
 
@@ -149,9 +149,13 @@ Current shared daemon surfaces you can rely on at this commit:
 - `GET /health`
 - `POST /v1/data/public`
 - `GET /v1/data/public/{addr}`
-- `POST /v1/data/private`
-- `GET /v1/data/private`
+- `POST /v1/data`
+- `POST /v1/data/get`
 - `POST /v1/data/cost`
+- `POST /v1/files/public`
+- `POST /v1/files/public/get`
+- `POST /v1/files`
+- `POST /v1/files/get`
 - `POST /v1/files/cost`
 - `GET /v1/wallet/address`
 - `GET /v1/wallet/balance`
@@ -178,8 +182,8 @@ Keep these rules straight:
 
 - REST binary payloads are base64 inside JSON.
 - `POST /v1/data/public` returns a public address.
-- `POST /v1/data/private` returns a serialized `DataMap`.
-- `GET /v1/data/private` needs the `data_map` query parameter.
+- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on-network).
+- `POST /v1/data/get` retrieves private data; pass `data_map` in the JSON body (not a query parameter).
 - read-only daemon work does not require `AUTONOMI_WALLET_KEY`
 
 Current documented binding entry points:
