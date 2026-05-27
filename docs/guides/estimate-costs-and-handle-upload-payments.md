@@ -196,14 +196,16 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
-    let cost = client.data_cost(b"Hello, Autonomi!").await?;
+    let cost = client
+        .data_cost(b"Hello, Autonomi!", PaymentMode::Auto)
+        .await?;
 
-    println!("{}", cost);
+    println!("{}", cost.cost);
     Ok(())
 }
 ```
@@ -238,10 +240,10 @@ curl -X POST http://localhost:8082/v1/data/public \
 {% endtab %}
 {% tab title="Python" %}
 ```python
-from antd import AntdClient
+from antd import AntdClient, PaymentMode
 
 client = AntdClient()
-result = client.data_put_public(b"Hello, Autonomi!", payment_mode="merkle")
+result = client.data_put_public(b"Hello, Autonomi!", payment_mode=PaymentMode.MERKLE)
 
 print(result.address)
 ```
@@ -266,13 +268,13 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
     let result = client
-        .data_put_public(b"Hello, Autonomi!", Some("merkle"))
+        .data_put_public(b"Hello, Autonomi!", PaymentMode::Merkle)
         .await?;
 
     println!("{}", result.address);

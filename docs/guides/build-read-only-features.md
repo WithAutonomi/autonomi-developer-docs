@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 3df6764298b10dcc51287f43b1b5742a25785bff
-  verified_date: 2026-05-16
+  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -77,7 +77,9 @@ curl http://localhost:8082/v1/data/public/<address>
 Private retrieval through the daemon:
 
 ```bash
-curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
+curl -X POST http://localhost:8082/v1/data/get \
+  -H "Content-Type: application/json" \
+  -d '{"data_map":"<hex_encoded_datamap>"}'
 ```
 
 The private retrieval response is JSON with the content returned as base64 in the `data` field.

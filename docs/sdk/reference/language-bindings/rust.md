@@ -40,7 +40,7 @@ For gRPC, the current crate also exports `GrpcClient` and `DEFAULT_GRPC_ENDPOINT
 For upload examples in this section, start `antd` in a write-enabled mode first. On the default network, that means wallet plus EVM payment configuration. On a local devnet, `ant dev start` provisions that for you.
 
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -49,7 +49,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let health = client.health().await?;
     assert!(health.ok);
 
-    let result = client.data_put_public(b"Hello from Rust!", None).await?;
+    let result = client
+        .data_put_public(b"Hello from Rust!", PaymentMode::Auto)
+        .await?;
     println!("{}", result.address);
 
     let data = client.data_get_public(&result.address).await?;
@@ -63,7 +65,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 | Autonomi type | Rust type |
 |------|------|
 | `HealthStatus` | `antd_client::HealthStatus` |
-| `PutResult` | `antd_client::PutResult` |
+| `PutResult` | `antd_client::PutResult` for chunk writes |
+| `DataPutPublicResult` | `antd_client::DataPutPublicResult` |
+| `DataPutResult` | `antd_client::DataPutResult` |
+| `FilePutPublicResult` | `antd_client::FilePutPublicResult` |
+| `FilePutResult` | `antd_client::FilePutResult` |
+| `PaymentMode` | `antd_client::PaymentMode` |
+| `UploadCostEstimate` | `antd_client::UploadCostEstimate` |
 | `WalletAddress` | `antd_client::WalletAddress` |
 | `WalletBalance` | `antd_client::WalletBalance` |
 | `PrepareUploadResult` | `antd_client::PrepareUploadResult` |

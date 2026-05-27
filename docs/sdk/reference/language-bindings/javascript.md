@@ -65,8 +65,12 @@ main().catch((error) => {
 | Autonomi type | JavaScript type |
 |------|------|
 | `HealthStatus` | object with `ok`, `network`, `version`, `evmNetwork`, `uptimeSeconds`, `buildCommit`, `paymentTokenAddress`, and `paymentVaultAddress` |
-| `PutResult` | `{ cost: string, address: string }` |
-| `FileUploadResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `PutResult` | `{ cost: string, address: string }` for chunk writes |
+| `DataPutPublicResult` | `{ address: string, chunksStored: number, paymentModeUsed: string }` |
+| `DataPutResult` | `{ dataMap: string, chunksStored: number, paymentModeUsed: string }` |
+| `FilePutPublicResult` | `{ address: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `FilePutResult` | `{ dataMap: string, storageCostAtto: string, gasCostWei: string, chunksStored: number, paymentModeUsed: string }` |
+| `PaymentMode` | string values: `auto`, `merkle`, or `single` |
 | `WalletAddress` | `{ address: string }` |
 | `WalletBalance` | `{ balance: string, gasBalance: string }` |
 | `PaymentInfo` | `{ quoteHash: string, rewardsAddress: string, amount: string }` |

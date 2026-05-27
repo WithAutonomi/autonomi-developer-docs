@@ -65,7 +65,11 @@ func main() {
     client := antd.NewClient(antd.DefaultBaseURL)
     ctx := context.Background()
 
-    result, err := client.DataPutPublic(ctx, []byte("Hello from Go!"))
+    result, err := client.DataPutPublic(
+        ctx,
+        []byte("Hello from Go!"),
+        antd.PaymentModeAuto,
+    )
     if err != nil {
         log.Fatal(err)
     }
@@ -84,7 +88,13 @@ func main() {
 | Autonomi type | Go type |
 |------|------|
 | `HealthStatus` | `antd.HealthStatus` |
-| `PutResult` | `antd.PutResult` |
+| `PutResult` | `antd.PutResult` for chunk writes |
+| `DataPutPublicResult` | `antd.DataPutPublicResult` |
+| `DataPutResult` | `antd.DataPutResult` |
+| `FilePutPublicResult` | `antd.FilePutPublicResult` |
+| `FilePutResult` | `antd.FilePutResult` |
+| `PaymentMode` | `antd.PaymentMode` |
+| `UploadCostEstimate` | `antd.UploadCostEstimate` |
 | `WalletAddress` | `antd.WalletAddress` |
 | `WalletBalance` | `antd.WalletBalance` |
 | `PrepareUploadResult` | `antd.PrepareUploadResult` |

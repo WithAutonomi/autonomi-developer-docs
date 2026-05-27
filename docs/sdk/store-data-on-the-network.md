@@ -130,12 +130,14 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
-    let result = client.data_put_public(b"Hello, Autonomi!", None).await?;
+    let result = client
+        .data_put_public(b"Hello, Autonomi!", PaymentMode::Auto)
+        .await?;
 
     println!("{}", result.address);
     Ok(())
@@ -255,13 +257,13 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
     let original = b"Hello, Autonomi!";
-    let result = client.data_put_public(original, None).await?;
+    let result = client.data_put_public(original, PaymentMode::Auto).await?;
     let retrieved = client.data_get_public(&result.address).await?;
 
     assert_eq!(retrieved, original);

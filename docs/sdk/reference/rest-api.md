@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 4021000b552175394bcfe04f1c7712467887d539
-  verified_date: 2026-05-21
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -124,9 +124,9 @@ curl -N http://localhost:8082/v1/data/public/<addr>/stream
 
 ### Store Private Data
 
-**Endpoint:** `POST /v1/data/private`
+**Endpoint:** `POST /v1/data`
 
-Stores private data and returns a serialized DataMap instead of a public address.
+Stores private data. The DataMap is returned to the caller and is not stored on-network.
 
 **Parameters:**
 
@@ -150,22 +150,22 @@ Stores private data and returns a serialized DataMap instead of a public address
 ```bash
 DATA_B64=$(printf 'Secret message' | base64)
 
-curl -X POST http://localhost:8082/v1/data/private \
+curl -X POST http://localhost:8082/v1/data \
   -H "Content-Type: application/json" \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
 ### Get Private Data
 
-**Endpoint:** `GET /v1/data/private`
+**Endpoint:** `POST /v1/data/get`
 
-Retrieves private data using the returned DataMap.
+Retrieves private data using a caller-held DataMap. Uses POST so the hex-encoded DataMap (which can be many KB) goes in the request body rather than a URL query string.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `data_map` | query | Yes | Hex-encoded serialized DataMap |
+| `data_map` | string | Yes | Hex-encoded serialized DataMap |
 
 **Response:**
 
@@ -178,7 +178,9 @@ Retrieves private data using the returned DataMap.
 **Example:**
 
 ```bash
-curl "http://localhost:8082/v1/data/private?data_map=<hex_encoded_datamap>"
+curl -X POST http://localhost:8082/v1/data/get \
+  -H "Content-Type: application/json" \
+  -d '{"data_map":"<hex_encoded_datamap>"}'
 ```
 
 ### Estimate Data Cost
@@ -192,6 +194,7 @@ Estimates the storage cost for a data payload without uploading it.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `data` | string | Yes | Base64-encoded payload |
+| `payment_mode` | string | No | `auto`, `merkle`, or `single` |
 
 **Response:**
 
@@ -364,9 +367,9 @@ These endpoints work on paths visible to the machine running `antd`.
 
 ### Upload a Public File
 
-**Endpoint:** `POST /v1/files/upload/public`
+**Endpoint:** `POST /v1/files/public`
 
-Uploads a local file and stores its DataMap publicly.
+Uploads a local file publicly. Also stores the DataMap on-network as an additional chunk and returns its network address.
 
 **Parameters:**
 
@@ -390,22 +393,22 @@ Uploads a local file and stores its DataMap publicly.
 **Example:**
 
 ```bash
-curl -X POST http://localhost:8082/v1/files/upload/public \
+curl -X POST http://localhost:8082/v1/files/public \
   -H "Content-Type: application/json" \
   -d '{"path":"/absolute/path/to/document.pdf"}'
 ```
 
 ### Download a Public File
 
-**Endpoint:** `POST /v1/files/download/public`
+**Endpoint:** `POST /v1/files/public/get`
 
-Downloads a file to a local destination path.
+Downloads a public file using its on-network DataMap address.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `address` | string | Yes | 64-character hex file address |
+| `address` | string | Yes | 64-character hex on-network DataMap address |
 | `dest_path` | string | Yes | Local destination path |
 
 **Response:** HTTP `200 OK` with no JSON body
@@ -413,9 +416,65 @@ Downloads a file to a local destination path.
 **Example:**
 
 ```bash
-curl -X POST http://localhost:8082/v1/files/download/public \
+curl -X POST http://localhost:8082/v1/files/public/get \
   -H "Content-Type: application/json" \
   -d '{"address":"<64_hex_address>","dest_path":"/absolute/path/to/downloaded.pdf"}'
+```
+
+### Upload a Private File
+
+**Endpoint:** `POST /v1/files`
+
+Uploads a local file privately. The DataMap is returned to the caller and is not stored on-network.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | string | Yes | Local file path |
+| `payment_mode` | string | No | `auto`, `merkle`, or `single` |
+
+**Response:**
+
+```json
+{
+  "data_map": "<hex_encoded_datamap>",
+  "storage_cost_atto": "<atto_token_amount>",
+  "gas_cost_wei": "<wei_amount>",
+  "chunks_stored": 42,
+  "payment_mode_used": "auto"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8082/v1/files \
+  -H "Content-Type: application/json" \
+  -d '{"path":"/absolute/path/to/document.pdf"}'
+```
+
+### Download a Private File
+
+**Endpoint:** `POST /v1/files/get`
+
+Downloads a file using a caller-held DataMap (no address lookup required).
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `data_map` | string | Yes | Hex-encoded serialized DataMap |
+| `dest_path` | string | Yes | Local destination path |
+
+**Response:** HTTP `200 OK` with no JSON body
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:8082/v1/files/get \
+  -H "Content-Type: application/json" \
+  -d '{"data_map":"<hex_encoded_datamap>","dest_path":"/absolute/path/to/downloaded.pdf"}'
 ```
 
 ### Estimate File Cost
@@ -430,6 +489,7 @@ Estimates upload cost for a local file.
 |------|------|----------|-------------|
 | `path` | string | Yes | Local file path |
 | `is_public` | boolean | No | Defaults to `true` |
+| `payment_mode` | string | No | `auto`, `merkle`, or `single` |
 
 **Response:**
 
