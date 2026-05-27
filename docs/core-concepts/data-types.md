@@ -70,7 +70,7 @@ Public and private data are not two different low-level storage systems.
 In the daemon APIs, you can see this difference clearly:
 
 - `POST /v1/data/public` returns a public address
-- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on the network)
+- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on-network)
 
 In both cases, the underlying content is still stored as chunks.
 

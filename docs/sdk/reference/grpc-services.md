@@ -39,7 +39,7 @@ Checks daemon health and network selection.
 
 **Signature:** `Put(PutDataRequest) -> PutDataResponse`
 
-Stores private data. The DataMap is returned to the caller and is not stored on the network.
+Stores private data. The DataMap is returned to the caller and is not stored on-network.
 
 ### Put Public
 
@@ -91,7 +91,7 @@ Stores a raw chunk.
 
 **Signature:** `Put(PutFileRequest) -> PutFileResponse`
 
-Uploads a local file privately. The DataMap is returned to the caller and is not stored on the network.
+Uploads a local file privately. The DataMap is returned to the caller and is not stored on-network.
 
 ### Put Public
 
@@ -142,7 +142,7 @@ The proto files define these shared shapes:
 
 | Message | Fields |
 |------|--------|
-| `Cost` | `atto_tokens` |
+| `Cost` | `atto_tokens`, `file_size`, `chunk_count`, `estimated_gas_cost_wei`, `payment_mode` |
 | `HealthCheckResponse` | `status`, `network`, `version`, `evm_network`, `uptime_seconds`, `build_commit`, `payment_token_address`, `payment_vault_address` |
 | `PutPublicDataResponse` | `cost`, `address` |
 | `PutDataResponse` | `cost`, `data_map` |

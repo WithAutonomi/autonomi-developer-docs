@@ -126,7 +126,7 @@ curl -N http://localhost:8082/v1/data/public/<addr>/stream
 
 **Endpoint:** `POST /v1/data`
 
-Stores private data. The DataMap is returned to the caller and is not stored on the network.
+Stores private data. The DataMap is returned to the caller and is not stored on-network.
 
 **Parameters:**
 
@@ -425,7 +425,7 @@ curl -X POST http://localhost:8082/v1/files/public/get \
 
 **Endpoint:** `POST /v1/files`
 
-Uploads a local file privately. The DataMap is returned to the caller and is not stored on the network.
+Uploads a local file privately. The DataMap is returned to the caller and is not stored on-network.
 
 **Parameters:**
 

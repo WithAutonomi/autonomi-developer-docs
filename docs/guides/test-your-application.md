@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -43,11 +43,15 @@ Mock the daemon client or direct-network wrapper at your application boundary.
 {% tab title="Python" %}
 ```python
 from unittest.mock import MagicMock
-from antd import PutResult
+from antd import DataPutPublicResult
 
 def test_store_data():
     mock_client = MagicMock()
-    mock_client.data_put_public.return_value = PutResult(cost="1", address="abc123")
+    mock_client.data_put_public.return_value = DataPutPublicResult(
+        address="abc123",
+        chunks_stored=1,
+        payment_mode_used="auto",
+    )
 
     result = mock_client.data_put_public(b"test data")
     assert result.address == "abc123"
@@ -60,7 +64,11 @@ import { describe, expect, it, vi } from "vitest";
 describe("store data", () => {
   it("returns an address", async () => {
     const mockClient = {
-      dataPutPublic: vi.fn().mockResolvedValue({ cost: "1", address: "abc123" }),
+      dataPutPublic: vi.fn().mockResolvedValue({
+        address: "abc123",
+        chunksStored: 1,
+        paymentModeUsed: "auto",
+      }),
     };
 
     const result = await mockClient.dataPutPublic(Buffer.from("test data"));

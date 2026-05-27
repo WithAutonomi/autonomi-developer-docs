@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 
@@ -65,7 +65,11 @@ func main() {
     client := antd.NewClient(antd.DefaultBaseURL)
     ctx := context.Background()
 
-    result, err := client.DataPutPublic(ctx, []byte("Hello from Go!"))
+    result, err := client.DataPutPublic(
+        ctx,
+        []byte("Hello from Go!"),
+        antd.PaymentModeAuto,
+    )
     if err != nil {
         log.Fatal(err)
     }
@@ -84,7 +88,13 @@ func main() {
 | Autonomi type | Go type |
 |------|------|
 | `HealthStatus` | `antd.HealthStatus` |
-| `PutResult` | `antd.PutResult` |
+| `PutResult` | `antd.PutResult` for chunk writes |
+| `DataPutPublicResult` | `antd.DataPutPublicResult` |
+| `DataPutResult` | `antd.DataPutResult` |
+| `FilePutPublicResult` | `antd.FilePutPublicResult` |
+| `FilePutResult` | `antd.FilePutResult` |
+| `PaymentMode` | `antd.PaymentMode` |
+| `UploadCostEstimate` | `antd.UploadCostEstimate` |
 | `WalletAddress` | `antd.WalletAddress` |
 | `WalletBalance` | `antd.WalletBalance` |
 | `PrepareUploadResult` | `antd.PrepareUploadResult` |

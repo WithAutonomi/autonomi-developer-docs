@@ -182,7 +182,7 @@ Keep these rules straight:
 
 - REST binary payloads are base64 inside JSON.
 - `POST /v1/data/public` returns a public address.
-- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on the network).
+- `POST /v1/data` returns a serialized `DataMap` (the DataMap is not stored on-network).
 - `POST /v1/data/get` retrieves private data; pass `data_map` in the JSON body (not a query parameter).
 - read-only daemon work does not require `AUTONOMI_WALLET_KEY`
 

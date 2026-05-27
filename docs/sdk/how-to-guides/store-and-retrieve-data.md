@@ -64,12 +64,14 @@ main().catch((error) => {
 {% endtab %}
 {% tab title="Rust" %}
 ```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new(DEFAULT_BASE_URL);
-    let result = client.data_put_public(b"Hello, Autonomi!", None).await?;
+    let result = client
+        .data_put_public(b"Hello, Autonomi!", PaymentMode::Auto)
+        .await?;
 
     println!("{}", result.address);
     Ok(())
@@ -132,7 +134,7 @@ The REST response uses base64 in the `data` field. The Python, Node.js / TypeScr
 
 ### 3. Store private data
 
-Private uploads return a serialized DataMap. The DataMap is not stored on the network — keep it to retrieve the data later.
+Private uploads return a serialized DataMap. The DataMap is not stored on-network; keep it to retrieve the data later.
 
 {% tabs %}
 {% tab title="cURL" %}

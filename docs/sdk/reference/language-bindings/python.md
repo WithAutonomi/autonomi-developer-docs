@@ -61,7 +61,13 @@ print(data.decode())
 | Autonomi type | Python type |
 |------|------|
 | `HealthStatus` | `antd.HealthStatus` |
-| `PutResult` | `antd.PutResult` |
+| `PutResult` | `antd.PutResult` for chunk writes |
+| `DataPutPublicResult` | `antd.DataPutPublicResult` |
+| `DataPutResult` | `antd.DataPutResult` |
+| `FilePutPublicResult` | `antd.FilePutPublicResult` |
+| `FilePutResult` | `antd.FilePutResult` |
+| `PaymentMode` | `antd.PaymentMode` |
+| `UploadCostEstimate` | `antd.UploadCostEstimate` |
 | `WalletAddress` | `antd.WalletAddress` |
 | `WalletBalance` | `antd.WalletBalance` |
 | `PrepareUploadResult` | `antd.PrepareUploadResult` |
