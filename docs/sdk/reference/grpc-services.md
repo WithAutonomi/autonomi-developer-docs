@@ -117,7 +117,7 @@ Downloads a public file to a local destination path using its on-network DataMap
 
 **Signature:** `Cost(FileCostRequest) -> antd.v1.Cost`
 
-Estimates file upload cost. Accepts an optional `payment_mode` field (`"auto"`, `"merkle"`, or `"single"`).
+Estimates file upload cost. `is_public` toggles between the public and private payment shape (public bundles an extra DataMap chunk into the estimate). Accepts an optional `payment_mode` field (`"auto"`, `"merkle"`, or `"single"`).
 
 ## Event Service
 
@@ -146,11 +146,13 @@ The proto files define these shared shapes:
 | `HealthCheckResponse` | `status`, `network`, `version`, `evm_network`, `uptime_seconds`, `build_commit`, `payment_token_address`, `payment_vault_address` |
 | `PutPublicDataResponse` | `cost`, `address` |
 | `PutDataResponse` | `cost`, `data_map` |
+| `PutFileRequest` | `path`, `payment_mode` |
 | `PutFilePublicResponse` | `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
 | `PutFileResponse` | `data_map`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
 | `GetFilePublicRequest` | `address`, `dest_path` |
 | `GetFileRequest` | `data_map`, `dest_path` |
 | `GetDataRequest` | `data_map` |
+| `FileCostRequest` | `path`, `is_public`, `payment_mode` |
 
 ## Related pages
 

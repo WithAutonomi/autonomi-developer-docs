@@ -63,7 +63,7 @@ The `antd` REST surface groups into these areas:
 |------|------|
 | Health | `/health` |
 | Data | `/v1/data/public`, `/v1/data`, `/v1/data/get`, `/v1/data/cost` |
-| Chunks | `/v1/chunks`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
+| Chunks | `/v1/chunks`, `/v1/chunks/{addr}`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
 | Files | `/v1/files/public`, `/v1/files/public/get`, `/v1/files`, `/v1/files/get`, `/v1/files/cost` |
 | Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
 | External signer flow | `/v1/chunks/prepare`, `/v1/chunks/finalize`, `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
