@@ -3,36 +3,36 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: a3cf4e40052e3af8d1e8029ca0b3c97281d14108
-  verified_date: 2026-05-18
+  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 3df6764298b10dcc51287f43b1b5742a25785bff
-  verified_date: 2026-05-16
+  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: f38fdcacbeb3318e4524f4534e2d5bd87dcca467
-  verified_date: 2026-05-16
+  source_commit: 2a8b91deada5506c72b7d234655119b2ab803d92
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: cbaf710dc51c7e436120ced5d60f07b0aa14a8ee
-  verified_date: 2026-05-16
+  source_commit: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 550183b717a4c9c0d9bb498eb0b10809c51764bb
-  verified_date: 2026-05-16
+  source_commit: b4d0da07e75e85e4473b50e33d63a6648afc4dd2
+  verified_date: 2026-05-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
