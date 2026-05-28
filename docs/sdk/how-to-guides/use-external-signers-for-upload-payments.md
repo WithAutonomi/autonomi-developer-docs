@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
-  verified_date: 2026-05-26
+  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
+  verified_date: 2026-05-28
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -107,7 +107,7 @@ curl -X POST http://localhost:8082/v1/data/prepare \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
 
-The in-memory data prepare endpoint supports only private uploads: `visibility` is accepted but `"public"` returns `501`. To prepare a public upload with an external signer, use `POST /v1/upload/prepare` with a file path and `"visibility":"public"` instead.
+The in-memory data prepare endpoint accepts `"private"` (default) or `"public"` for `visibility`. When `"public"`, the serialized DataMap is bundled into the same external-signer payment batch and published on-network on finalize; the finalize response then includes a `data_map_address` field with its network address.
 
 The prepare endpoints return a `payment_type` discriminator. Use that value to decide which on-chain call to make and which finalize payload to send back.
 

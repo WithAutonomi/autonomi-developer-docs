@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7a113b390522d76d28b8f3e5b4078f9c9418d46f
-  verified_date: 2026-05-26
+  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
+  verified_date: 2026-05-28
   verification_mode: current-merged-truth
 -->
 
@@ -591,7 +591,7 @@ Prepares an in-memory data upload for external signing.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `data` | string | Yes | Base64-encoded payload |
-| `visibility` | string | No | `"private"` (default) or `"public"`. `"public"` returns `501` on this endpoint. Use `/v1/upload/prepare` with a file path for public external-signer uploads. |
+| `visibility` | string | No | `"private"` (default) or `"public"`. When `"public"`, the serialized DataMap is bundled into the same external-signer payment batch and published on-network on finalize; `data_map_address` is then present in the finalize response. |
 
 **Response:**
 
@@ -731,7 +731,6 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
 | `404` | Not found | Check the address or `upload_id` |
 | `413` | Payload too large | Split the upload or switch to file endpoints |
 | `500` | Internal server error | Check daemon logs and retry |
-| `501` | Not implemented | `visibility:"public"` is not supported on `/v1/data/prepare`; use `/v1/upload/prepare` with a file path instead |
 | `502` | Network unreachable | Confirm the daemon can reach the Autonomi network |
 | `503` | Service unavailable | Configure a wallet before calling wallet or write endpoints |
 
