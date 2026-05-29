@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: cac111f35bdc30cf05a82468d5fa84d594626d87
+  verified_date: 2026-05-29
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
-  verified_date: 2026-05-26
+  source_commit: eeba52b997415164421999287d54fce6beae3bd3
+  verified_date: 2026-05-29
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -209,9 +209,7 @@ Expected response shape:
 
 ### 5. Use SDK helpers when available
 
-The daemon SDKs follow the same prepare/finalize split. Merkle-capable bindings expose `payment_type` on prepare results and a `finalize_merkle_upload` helper for the Merkle path.
-
-Use the REST API when you need the full finalize response surface, such as the raw `data_map` value or explicit `store_data_map` control on wave-batch finalize requests.
+The daemon SDKs follow the same prepare/finalize split across both REST and gRPC transports. Merkle-capable bindings expose `payment_type` on prepare results and a `finalize_merkle_upload` helper for the Merkle path. The gRPC `UploadService` and `ChunkService` expose the full prepare/finalize surface including `data_map`, `data_map_address`, and `store_data_map` — at parity with REST for the external-signer flow.
 
 If you are building in Rust with ant-core instead of the daemon, the library exposes native external-payment helpers such as `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the payment batch for a public in-memory upload. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, and `finalize_upload_merkle_with_progress` are also available when you need UI feedback during long-running uploads.
 
