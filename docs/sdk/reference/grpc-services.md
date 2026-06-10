@@ -107,7 +107,7 @@ When the chunk is already on-network, `already_stored` is `true`, the payment fi
 | `already_stored` | bool | `true` if the chunk was already on-network; all payment fields are empty when `true` |
 | `upload_id` | string | Opaque token to pass to `FinalizeChunk`; empty when `already_stored` is `true` |
 | `payment_type` | string | Always `"wave_batch"` for single-chunk publishes; empty when `already_stored` is `true` |
-| `payments` | repeated PaymentEntry | Per-quote payment entries for `payForQuotes()` |
+| `payments` | repeated PaymentEntry | Per-quote payment entries for `payForQuotes()`; see [Common messages](#common-messages) |
 | `total_amount` | string | Total amount to pay in atto tokens |
 | `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
 | `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
@@ -134,12 +134,12 @@ Phase 2 of the external-signer single-chunk upload flow. Mirrors `POST /v1/chunk
 
 ## Upload Service
 
-The Upload Service is the external-signer flow for files and in-memory data. It mirrors the REST `/v1/upload/prepare`, `/v1/data/prepare`, and `/v1/upload/finalize` surface.
+The Upload Service handles external-signer file and in-memory data uploads. It mirrors the REST `/v1/upload/prepare`, `/v1/data/prepare`, and `/v1/upload/finalize` surface.
 
-The flow is two-phase: submit a prepare request, receive payment details and an `upload_id`, submit the EVM payment externally, then call `FinalizeUpload` with the resulting transaction artefacts.
+The flow is two-phase: submit a prepare request, receive payment details and an `upload_id`, submit the EVM payment externally, then call `FinalizeUpload` with the transaction hashes or winner pool hash.
 
-- Files with fewer than 64 chunks use `payment_type = "wave_batch"` and `payForQuotes()`.
-- Files with 64 or more chunks use `payment_type = "merkle"` and `payForMerkleTree2()`.
+- Uploads with fewer than 64 chunks use `payment_type = "wave_batch"` and `payForQuotes()`.
+- Uploads with 64 or more chunks use `payment_type = "merkle"` and `payForMerkleTree2()`.
 
 ### PrepareFileUpload
 
@@ -151,7 +151,7 @@ Phase 1 for a local file. Returns payment details and an `upload_id`.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | Local filesystem path on the daemon host |
+| `path` | string | Local filesystem path on the host running `antd` |
 | `visibility` | string | `"private"` (default) or `"public"`. `"public"` bundles the DataMap chunk into the payment batch; `data_map_address` is populated in the finalize response |
 
 ### PrepareDataUpload
@@ -175,9 +175,9 @@ Both prepare RPCs return `PrepareUploadResponse`:
 |------|------|-------------|
 | `upload_id` | string | Opaque token to pass to `FinalizeUpload` |
 | `payment_type` | string | `"wave_batch"` or `"merkle"` |
-| `payments` | repeated PaymentEntry | Wave-batch: per-quote entries for `payForQuotes()` |
+| `payments` | repeated PaymentEntry | Wave-batch: per-quote entries for `payForQuotes()`; see [Common messages](#common-messages) |
 | `depth` | uint32 | Merkle: tree depth (1–8) |
-| `pool_commitments` | repeated PoolCommitmentEntry | Merkle: pool commitments for `payForMerkleTree2()`; each entry has exactly 16 candidate nodes |
+| `pool_commitments` | repeated PoolCommitmentEntry | Merkle: pool commitments for `payForMerkleTree2()`; each entry has exactly 16 candidate nodes; see [Common messages](#common-messages) |
 | `merkle_payment_timestamp` | uint64 | Merkle: unix timestamp for the payment |
 | `total_amount` | string | Total amount in atto tokens (`"0"` for Merkle) |
 | `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
@@ -197,20 +197,20 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 | `upload_id` | string | The `upload_id` returned from a prepare RPC |
 | `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex). Must be empty for Merkle |
 | `winner_pool_hash` | string | Merkle: winner pool hash (hex with `0x` prefix) from the `MerklePaymentMade` event. Must be empty for wave-batch |
-| `store_data_map` | bool | If `true`, stores the DataMap via the daemon's internal wallet and returns its address in `address` |
+| `store_data_map` | bool | If `true`, stores the DataMap through `antd`'s configured wallet and returns its address in `address` |
 
 **Response fields:**
 
 | Name | Type | Description |
 |------|------|-------------|
 | `data_map` | string | Hex-encoded serialized DataMap. Always returned |
-| `address` | string | Network address of the stored DataMap; only set when `store_data_map` is `true` |
-| `data_map_address` | string | Network address of the bundled DataMap chunk; only set when the upload was prepared with `visibility = "public"` |
-| `chunks_stored` | uint64 | Number of chunks stored on the network |
+| `address` | string | Autonomi Network address of the stored DataMap; only set when `store_data_map` is `true` |
+| `data_map_address` | string | Autonomi Network address of the bundled DataMap chunk; only set when the upload was prepared with `visibility = "public"` |
+| `chunks_stored` | uint64 | Number of chunks stored on the Autonomi Network |
 
 ## Wallet Service
 
-The Wallet Service mirrors the REST `/v1/wallet/*` surface. All three RPCs require the daemon to have been started with `AUTONOMI_WALLET_KEY`. When the wallet is absent, the daemon returns `failed_precondition`.
+The Wallet Service mirrors the REST `/v1/wallet/*` surface. All three RPCs require `antd` to have been started with `AUTONOMI_WALLET_KEY`. When the wallet is absent, `antd` returns `failed_precondition`.
 
 External-signer flows do not use this service — they use `UploadService` and `ChunkService.PrepareChunk`/`FinalizeChunk` instead.
 
@@ -304,7 +304,7 @@ This RPC is exposed, but the stream stays open without emitting events.
 
 ## Common messages
 
-The proto files define these shared shapes:
+The proto files define these reusable shapes:
 
 | Message | Fields |
 |------|--------|
@@ -319,6 +319,9 @@ The proto files define these shared shapes:
 | `GetFileRequest` | `data_map`, `dest_path` |
 | `GetDataRequest` | `data_map` |
 | `FileCostRequest` | `path`, `is_public`, `payment_mode` |
+| `PaymentEntry` | `quote_hash`, `rewards_address`, `amount` |
+| `PoolCommitmentEntry` | `pool_hash`, `candidates` |
+| `CandidateNodeEntry` | `rewards_address`, `amount` |
 
 ## Related pages
 
