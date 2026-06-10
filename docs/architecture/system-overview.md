@@ -3,50 +3,50 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: cac111f35bdc30cf05a82468d5fa84d594626d87
-  verified_date: 2026-05-29
+  source_commit: e102df9b3ea1a17fba7cf731081f515d89552b82
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: eeba52b997415164421999287d54fce6beae3bd3
-  verified_date: 2026-05-29
+  source_commit: 84332e2d752499df5402da797e5d8bba547bc58b
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: d91a4a32955e2eddc829cbf44cad31da4cde6f06
-  verified_date: 2026-05-29
+  source_commit: fb7494e84dd02f664fce83cebd210a4c73ddcfe2
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
-  verified_date: 2026-05-26
+  source_commit: ffaf12d41c1f129ed92051e04aaf5d6f8e94eec7
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 7ca2fda6700be4941bc181924691afebf12589fe
-  verified_date: 2026-05-29
+  source_commit: a681772c042b8215f36a9a860510d1fdb54b7540
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: 260b522926d6d64baf5891f168a72388764d250b
-  verified_date: 2026-05-16
+  source_commit: 2ee8e944ae32c3667ca8b588365a65a41f4b0f14
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: 2ab931e2533f1df6aa446636fbcf6e95b5bf5a21
-  verified_date: 2026-05-16
+  source_commit: 56e7b435de76f868f285b93cc470000fc6f5eec4
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:

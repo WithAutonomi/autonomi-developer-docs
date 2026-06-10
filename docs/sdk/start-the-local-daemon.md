@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: cac111f35bdc30cf05a82468d5fa84d594626d87
-  verified_date: 2026-05-29
+  source_commit: e102df9b3ea1a17fba7cf731081f515d89552b82
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: d91a4a32955e2eddc829cbf44cad31da4cde6f06
-  verified_date: 2026-05-29
+  source_commit: fb7494e84dd02f664fce83cebd210a4c73ddcfe2
+  verified_date: 2026-06-10
   verification_mode: current-merged-truth
 -->
 
