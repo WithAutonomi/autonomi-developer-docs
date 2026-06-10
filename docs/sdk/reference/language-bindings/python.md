@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: cac111f35bdc30cf05a82468d5fa84d594626d87
+  verified_date: 2026-05-29
   verification_mode: current-merged-truth
 -->
 
@@ -91,7 +91,7 @@ except AntdError as error:
     print(error)
 ```
 
-REST and gRPC share the same high-level API. Wallet operations and external-signer tools are REST-only; `payment_mode` is available on both transports.
+REST and gRPC share the same high-level API, including wallet operations and external-signer prepare/finalize methods. `payment_mode` is available on both transports.
 
 ## Full API reference
 

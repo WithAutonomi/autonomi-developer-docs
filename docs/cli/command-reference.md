@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
-  verified_date: 2026-05-26
+  source_commit: eeba52b997415164421999287d54fce6beae3bd3
+  verified_date: 2026-05-29
   verification_mode: current-merged-truth
 -->
 
@@ -171,11 +171,19 @@ Retrieves a single chunk by address.
 |------|------|----------|-------------|
 | `ADDRESS` | string | Yes | Hex-encoded chunk address (64 hex characters) |
 | `-o, --output <PATH>` | path | No | Write the chunk to a file instead of stdout |
+| `--all-peers` | boolean | No | Diagnostic mode: try every selected closest peer and print ranked per-peer results. Chunk bytes are only written when `-o`/`--output` is also supplied. |
+| `--peer-count <N>` | integer | No | Diagnostic mode only. Number of closest peers to try with `--all-peers`. Requires `--all-peers`. |
 
 **Example:**
 
 ```bash
 ant chunk get <chunk_address> -o chunk.bin
+```
+
+Diagnostic example (try all closest peers and rank results):
+
+```bash
+ant chunk get <chunk_address> --all-peers --peer-count 5
 ```
 
 ## Wallet commands
@@ -291,12 +299,16 @@ Adds one or more nodes to the registry.
 | `--version <X.Y.Z>` | string | No | Download a specific node version |
 | `--url <URL>` | string | No | Download a node archive from a URL |
 | `--bootstrap <ADDRS>` | string list | No | Bootstrap peers for the node binary itself |
+| `--upgrade-channel <CHANNEL>` | string | No | Release channel the node tracks for automatic upgrades: `stable` or `beta` |
 | `--env <K=V>` | string list | No | Node environment variables |
 
 **Example:**
 
 ```bash
 ant node add --rewards-address 0xYourWallet --count 1
+
+# Pin the node to the stable upgrade channel:
+ant node add --rewards-address 0xYourWallet --count 1 --upgrade-channel stable
 ```
 
 ### `ant node start`
