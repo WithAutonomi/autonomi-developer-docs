@@ -29,13 +29,13 @@ keywords:
   - read-only
 
 # Verification block. Re-verify before changing stable claims or examples.
-verified_date: "2026-06-10"
+verified_date: "2026-06-13"
 verification_mode: current-merged-truth
 verified_commits:
   ant-sdk: e102df9b3ea1a17fba7cf731081f515d89552b82
   ant-client: 84332e2d752499df5402da797e5d8bba547bc58b
   ant-node: fb7494e84dd02f664fce83cebd210a4c73ddcfe2
-  ant-protocol: ffaf12d41c1f129ed92051e04aaf5d6f8e94eec7
+  ant-protocol: 34c11cb9f626290b18263ebe8e10e172e5523424
   self_encryption: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
   evmlib: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
 
