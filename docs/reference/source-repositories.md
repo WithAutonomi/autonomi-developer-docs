@@ -24,22 +24,22 @@
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: ffaf12d41c1f129ed92051e04aaf5d6f8e94eec7
-  verified_date: 2026-06-10
+  source_commit: 34c11cb9f626290b18263ebe8e10e172e5523424
+  verified_date: 2026-06-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: a681772c042b8215f36a9a860510d1fdb54b7540
-  verified_date: 2026-06-10
+  source_commit: 180454671b87debcb2afbd83f2d8126c41b0dd02
+  verified_date: 2026-06-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: 2ee8e944ae32c3667ca8b588365a65a41f4b0f14
-  verified_date: 2026-06-10
+  source_commit: e24ecaced902f668d64cda2269deef0babd5d9ab
+  verified_date: 2026-06-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
