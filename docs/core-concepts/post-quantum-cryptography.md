@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: 56e7b435de76f868f285b93cc470000fc6f5eec4
-  verified_date: 2026-06-10
+  source_commit: bb2aa1981afe94340160b70f65bd633098da6e5b
+  verified_date: 2026-06-15
   verification_mode: current-merged-truth
 -->
 <!-- verification:
