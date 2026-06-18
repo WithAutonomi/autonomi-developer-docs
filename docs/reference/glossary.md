@@ -24,15 +24,15 @@
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 34c11cb9f626290b18263ebe8e10e172e5523424
-  verified_date: 2026-06-13
+  source_commit: ca95e6e1951ed622bd7d594e3211cee59e2eb3d8
+  verified_date: 2026-06-18
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: 180454671b87debcb2afbd83f2d8126c41b0dd02
-  verified_date: 2026-06-13
+  source_commit: dff6b0ec43680cfe7b026ba42ffd90501734e94d
+  verified_date: 2026-06-18
   verification_mode: current-merged-truth
 -->
 <!-- verification:

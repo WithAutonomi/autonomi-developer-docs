@@ -31,8 +31,8 @@
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 34c11cb9f626290b18263ebe8e10e172e5523424
-  verified_date: 2026-06-13
+  source_commit: ca95e6e1951ed622bd7d594e3211cee59e2eb3d8
+  verified_date: 2026-06-18
   verification_mode: current-merged-truth
 -->
 
