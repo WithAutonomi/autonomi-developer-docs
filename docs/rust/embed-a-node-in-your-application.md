@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: fb7494e84dd02f664fce83cebd210a4c73ddcfe2
-  verified_date: 2026-06-10
+  source_commit: c53665bf4dda87cdbcf848606fa0182e822297d7
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 
@@ -76,7 +76,6 @@ tokio::spawn(async move {
 - `upgrade`
 - `payment.rewards_address`
 - `payment.evm_network`
-- `bootstrap_cache`
 - `storage`
 - `close_group_cache_dir`
 - `max_message_size`

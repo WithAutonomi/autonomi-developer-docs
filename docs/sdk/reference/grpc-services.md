@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e102df9b3ea1a17fba7cf731081f515d89552b82
-  verified_date: 2026-06-10
+  source_commit: e56292325d04f1cf398c7e6bc77619ff2ab44447
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 
@@ -59,11 +59,41 @@ Fetches private data using a caller-held `data_map` string.
 
 Fetches public data by address.
 
+### Stream
+
+**Signature:** `Stream(StreamDataRequest) -> stream DataChunk`
+
+Streams private data from a caller-held `data_map` with constant memory, decrypting one batch at a time. This is the streaming counterpart of `Get` and the primitive that `StreamPublic` wraps.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data_map` | string | Hex-encoded serialized DataMap |
+| `include_progress` | bool | When `true`, the server interleaves `DownloadProgress` frames with the data frames on the same stream. Defaults to `false`, in which case the stream carries only data frames |
+
 ### Stream Public
 
 **Signature:** `StreamPublic(StreamPublicDataRequest) -> stream DataChunk`
 
-This RPC is exposed, but the handler returns `UNIMPLEMENTED`.
+Resolves a public address to its DataMap and then streams the data, the public wrapper around `Stream`.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `address` | string | Hex data address |
+| `include_progress` | bool | Same meaning as on `Stream`. Defaults to `false` |
+
+Each `DataChunk` frame carries exactly one of two payloads through its `kind` oneof: `data` (a decrypted plaintext batch) or `progress` (a `DownloadProgress` update). A consumer that leaves `include_progress` at `false` receives only `data` frames.
+
+`DownloadProgress` reports fetch progress in chunk counts:
+
+| Name | Type | Description |
+|------|------|-------------|
+| `phase` | string | One of `resolving_map`, `resolved`, or `fetching` |
+| `fetched` | uint64 | Chunks fetched so far in the current phase |
+| `total` | uint64 | Total chunks for the current phase, or `0` while not yet known |
 
 ### Cost
 
@@ -183,6 +213,8 @@ Both prepare RPCs return `PrepareUploadResponse`:
 | `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
 | `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
 | `rpc_url` | string | EVM RPC URL for submitting transactions |
+| `total_chunks` | uint64 | Full chunk count for the upload, including chunks already on-network |
+| `already_stored_count` | uint64 | Chunks already stored on-network and excluded from payment and the PUT. The external signer pays for `total_chunks - already_stored_count` chunks |
 
 ### FinalizeUpload
 
@@ -310,8 +342,10 @@ The proto files define these reusable shapes:
 |------|--------|
 | `Cost` | `atto_tokens`, `file_size`, `chunk_count`, `estimated_gas_cost_wei`, `payment_mode` |
 | `HealthCheckResponse` | `status`, `network`, `version`, `evm_network`, `uptime_seconds`, `build_commit`, `payment_token_address`, `payment_vault_address` |
-| `PutPublicDataResponse` | `cost`, `address` |
-| `PutDataResponse` | `cost`, `data_map` |
+| `PutPublicDataResponse` | `cost`, `address`, `chunks_stored`, `payment_mode_used` |
+| `PutDataResponse` | `cost`, `data_map`, `chunks_stored`, `payment_mode_used` |
+| `DataChunk` | `kind` oneof of `data` (bytes) or `progress` (`DownloadProgress`) |
+| `DownloadProgress` | `phase`, `fetched`, `total` |
 | `PutFileRequest` | `path`, `payment_mode` |
 | `PutFilePublicResponse` | `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
 | `PutFileResponse` | `data_map`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |

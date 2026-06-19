@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 84332e2d752499df5402da797e5d8bba547bc58b
-  verified_date: 2026-06-10
+  source_commit: 4d0448458ec302af68a5504c533d105b0991c93c
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 
@@ -110,6 +110,7 @@ Downloads a public file by address or a private file using a local DataMap file.
 | `ADDRESS` | string | Conditionally | Public DataMap address. Required unless `--datamap` is provided. |
 | `--datamap <PATH>` | path | No | Local `.datamap` file for private download |
 | `-o, --output <PATH>` | path | Conditionally | Required for address-based downloads. Optional for `--datamap` downloads that can infer the original filename. |
+| `--peers <COUNT>` | integer | No | Number of closest peers to try for each chunk fetch. Accepts a positive integer. `--peer-count` is accepted as an alias. |
 
 **Example:**
 
