@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e102df9b3ea1a17fba7cf731081f515d89552b82
-  verified_date: 2026-06-10
+  source_commit: e56292325d04f1cf398c7e6bc77619ff2ab44447
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 
@@ -108,7 +108,12 @@ curl http://localhost:8082/v1/data/public/<addr>
 
 **Endpoint:** `GET /v1/data/public/{addr}/stream`
 
-This endpoint is exposed, but the handler is a stub and returns an empty SSE stream.
+Streams a public object by address with constant memory, decrypting one batch at a time instead of buffering the whole object into a JSON body. Use this for large objects.
+
+The response framing depends on the `Accept` header:
+
+- Default (any `Accept` other than `application/x-ndjson`): a raw `application/octet-stream` body of the decrypted plaintext. The `Content-Length` header is set from the object's original size, so a client detects a failed download as a short read.
+- `Accept: application/x-ndjson`: newline-delimited JSON (NDJSON) frames, one JSON object per line, so the caller can drive a determinate progress bar. A leading `{"type":"meta","total_size":<bytes>}` frame is followed by interleaved `{"type":"progress",...}` and `{"type":"data","chunk":"<base64>"}` frames, and a terminal `{"type":"error","message":"..."}` frame if the download fails partway. Each `progress` frame carries `phase` (`"resolving_map"`, `"resolved"`, or `"fetching"`), `fetched` (chunks fetched so far), and `total` (chunks for the phase, or `0` while still unknown).
 
 **Parameters:**
 
@@ -119,7 +124,12 @@ This endpoint is exposed, but the handler is a stub and returns an empty SSE str
 **Example:**
 
 ```bash
-curl -N http://localhost:8082/v1/data/public/<addr>/stream
+# Raw bytes
+curl http://localhost:8082/v1/data/public/<addr>/stream -o object.bin
+
+# Progress framing
+curl -H "Accept: application/x-ndjson" \
+  http://localhost:8082/v1/data/public/<addr>/stream
 ```
 
 ### Store Private Data
@@ -291,7 +301,7 @@ Prepares one raw chunk for the external-signer flow. The daemon computes the chu
 
 **Response:**
 
-When the chunk already exists on the network:
+When the chunk already exists on-network:
 
 ```json
 {
@@ -613,7 +623,9 @@ The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for upl
   "total_amount": "<atto_token_amount>",
   "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
-  "rpc_url": "http://127.0.0.1:8545"
+  "rpc_url": "http://127.0.0.1:8545",
+  "total_chunks": 12,
+  "already_stored_count": 4
 }
 ```
 
@@ -639,11 +651,15 @@ Merkle variant:
   "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
-  "rpc_url": "http://127.0.0.1:8545"
+  "rpc_url": "http://127.0.0.1:8545",
+  "total_chunks": 128,
+  "already_stored_count": 0
 }
 ```
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The example above shows one candidate for brevity.
+
+Both variants include `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many of those were already stored and so excluded from payment and from the PUT. The external signer pays for `total_chunks - already_stored_count` chunks, which is why a prepared upload can cost less than the raw file size implies.
 
 **Example:**
 

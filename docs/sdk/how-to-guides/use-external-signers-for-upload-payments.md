@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e102df9b3ea1a17fba7cf731081f515d89552b82
-  verified_date: 2026-06-10
+  source_commit: e56292325d04f1cf398c7e6bc77619ff2ab44447
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 84332e2d752499df5402da797e5d8bba547bc58b
-  verified_date: 2026-06-10
+  source_commit: 4d0448458ec302af68a5504c533d105b0991c93c
+  verified_date: 2026-06-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -129,7 +129,9 @@ Wave-batch prepare response:
   "total_amount": "<atto_token_amount>",
   "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint"
+  "rpc_url": "https://your-rpc-endpoint",
+  "total_chunks": 12,
+  "already_stored_count": 4
 }
 ```
 
@@ -155,11 +157,15 @@ Merkle prepare response:
   "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint"
+  "rpc_url": "https://your-rpc-endpoint",
+  "total_chunks": 128,
+  "already_stored_count": 0
 }
 ```
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The sample above shows one candidate for brevity.
+
+Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Pay for `total_chunks - already_stored_count` chunks, and reconcile against the full file size when a prepare comes back cheaper than expected.
 
 For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request. `antd` bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its Autonomi Network address.
 
