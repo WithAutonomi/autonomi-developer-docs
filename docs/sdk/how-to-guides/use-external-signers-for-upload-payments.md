@@ -165,7 +165,7 @@ Merkle prepare response:
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The sample above shows one candidate for brevity.
 
-Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on the network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Pay for `total_chunks - already_stored_count` chunks, and reconcile against the full file size when a prepare comes back cheaper than expected.
+Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Pay for `total_chunks - already_stored_count` chunks, and reconcile against the full file size when a prepare comes back cheaper than expected.
 
 For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request. `antd` bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its Autonomi Network address.
 

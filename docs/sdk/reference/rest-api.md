@@ -193,29 +193,6 @@ curl -X POST http://localhost:8082/v1/data/get \
   -d '{"data_map":"<hex_encoded_datamap>"}'
 ```
 
-### Stream Private Data
-
-**Endpoint:** `POST /v1/data/stream`
-
-Streams private data from a caller-held DataMap with constant memory, the streaming counterpart of `POST /v1/data/get`. Uses POST so the hex-encoded DataMap (which can be many KB) goes in the request body. DataMaps larger than 10 MB are rejected with `400`.
-
-The response framing matches `GET /v1/data/public/{addr}/stream`: a raw `application/octet-stream` body by default, or NDJSON progress frames when the request sends `Accept: application/x-ndjson`.
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `data_map` | string | Yes | Hex-encoded serialized DataMap |
-
-**Example:**
-
-```bash
-curl -X POST http://localhost:8082/v1/data/stream \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/x-ndjson" \
-  -d '{"data_map":"<hex_encoded_datamap>"}'
-```
-
 ### Estimate Data Cost
 
 **Endpoint:** `POST /v1/data/cost`
@@ -324,7 +301,7 @@ Prepares one raw chunk for the external-signer flow. The daemon computes the chu
 
 **Response:**
 
-When the chunk already exists on the network:
+When the chunk already exists on-network:
 
 ```json
 {
@@ -682,7 +659,7 @@ Merkle variant:
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The example above shows one candidate for brevity.
 
-Both variants include `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on the network; `already_stored_count` is how many of those were already stored and so excluded from payment and from the PUT. The external signer pays for `total_chunks - already_stored_count` chunks, which is why a prepared upload can cost less than the raw file size implies.
+Both variants include `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many of those were already stored and so excluded from payment and from the PUT. The external signer pays for `total_chunks - already_stored_count` chunks, which is why a prepared upload can cost less than the raw file size implies.
 
 **Example:**
 

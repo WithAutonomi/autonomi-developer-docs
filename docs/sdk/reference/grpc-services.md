@@ -213,8 +213,6 @@ Both prepare RPCs return `PrepareUploadResponse`:
 | `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
 | `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
 | `rpc_url` | string | EVM RPC URL for submitting transactions |
-| `total_chunks` | uint64 | Full chunk count for the upload, including chunks already on-network |
-| `already_stored_count` | uint64 | Chunks already stored on-network and excluded from payment and the PUT. The external signer pays for `total_chunks - already_stored_count` chunks |
 
 ### FinalizeUpload
 
