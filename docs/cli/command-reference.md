@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 4d0448458ec302af68a5504c533d105b0991c93c
-  verified_date: 2026-06-19
+  source_commit: 3ab50c44a6ba62b34e879b86c97eae469b56cb3c
+  verified_date: 2026-06-25
   verification_mode: current-merged-truth
 -->
 
@@ -111,6 +111,7 @@ Downloads a public file by address or a private file using a local DataMap file.
 | `--datamap <PATH>` | path | No | Local `.datamap` file for private download |
 | `-o, --output <PATH>` | path | Conditionally | Required for address-based downloads. Optional for `--datamap` downloads that can infer the original filename. |
 | `--peers <COUNT>` | integer | No | Number of closest peers to try for each chunk fetch. Accepts a positive integer. `--peer-count` is accepted as an alias. |
+| `--all-peers` | boolean | No | Diagnostic mode: download the file as usual, then fetch each chunk from every selected closest peer and print ranked per-peer results. `--try-all-peers` is accepted as an alias. The number of closest peers swept per chunk comes from `--peers`, defaulting to the client close-group size. With `--json`, the per-peer results are emitted as a `chunk_peer_check` object on the download result. |
 
 **Example:**
 
@@ -124,6 +125,12 @@ Private datamap example:
 
 ```bash
 ant file download --datamap photo.jpg.datamap
+```
+
+Diagnostic example (download, then rank closest-peer results for each chunk):
+
+```bash
+ant file download 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a -o lucky.jpg --all-peers --peers 5
 ```
 
 ### `ant file cost <PATH>`
