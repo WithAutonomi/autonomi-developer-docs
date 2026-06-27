@@ -24,8 +24,8 @@
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: e24ecaced902f668d64cda2269deef0babd5d9ab
-  verified_date: 2026-06-13
+  source_commit: a24065b83c188a2b74cd8a0ad2c518f076016756
+  verified_date: 2026-06-27
   verification_mode: current-merged-truth
 -->
 

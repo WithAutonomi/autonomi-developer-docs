@@ -17,8 +17,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 0be9579c679e07fa266207bb9af5a4dde1aaee5a
-  verified_date: 2026-06-26
+  source_commit: e53928ac8eeb33cb07576dae06dbac5f1cf94f18
+  verified_date: 2026-06-27
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -31,8 +31,8 @@
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: ca95e6e1951ed622bd7d594e3211cee59e2eb3d8
-  verified_date: 2026-06-18
+  source_commit: 7caae7701a52f7ec557dea394abf60c33670521e
+  verified_date: 2026-06-27
   verification_mode: current-merged-truth
 -->
 
