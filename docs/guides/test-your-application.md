@@ -10,15 +10,15 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 3ab50c44a6ba62b34e879b86c97eae469b56cb3c
-  verified_date: 2026-06-25
+  source_commit: 95a23beefa53e733bb276922a89d1809ad2fe957
+  verified_date: 2026-07-01
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: e53928ac8eeb33cb07576dae06dbac5f1cf94f18
-  verified_date: 2026-06-27
+  source_commit: 3df630c917f03861a7498ca52dfb729dc1f42222
+  verified_date: 2026-07-01
   verification_mode: current-merged-truth
 -->
 
