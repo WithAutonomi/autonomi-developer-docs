@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 3ab50c44a6ba62b34e879b86c97eae469b56cb3c
-  verified_date: 2026-06-25
+  source_commit: 95a23beefa53e733bb276922a89d1809ad2fe957
+  verified_date: 2026-07-01
   verification_mode: current-merged-truth
 -->
 
@@ -299,14 +299,13 @@ Adds one or more nodes to the registry.
 | `--rewards-address <ADDR>` | string | Yes | Wallet address for node earnings |
 | `--count <N>` | integer | No | Number of nodes to add |
 | `--node-port <PORT|RANGE>` | string | No | Node port or port range |
-| `--metrics-port <PORT|RANGE>` | string | No | Metrics port or port range |
 | `--data-dir-path <PATH>` | path | No | Custom data directory prefix |
 | `--log-dir-path <PATH>` | path | No | Custom log directory prefix |
-| `--network-id <ID>` | integer | No | Network ID. Default `1` is mainnet. |
 | `--path <PATH>` | path | No | Local node binary path |
 | `--version <X.Y.Z>` | string | No | Download a specific node version |
 | `--url <URL>` | string | No | Download a node archive from a URL |
 | `--bootstrap <ADDRS>` | string list | No | Bootstrap peers for the node binary itself |
+| `--evm-network <NET>` | string | No | EVM network the node uses for storage payments: `arbitrum-one` or `arbitrum-sepolia`. Default `arbitrum-one`. |
 | `--upgrade-channel <CHANNEL>` | string | No | Release channel the node tracks for automatic upgrades: `stable` or `beta` |
 | `--env <K=V>` | string list | No | Node environment variables |
 
