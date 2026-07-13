@@ -337,9 +337,9 @@ ant node start --service-name node1
 
 ### `ant node status`
 
-Shows the status of all registered nodes. Each node reports a state, shown in the table as `Running`, `Stopped`, `Starting`, `Stopping`, `Errored`, or `Evicted`. An evicted node is one the daemon automatically stopped when its host ran low on disk. Eviction stops the node and attempts to delete its data directory to reclaim space, then keeps the node's registry record marked `Evicted`. The table row for an evicted node shows the eviction reason and the exact `ant node dismiss` command to clear it. Deletion can fail; check the eviction reason, and `reclaimed_bytes` in the JSON output, to confirm whether space was actually recovered.
+Shows the status of all registered nodes. Each node reports a state, shown in the table as `Running`, `Stopped`, `Starting`, `Stopping`, `Errored`, or `Evicted`. An evicted node is one the node daemon automatically stopped when its host ran low on disk. Eviction stops the node and attempts to delete its data directory to reclaim space, then keeps the node's registry record marked `Evicted`. The table row for an evicted node shows the eviction reason and the exact `ant node dismiss` command to clear it. Deletion can fail; check the eviction reason to see what was attempted, and treat `reclaimed_bytes` in the JSON output as the recorded estimate for that attempt rather than a measurement of free space now available.
 
-When the daemon is running and a health snapshot is available, the output opens with a fleet-health summary of `Healthy`, `Warning`, or `Critical`, followed by one line per check that is not healthy. The summary is omitted when the daemon is stopped, and also when the daemon is running but the snapshot cannot be retrieved.
+When the node daemon is running and a health snapshot is available, the output opens with a fleet-health summary of `Healthy`, `Warning`, or `Critical`, followed by one line per check that is not healthy. The summary is omitted when the node daemon is stopped, and also when it is running but the snapshot cannot be retrieved.
 
 **Parameters:**
 
@@ -366,7 +366,7 @@ The payload has these top-level fields:
 | `nodes` | array | One object per registered node. |
 | `total_running` | integer | Count of nodes reported as `running` or `starting`. |
 | `total_stopped` | integer | Count of every other node, including `stopped`, `stopping`, `errored`, and `evicted`. |
-| `health` | object or null | Fleet-health snapshot. It is `null` when the daemon is stopped, and also when the daemon is running but the snapshot cannot be retrieved, so `null` alone does not mean the daemon is stopped. |
+| `health` | object or null | Fleet-health snapshot. It is `null` when the node daemon is stopped, and also when it is running but the snapshot cannot be retrieved, so `null` alone does not mean the node daemon is stopped. |
 
 Each `nodes` entry has these fields:
 
@@ -407,7 +407,7 @@ Example payload with two running nodes that share a partition and one previously
   "nodes": [
     {
       "node_id": 1,
-      "name": "antnode1",
+      "name": "node1",
       "version": "0.4.0",
       "status": "running",
       "pid": 48213,
@@ -415,7 +415,7 @@ Example payload with two running nodes that share a partition and one previously
     },
     {
       "node_id": 2,
-      "name": "antnode2",
+      "name": "node2",
       "version": "0.4.0",
       "status": "running",
       "pid": 48219,
@@ -423,7 +423,7 @@ Example payload with two running nodes that share a partition and one previously
     },
     {
       "node_id": 3,
-      "name": "antnode3",
+      "name": "node3",
       "version": "0.4.0",
       "status": "evicted",
       "eviction": {
@@ -447,7 +447,7 @@ Example payload with two running nodes that share a partition and one previously
         "eviction_threshold_bytes": 524288000,
         "candidate": {
           "node_id": 2,
-          "data_dir": "/home/alice/.local/share/autonomi/node/antnode2",
+          "data_dir": "/home/alice/.local/share/autonomi/nodes/node-2",
           "size_bytes": 1073741824
         }
       }
@@ -460,14 +460,14 @@ Example payload with two running nodes that share a partition and one previously
 
 **Command:** `ant node dismiss <NODE_ID>`
 
-Removes a node's registry entry so it no longer appears in `ant node status`. This clears the record for a node the daemon evicted for low disk, though it is not restricted to evicted nodes.
+Removes a node's registry entry so it no longer appears in `ant node status`. This clears the record for a node the node daemon evicted for low disk, though it is not restricted to evicted nodes.
 
-Dismissal behavior depends on the daemon:
+Dismissal behavior depends on the node daemon:
 
-- With the daemon running, dismiss removes any node that is not running. It refuses to dismiss a running node and asks you to stop it first.
-- With the daemon stopped, dismiss removes the registry entry directly and does not stop any process. Dismiss a node only when it is not running, so you do not leave an orphaned node process behind.
+- When the node daemon is running, dismiss removes any node that is not running. It refuses to dismiss a running node and asks you to stop it first.
+- When the node daemon is stopped, dismiss removes the registry entry directly and does not stop any process. Dismiss a node only when it is not running, so you do not leave an orphaned node process behind.
 
-Dismissing removes the registry entry only; it does not itself reclaim disk space. After an eviction, check the eviction reason and `reclaimed_bytes` first: if the data directory was not deleted, free that space manually. Once enough capacity is available, dismiss the `Evicted` record, then add a replacement node with `ant node add` if you still need it.
+Dismissing removes the registry entry only; it does not itself reclaim disk space. After an eviction, read the eviction reason to see whether cleanup succeeded, and treat `reclaimed_bytes` as the recorded estimate for that attempt, not proof of current free space. Before adding a replacement node, check the actual free disk space on the affected partition and free space manually if the eviction did not. Once enough capacity is available, dismiss the `Evicted` record, then add a replacement node with `ant node add` if you still need it.
 
 **Parameters:**
 
@@ -484,7 +484,7 @@ ant node dismiss 3
 Output:
 
 ```text
-✓ Dismissed node 3 (antnode3)
+✓ Dismissed node 3 (node3)
 ```
 
 ### `ant node stop`
