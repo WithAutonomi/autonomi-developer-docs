@@ -447,7 +447,7 @@ Example payload with two running nodes that share a partition and one previously
         "eviction_threshold_bytes": 524288000,
         "candidate": {
           "node_id": 2,
-          "data_dir": "/home/alice/.local/share/autonomi/nodes/node-2",
+          "data_dir": "/home/alice/.local/share/ant/nodes/node-2",
           "size_bytes": 1073741824
         }
       }
