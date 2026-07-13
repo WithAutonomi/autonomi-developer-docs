@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 95a23beefa53e733bb276922a89d1809ad2fe957
-  verified_date: 2026-07-01
+  source_commit: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 
@@ -21,6 +21,7 @@ ant
 │   │   ├── stop
 │   │   ├── status
 │   │   └── info
+│   ├── dismiss
 │   ├── reset
 │   ├── start
 │   ├── status
@@ -336,7 +337,7 @@ ant node start --service-name node1
 
 ### `ant node status`
 
-Shows the status of all registered nodes.
+Shows the status of all registered nodes. Each node reports its state, which includes `Running`, `Stopped`, `Starting`, `Stopping`, `Errored`, and `Evicted`. A node is evicted when its host runs low on disk; the row shows the eviction reason and the exact command to clear it. When the daemon is running, the output also opens with a fleet-health summary of `Healthy`, `Warning`, or `Critical`, followed by a line for each check that is not healthy.
 
 **Parameters:**
 
@@ -346,6 +347,28 @@ This command has no command-specific parameters.
 
 ```bash
 ant node status
+```
+
+Add `--json` (a root flag, before the subcommand) to get a machine-readable payload. The JSON object carries the per-node list under `nodes`, the `total_running` and `total_stopped` counts, and a `health` object with the fleet-health summary (or `null` when the daemon is not running).
+
+```bash
+ant --json node status
+```
+
+### `ant node dismiss`
+
+Removes an evicted node from the registry so it no longer appears in `ant node status`. Run this after a node is evicted for low disk and you have reclaimed space or no longer want the node. When the daemon is running, the command clears the node from the daemon's in-memory registry as well; when the daemon is stopped, it operates directly on the registry file.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `<NODE_ID>` | integer | Yes | The ID of the evicted node to dismiss. This is the numeric ID shown in the `ant node status` list. |
+
+**Example:**
+
+```bash
+ant node dismiss 3
 ```
 
 ### `ant node stop`
