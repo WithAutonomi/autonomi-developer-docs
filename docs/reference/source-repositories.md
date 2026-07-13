@@ -3,43 +3,43 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: e56292325d04f1cf398c7e6bc77619ff2ab44447
-  verified_date: 2026-06-19
+  source_commit: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 95a23beefa53e733bb276922a89d1809ad2fe957
-  verified_date: 2026-07-01
+  source_commit: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 3df630c917f03861a7498ca52dfb729dc1f42222
-  verified_date: 2026-07-01
+  source_commit: bc4c44817fa63c411256af1e015e483aea4356b1
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 82cab846735903d385a0d02a4ee249f89b47f111
-  verified_date: 2026-07-01
+  source_commit: 83d588e34633c812c329ffb9a2666f5c7387dd7b
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: ef00920af7b93f24383af021955418a2e2cd8b4c
-  verified_date: 2026-07-01
+  source_commit: d323c462224c2043c065606e7af10696c13654dd
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: a24065b83c188a2b74cd8a0ad2c518f076016756
-  verified_date: 2026-06-27
+  source_commit: 95efb84f047dd1d186c418bd28f95a64056f25ff
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -59,8 +59,8 @@
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
-  verified_date: 2026-05-16
+  source_commit: 28fc354b3723850cfa7afea10d07a13a0617a035
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
