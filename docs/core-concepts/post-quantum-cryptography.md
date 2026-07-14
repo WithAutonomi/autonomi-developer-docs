@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: 2ab931e2533f1df6aa446636fbcf6e95b5bf5a21
-  verified_date: 2026-05-16
+  source_commit: bb2aa1981afe94340160b70f65bd633098da6e5b
+  verified_date: 2026-06-15
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: 260b522926d6d64baf5891f168a72388764d250b
-  verified_date: 2026-05-16
+  source_commit: 95efb84f047dd1d186c418bd28f95a64056f25ff
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:

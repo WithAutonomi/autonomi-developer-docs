@@ -3,22 +3,22 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
-  verified_date: 2026-05-26
+  source_commit: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
-  verified_date: 2026-05-02
+  source_commit: 28fc354b3723850cfa7afea10d07a13a0617a035
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 
@@ -67,7 +67,7 @@ curl -X POST http://localhost:8082/v1/chunks/prepare \
   -d "{\"data\":\"$CHUNK_B64\"}"
 ```
 
-When the chunk is already stored on the network, the response returns `already_stored: true` with the existing address and no `upload_id`. There is nothing more to do: no payment to make and no finalize call to issue. Otherwise the response returns the wave-batch payment shape:
+When the chunk is already stored on the Autonomi Network, the response returns `already_stored: true` with the existing address and no `upload_id`. There is nothing more to do: no payment to make and no finalize call to issue. Otherwise the response returns the wave-batch payment shape:
 
 ```json
 {
@@ -129,7 +129,9 @@ Wave-batch prepare response:
   "total_amount": "<atto_token_amount>",
   "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint"
+  "rpc_url": "https://your-rpc-endpoint",
+  "total_chunks": 12,
+  "already_stored_count": 4
 }
 ```
 
@@ -155,13 +157,17 @@ Merkle prepare response:
   "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint"
+  "rpc_url": "https://your-rpc-endpoint",
+  "total_chunks": 128,
+  "already_stored_count": 0
 }
 ```
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The sample above shows one candidate for brevity.
 
-For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request — the daemon bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its network address.
+Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Pay for `total_chunks - already_stored_count` chunks, and reconcile against the full file size when a prepare comes back cheaper than expected.
+
+For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request. `antd` bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its Autonomi Network address.
 
 ### 3. Submit the payment externally
 
@@ -170,7 +176,7 @@ Use your signer stack to submit the EVM payment transaction described by the pre
 `antd` does not sign or broadcast those transactions in this flow.
 
 - For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`.
-- For `merkle`, call `payForMerkleTree()` with `depth`, `pool_commitments`, and `merkle_payment_timestamp`, then keep the `winner_pool_hash` from the `MerklePaymentMade` event.
+- For `merkle`, call `payForMerkleTree2()` with `depth`, `pool_commitments`, and `merkle_payment_timestamp`, then keep the `winner_pool_hash` from the `MerklePaymentMade` event.
 
 Both calls use the `payment_vault_address` returned by the prepare step.
 
@@ -183,7 +189,7 @@ Wave-batch finalize request:
 ```bash
 curl -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
-  -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"},"store_data_map":true}'
+  -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
 ```
 
 Merkle finalize request:
@@ -191,7 +197,7 @@ Merkle finalize request:
 ```bash
 curl -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
-  -d '{"upload_id":"<hex_id>","winner_pool_hash":"0x...","store_data_map":true}'
+  -d '{"upload_id":"<hex_id>","winner_pool_hash":"0x..."}'
 ```
 
 Expected response shape:
@@ -199,25 +205,23 @@ Expected response shape:
 ```json
 {
   "data_map": "<hex_encoded_datamap>",
-  "address": "<64_hex_address>",
-  "data_map_address": "<64_hex_address>",
+  "address": "<64_hex_address_if_store_data_map_true>",
+  "data_map_address": "<64_hex_address_if_visibility_public>",
   "chunks_stored": <chunk_count>
 }
 ```
 
-`address` is only present when `store_data_map` is `true`; that path uses the daemon's own wallet to store the DataMap. `data_map_address` is only present when the upload was prepared with `visibility:"public"` — it is the network address of the DataMap chunk whose payment was included in the same external-signer batch.
+`address` is only present when `store_data_map` is `true`; that path stores the DataMap through `antd`'s configured wallet. Use it only when `antd` has a wallet key. `data_map_address` is only present when the upload was prepared with `visibility:"public"`; it is the Autonomi Network address of the DataMap chunk whose payment was included in the same external-signer batch.
 
 ### 5. Use SDK helpers when available
 
-The daemon SDKs follow the same prepare/finalize split. Merkle-capable bindings expose `payment_type` on prepare results and a `finalize_merkle_upload` helper for the Merkle path.
+The language bindings for `antd` follow the same prepare/finalize split across both REST and gRPC transports. Merkle-capable bindings expose `payment_type` on prepare results and a `finalize_merkle_upload` helper for the Merkle path. For file and in-memory data uploads, gRPC `UploadService` exposes the full finalize surface, including `data_map`, `data_map_address`, and `store_data_map`. For single-chunk uploads, gRPC `ChunkService` exposes `PrepareChunk` and `FinalizeChunk`; `FinalizeChunk` returns the stored chunk address.
 
-Use the REST API when you need the full finalize response surface, such as the raw `data_map` value or explicit `store_data_map` control on wave-batch finalize requests.
-
-If you are building in Rust with ant-core instead of the daemon, the library exposes native external-payment helpers such as `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the payment batch for a public in-memory upload. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, and `finalize_upload_merkle_with_progress` are also available when you need UI feedback during long-running uploads.
+If you are building in Rust with ant-core instead of `antd`, the library exposes native external-payment helpers such as `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the payment batch for a public in-memory upload. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, and `finalize_upload_merkle_with_progress` are also available when you need UI feedback during long-running uploads.
 
 ## Verify it worked
 
-Finalize succeeds when the daemon accepts the `upload_id` plus either the `tx_hashes` map or the `winner_pool_hash`, then returns upload metadata. If you requested `store_data_map: true`, you can retrieve the stored content again through the returned address.
+Finalize succeeds when `antd` accepts the `upload_id` plus either the `tx_hashes` map or the `winner_pool_hash`, then returns upload metadata. Use the returned `data_map` for private retrieval. If you prepared with `visibility:"public"`, use the returned `data_map_address` for public retrieval.
 
 ## Common errors
 
@@ -225,7 +229,7 @@ Finalize succeeds when the daemon accepts the `upload_id` plus either the `tx_ha
 
 **400 Bad Request**: Check whether the prepared upload expects `tx_hashes` or `winner_pool_hash`, and validate the hex formatting of those values.
 
-**503 Service Unavailable**: You accidentally started the daemon in direct-wallet mode or without the required network configuration.
+**503 Service Unavailable**: You started `antd` in direct-wallet mode or without the required network configuration.
 
 ## Next steps
 

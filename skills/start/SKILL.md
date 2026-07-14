@@ -29,15 +29,15 @@ keywords:
   - read-only
 
 # Verification block. Re-verify before changing stable claims or examples.
-verified_date: "2026-05-28"
+verified_date: "2026-07-13"
 verification_mode: current-merged-truth
 verified_commits:
-  ant-sdk: 7853b76d99ef9e308140b763f23d043559b204c4
-  ant-client: e67472424f94acd4b9188a342271210d4ab9f94d
-  ant-node: 2a8b91deada5506c72b7d234655119b2ab803d92
-  ant-protocol: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
+  ant-sdk: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  ant-client: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  ant-node: bc4c44817fa63c411256af1e015e483aea4356b1
+  ant-protocol: 83d588e34633c812c329ffb9a2666f5c7387dd7b
   self_encryption: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
-  evmlib: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
+  evmlib: 28fc354b3723850cfa7afea10d07a13a0617a035
 
 version_manifest_url: https://raw.githubusercontent.com/WithAutonomi/autonomi-developer-docs/main/skills/start/version.json
 canonical_docs_url: https://docs.autonomi.com/developers

@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 
@@ -102,7 +102,13 @@ Uploads a local file to the network. When `private=True`, the returned `address`
 
 **Tool:** `download_file(address, dest_path, private=False)`
 
-Downloads a file to a local path. Pass the on-network address when `private=False` (default) or the caller-held DataMap when `private=True`.
+Downloads a file to a local path. Pass the on-network address when `private=False` (default) or the caller-held DataMap when `private=True`. The daemon writes the file, so the daemon and the MCP server must share a filesystem.
+
+### Stream a File Download
+
+**Tool:** `stream_download_file(address, dest_path, private=False)`
+
+Downloads a file to `dest_path` like `download_file`, but streams the bytes back to the MCP server process and writes them on the MCP server's host one chunk at a time with constant memory. Use it for large objects, or when the daemon and MCP server do not share a filesystem. Pass the on-network address when `private=False` (default) or the caller-held DataMap when `private=True`. The response includes `bytes_written`.
 
 ### Estimate Cost
 

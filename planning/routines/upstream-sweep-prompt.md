@@ -8,7 +8,7 @@ Perform the daily upstream-drift sweep per `planning/routines/upstream-sweep.md`
 
 ## Model requirement
 
-This prompt requires **Opus 4.7 or higher**. The audit/write/verify loop in step 4 assumes the model can:
+This prompt requires **Opus 4.8 or higher**. The audit/write/verify loop in step 4 assumes the model can:
 
 - inspect upstream diffs and source at pinned SHAs,
 - compare those source changes against affected docs pages and `skills/start/SKILL.md`,

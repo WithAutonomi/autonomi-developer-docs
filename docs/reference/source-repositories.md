@@ -3,50 +3,50 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: e67472424f94acd4b9188a342271210d4ab9f94d
-  verified_date: 2026-05-26
+  source_commit: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 2a8b91deada5506c72b7d234655119b2ab803d92
-  verified_date: 2026-05-26
+  source_commit: bc4c44817fa63c411256af1e015e483aea4356b1
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 83b6b4e2b12c217fe2728cd6bd9d923e50b86708
-  verified_date: 2026-05-26
+  source_commit: 83d588e34633c812c329ffb9a2666f5c7387dd7b
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: b4d0da07e75e85e4473b50e33d63a6648afc4dd2
-  verified_date: 2026-05-26
+  source_commit: d323c462224c2043c065606e7af10696c13654dd
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: 260b522926d6d64baf5891f168a72388764d250b
-  verified_date: 2026-05-16
+  source_commit: 95efb84f047dd1d186c418bd28f95a64056f25ff
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: 2ab931e2533f1df6aa446636fbcf6e95b5bf5a21
-  verified_date: 2026-05-16
+  source_commit: bb2aa1981afe94340160b70f65bd633098da6e5b
+  verified_date: 2026-06-15
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -59,8 +59,8 @@
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 225acbb1af613193bcc8264b6ede4d7e4a7ac607
-  verified_date: 2026-05-16
+  source_commit: 28fc354b3723850cfa7afea10d07a13a0617a035
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 <!-- verification:

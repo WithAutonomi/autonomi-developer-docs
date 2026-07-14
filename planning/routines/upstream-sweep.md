@@ -10,7 +10,7 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 
 - Execution venue: Claude Desktop → Routines → New routine → Remote.
 - Schedule: daily at 09:00 UTC. Comfortably above the documented one-hour minimum interval for Remote-routine schedules.
-- Routine model: **Opus 4.7 or higher** end-to-end. The audit/write/verify loop in `## Opus audit/write/verify loop` requires the model to inspect upstream diffs and source at pinned SHAs, compare against docs and `SKILL.md`, write actual prose into draft PRs, and run practical verification. No subagent layer.
+- Routine model: **Opus 4.8 or higher** end-to-end. The audit/write/verify loop in `## Opus audit/write/verify loop` requires the model to inspect upstream diffs and source at pinned SHAs, compare against docs and `SKILL.md`, write actual prose into draft PRs, and run practical verification. No subagent layer.
 - Prompt: the committed prompt at `planning/routines/upstream-sweep-prompt.md`.
 - Body: the prompt invokes `scripts/sweep_poll.py` for deterministic detection, then runs the audit/write/verify loop against pinned upstream checkouts and opens PRs/issues per the topology.
 - Webhook arm (`repository_dispatch` or per-event collation) is explicitly deferred to v2 of the trigger shape.
@@ -199,7 +199,7 @@ If the `SKILL.md` body is byte-identical between base and head, **none** of `ver
 
 ## Opus audit/write/verify loop
 
-Required model: **Opus 4.7 or higher**. The deterministic scanner is only the drift detector; audit, prose-writing, and verification are first-class duties of the routine.
+Required model: **Opus 4.8 or higher**. The deterministic scanner is only the drift detector; audit, prose-writing, and verification are first-class duties of the routine.
 
 For each drifted record:
 
@@ -315,7 +315,7 @@ Forward compatibility: when `notify-docs.yml` rolls out in upstream repos, the s
 
 ## Out of scope
 
-- Claude Desktop Remote routine config (model = Opus 4.7 or higher, schedule, any optional `GITHUB_TOKEN` secret value) — lives in Claude Desktop, not in this repo. The behaviour (the prompt) is committed at `planning/routines/upstream-sweep-prompt.md`.
+- Claude Desktop Remote routine config (model = Opus 4.8 or higher, schedule, any optional `GITHUB_TOKEN` secret value) — lives in Claude Desktop, not in this repo. The behaviour (the prompt) is committed at `planning/routines/upstream-sweep-prompt.md`.
 - `notify-docs.yml` installation in any upstream repo — tracked under `planning/implementation-plan.md` Section 8.2.
 - Per-event sweep PRs — deferred to v2 of the trigger shape.
 - Auto-merge — deferred to v1.5. The label-driven `sweep-auto-merge` workflow ships once all three required checks have run cleanly for several weeks.

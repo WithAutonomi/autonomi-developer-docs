@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 7853b76d99ef9e308140b763f23d043559b204c4
-  verified_date: 2026-05-28
+  source_commit: 9ff4ca8d8c27f7581abd70d38b6585e204659169
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 
@@ -59,11 +59,41 @@ Fetches private data using a caller-held `data_map` string.
 
 Fetches public data by address.
 
+### Stream
+
+**Signature:** `Stream(StreamDataRequest) -> stream DataChunk`
+
+Streams private data from a caller-held `data_map` with constant memory, decrypting one batch at a time. This is the streaming counterpart of `Get` and the primitive that `StreamPublic` wraps.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data_map` | string | Hex-encoded serialized DataMap |
+| `include_progress` | bool | When `true`, the server interleaves `DownloadProgress` frames with the data frames on the same stream. Defaults to `false`, in which case the stream carries only data frames |
+
 ### Stream Public
 
 **Signature:** `StreamPublic(StreamPublicDataRequest) -> stream DataChunk`
 
-This RPC is exposed, but the handler returns `UNIMPLEMENTED`.
+Resolves a public address to its DataMap and then streams the data, the public wrapper around `Stream`.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `address` | string | Hex data address |
+| `include_progress` | bool | Same meaning as on `Stream`. Defaults to `false` |
+
+Each `DataChunk` frame carries exactly one of two payloads through its `kind` oneof: `data` (a decrypted plaintext batch) or `progress` (a `DownloadProgress` update). A consumer that leaves `include_progress` at `false` receives only `data` frames.
+
+`DownloadProgress` reports fetch progress in chunk counts:
+
+| Name | Type | Description |
+|------|------|-------------|
+| `phase` | string | One of `resolving_map`, `resolved`, or `fetching` |
+| `fetched` | uint64 | Chunks fetched so far in the current phase |
+| `total` | uint64 | Total chunks for the current phase, or `0` while not yet known |
 
 ### Cost
 
@@ -84,6 +114,172 @@ Fetches a chunk by address.
 **Signature:** `Put(PutChunkRequest) -> PutChunkResponse`
 
 Stores a raw chunk.
+
+### PrepareChunk
+
+**Signature:** `PrepareChunk(PrepareChunkRequest) -> PrepareChunkResponse`
+
+Phase 1 of the external-signer single-chunk upload flow. Mirrors `POST /v1/chunks/prepare`. Single-chunk publishes always use the wave-batch payment shape.
+
+When the chunk is already on-network, `already_stored` is `true`, the payment fields are empty, and no finalize call is needed.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | bytes | Raw chunk bytes (at most one ant-protocol chunk) |
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `address` | string | Content-addressed BLAKE3 hash of the chunk bytes (hex with `0x` prefix) |
+| `already_stored` | bool | `true` if the chunk was already on-network; all payment fields are empty when `true` |
+| `upload_id` | string | Opaque token to pass to `FinalizeChunk`; empty when `already_stored` is `true` |
+| `payment_type` | string | Always `"wave_batch"` for single-chunk publishes; empty when `already_stored` is `true` |
+| `payments` | repeated PaymentEntry | Per-quote payment entries for `payForQuotes()`; see [Common messages](#common-messages) |
+| `total_amount` | string | Total amount to pay in atto tokens |
+| `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
+| `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
+| `rpc_url` | string | EVM RPC URL for submitting transactions |
+
+### FinalizeChunk
+
+**Signature:** `FinalizeChunk(FinalizeChunkRequest) -> FinalizeChunkResponse`
+
+Phase 2 of the external-signer single-chunk upload flow. Mirrors `POST /v1/chunks/finalize`. Call this after the external EVM payment has landed on-chain.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `upload_id` | string | The `upload_id` returned from `PrepareChunk` |
+| `tx_hashes` | map\<string, string\> | Map of `quote_hash` (hex) to `tx_hash` (hex) from the on-chain payment |
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `address` | string | Network address of the stored chunk (hex with `0x` prefix) |
+
+## Upload Service
+
+The Upload Service handles external-signer file and in-memory data uploads. It mirrors the REST `/v1/upload/prepare`, `/v1/data/prepare`, and `/v1/upload/finalize` surface.
+
+The flow is two-phase: submit a prepare request, receive payment details and an `upload_id`, submit the EVM payment externally, then call `FinalizeUpload` with the transaction hashes or winner pool hash.
+
+- Uploads with fewer than 64 chunks use `payment_type = "wave_batch"` and `payForQuotes()`.
+- Uploads with 64 or more chunks use `payment_type = "merkle"` and `payForMerkleTree2()`.
+
+### PrepareFileUpload
+
+**Signature:** `PrepareFileUpload(PrepareFileUploadRequest) -> PrepareUploadResponse`
+
+Phase 1 for a local file. Returns payment details and an `upload_id`.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | Local filesystem path on the host running `antd` |
+| `visibility` | string | `"private"` (default) or `"public"`. `"public"` bundles the DataMap chunk into the payment batch; `data_map_address` is populated in the finalize response |
+
+### PrepareDataUpload
+
+**Signature:** `PrepareDataUpload(PrepareDataUploadRequest) -> PrepareUploadResponse`
+
+Phase 1 for in-memory bytes. Same two-phase flow as `PrepareFileUpload` but accepts raw bytes rather than a filesystem path.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | bytes | Raw bytes to upload |
+| `visibility` | string | `"private"` (default) or `"public"` |
+
+### PrepareUploadResponse (shared)
+
+Both prepare RPCs return `PrepareUploadResponse`:
+
+| Name | Type | Description |
+|------|------|-------------|
+| `upload_id` | string | Opaque token to pass to `FinalizeUpload` |
+| `payment_type` | string | `"wave_batch"` or `"merkle"` |
+| `payments` | repeated PaymentEntry | Wave-batch: per-quote entries for `payForQuotes()`; see [Common messages](#common-messages) |
+| `depth` | uint32 | Merkle: tree depth (1–8) |
+| `pool_commitments` | repeated PoolCommitmentEntry | Merkle: pool commitments for `payForMerkleTree2()`; each entry has exactly 16 candidate nodes; see [Common messages](#common-messages) |
+| `merkle_payment_timestamp` | uint64 | Merkle: unix timestamp for the payment |
+| `total_amount` | string | Total amount in atto tokens (`"0"` for Merkle) |
+| `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
+| `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
+| `rpc_url` | string | EVM RPC URL for submitting transactions |
+
+### FinalizeUpload
+
+**Signature:** `FinalizeUpload(FinalizeUploadRequest) -> FinalizeUploadResponse`
+
+Phase 2 for both file and data uploads. Call after the external EVM payment lands.
+
+**Request fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `upload_id` | string | The `upload_id` returned from a prepare RPC |
+| `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex). Must be empty for Merkle |
+| `winner_pool_hash` | string | Merkle: winner pool hash (hex with `0x` prefix) from the `MerklePaymentMade` event. Must be empty for wave-batch |
+| `store_data_map` | bool | If `true`, stores the DataMap through `antd`'s configured wallet and returns its address in `address` |
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data_map` | string | Hex-encoded serialized DataMap. Always returned |
+| `address` | string | Autonomi Network address of the stored DataMap; only set when `store_data_map` is `true` |
+| `data_map_address` | string | Autonomi Network address of the bundled DataMap chunk; only set when the upload was prepared with `visibility = "public"` |
+| `chunks_stored` | uint64 | Number of chunks stored on the Autonomi Network |
+
+## Wallet Service
+
+The Wallet Service mirrors the REST `/v1/wallet/*` surface. All three RPCs require `antd` to have been started with `AUTONOMI_WALLET_KEY`. When the wallet is absent, `antd` returns `failed_precondition`.
+
+External-signer flows do not use this service — they use `UploadService` and `ChunkService.PrepareChunk`/`FinalizeChunk` instead.
+
+### GetAddress
+
+**Signature:** `GetAddress(GetWalletAddressRequest) -> GetWalletAddressResponse`
+
+Returns the wallet's on-chain address.
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `address` | string | Wallet address (hex with `0x` prefix) |
+
+### GetBalance
+
+**Signature:** `GetBalance(GetWalletBalanceRequest) -> GetWalletBalanceResponse`
+
+Returns the wallet's token and gas balances.
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `balance` | string | Token balance in atto tokens as a decimal string |
+| `gas_balance` | string | Gas (native EVM token) balance in atto tokens as a decimal string |
+
+### Approve
+
+**Signature:** `Approve(WalletApproveRequest) -> WalletApproveResponse`
+
+Approves the wallet to spend tokens on the payment vault contract. Safe to call repeatedly; idempotent once approval is in place.
+
+**Response fields:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `approved` | bool | `true` if the approve transaction succeeded |
 
 ## File Service
 
@@ -138,14 +334,16 @@ This RPC is exposed, but the stream stays open without emitting events.
 
 ## Common messages
 
-The proto files define these shared shapes:
+The proto files define these reusable shapes:
 
 | Message | Fields |
 |------|--------|
 | `Cost` | `atto_tokens`, `file_size`, `chunk_count`, `estimated_gas_cost_wei`, `payment_mode` |
 | `HealthCheckResponse` | `status`, `network`, `version`, `evm_network`, `uptime_seconds`, `build_commit`, `payment_token_address`, `payment_vault_address` |
-| `PutPublicDataResponse` | `cost`, `address` |
-| `PutDataResponse` | `cost`, `data_map` |
+| `PutPublicDataResponse` | `cost`, `address`, `chunks_stored`, `payment_mode_used` |
+| `PutDataResponse` | `cost`, `data_map`, `chunks_stored`, `payment_mode_used` |
+| `DataChunk` | `kind` oneof of `data` (bytes) or `progress` (`DownloadProgress`) |
+| `DownloadProgress` | `phase`, `fetched`, `total` |
 | `PutFileRequest` | `path`, `payment_mode` |
 | `PutFilePublicResponse` | `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
 | `PutFileResponse` | `data_map`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, `payment_mode_used` |
@@ -153,6 +351,9 @@ The proto files define these shared shapes:
 | `GetFileRequest` | `data_map`, `dest_path` |
 | `GetDataRequest` | `data_map` |
 | `FileCostRequest` | `path`, `is_public`, `payment_mode` |
+| `PaymentEntry` | `quote_hash`, `rewards_address`, `amount` |
+| `PoolCommitmentEntry` | `pool_hash`, `candidates` |
+| `CandidateNodeEntry` | `rewards_address`, `amount` |
 
 ## Related pages
 
