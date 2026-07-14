@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 95a23beefa53e733bb276922a89d1809ad2fe957
-  verified_date: 2026-07-01
+  source_commit: bcab72ae72f72abcc47bdae1387ebc1deeea6106
+  verified_date: 2026-07-13
   verification_mode: current-merged-truth
 -->
 
@@ -21,6 +21,7 @@ ant
 │   │   ├── stop
 │   │   ├── status
 │   │   └── info
+│   ├── dismiss
 │   ├── reset
 │   ├── start
 │   ├── status
@@ -336,7 +337,9 @@ ant node start --service-name node1
 
 ### `ant node status`
 
-Shows the status of all registered nodes.
+Shows the status of all registered nodes. Each node reports a state, shown in the table as `Running`, `Stopped`, `Starting`, `Stopping`, `Errored`, or `Evicted`. An evicted node is one the node daemon automatically stopped when its host ran low on disk. Eviction stops the node and attempts to delete its data directory to reclaim space, then keeps the node's registry record marked `Evicted`. The table row for an evicted node shows the eviction reason and the exact `ant node dismiss` command to clear it. Deletion can fail; check the eviction reason to see what was attempted, and treat `reclaimed_bytes` in the JSON output as the recorded estimate for that attempt rather than a measurement of free space now available.
+
+When the node daemon is running and a health snapshot is available, the output opens with a fleet-health summary of `Healthy`, `Warning`, or `Critical`, followed by one line per check that is not healthy. The summary is omitted when the node daemon is stopped, and also when it is running but the snapshot cannot be retrieved.
 
 **Parameters:**
 
@@ -346,6 +349,142 @@ This command has no command-specific parameters.
 
 ```bash
 ant node status
+```
+
+**JSON output:**
+
+Add `--json` (a root flag, so it comes before the subcommand) to emit a machine-readable payload.
+
+```bash
+ant --json node status
+```
+
+The payload has these top-level fields:
+
+| Field | Type | Description |
+|------|------|-------------|
+| `nodes` | array | One object per registered node. |
+| `total_running` | integer | Count of nodes reported as `running` or `starting`. |
+| `total_stopped` | integer | Count of every other node, including `stopped`, `stopping`, `errored`, and `evicted`. |
+| `health` | object or null | Fleet-health snapshot. It is `null` when the node daemon is stopped, and also when it is running but the snapshot cannot be retrieved, so `null` alone does not mean the node daemon is stopped. |
+
+Each `nodes` entry has these fields:
+
+| Field | Type | Description |
+|------|------|-------------|
+| `node_id` | integer | Node ID used by the other `ant node` commands. |
+| `name` | string | Service name of the node. |
+| `version` | string | Node binary version. |
+| `status` | string | One of `running`, `stopped`, `starting`, `stopping`, `errored`, `evicted`. |
+| `pid` | integer | Process ID. Present only while the node is running. |
+| `uptime_secs` | integer | Seconds since the node process started. Present only while the node is running. |
+| `eviction` | object | Eviction detail. Present only when `status` is `evicted`. |
+
+An `eviction` object has these fields:
+
+| Field | Type | Description |
+|------|------|-------------|
+| `reason` | string | Human-readable explanation of the eviction. |
+| `evicted_at` | integer | Unix epoch seconds at which the eviction occurred. |
+| `reclaimed_bytes` | integer | Approximate bytes reclaimed by deleting the node's data directory. `0` when the deletion did not succeed, in which case the reason explains that manual cleanup may be needed. |
+
+When present, the `health` object has an `overall` level (`green`, `warning`, or `critical` — the worst level across all checks) and a `checks` array. Each `checks` entry has these fields:
+
+| Field | Type | Description |
+|------|------|-------------|
+| `kind` | string | Check type. The supported value is `disk_space`. |
+| `level` | string | `green`, `warning`, or `critical`. |
+| `summary` | string | Human-readable, user-facing one-liner. |
+| `partition` | string | Optional. Opaque identifier of the partition the finding concerns. Present for `disk_space` checks; omitted for other check kinds. |
+| `available_bytes` | integer | Optional. Free bytes on the partition. Present for `disk_space` checks; omitted for other check kinds. |
+| `eviction_threshold_bytes` | integer | Optional. Free-space floor at which an eviction triggers. Present for `disk_space` checks; omitted for other check kinds. |
+| `candidate` | object | Optional. Names the node that would be evicted next, with `node_id` (integer), `data_dir` (string), and `size_bytes` (integer, the space its eviction would free). Omitted when no candidate applies — a candidate is only produced when at least two running nodes share the partition and the level is not `green`. |
+
+Example payload with two running nodes that share a partition and one previously evicted node. The disk-space check is at `warning`, so it names the smaller running node as the next eviction candidate:
+
+```json
+{
+  "nodes": [
+    {
+      "node_id": 1,
+      "name": "node1",
+      "version": "0.4.0",
+      "status": "running",
+      "pid": 48213,
+      "uptime_secs": 7200
+    },
+    {
+      "node_id": 2,
+      "name": "node2",
+      "version": "0.4.0",
+      "status": "running",
+      "pid": 48219,
+      "uptime_secs": 6600
+    },
+    {
+      "node_id": 3,
+      "name": "node3",
+      "version": "0.4.0",
+      "status": "evicted",
+      "eviction": {
+        "reason": "Automatically evicted to reclaim disk space: only 480 MiB free on its partition. Its data directory was deleted, recovering ~2.00 GiB.",
+        "evicted_at": 1720800000,
+        "reclaimed_bytes": 2147483648
+      }
+    }
+  ],
+  "total_running": 2,
+  "total_stopped": 1,
+  "health": {
+    "overall": "warning",
+    "checks": [
+      {
+        "kind": "disk_space",
+        "level": "warning",
+        "summary": "Disk space low on dev:2049: 900 MiB free. An eviction may occur once it reaches 500 MiB; node 2 would be evicted next.",
+        "partition": "dev:2049",
+        "available_bytes": 943718400,
+        "eviction_threshold_bytes": 524288000,
+        "candidate": {
+          "node_id": 2,
+          "data_dir": "/home/alice/.local/share/ant/nodes/node-2",
+          "size_bytes": 1073741824
+        }
+      }
+    ]
+  }
+}
+```
+
+### Dismiss a node from the registry
+
+**Command:** `ant node dismiss <NODE_ID>`
+
+Removes a node's registry entry so it no longer appears in `ant node status`. This clears the record for a node the node daemon evicted for low disk, though it is not restricted to evicted nodes.
+
+Dismissal behavior depends on the node daemon:
+
+- When the node daemon is running, dismiss removes any node that is not running. It refuses to dismiss a running node and asks you to stop it first.
+- When the node daemon is stopped, dismiss removes the registry entry directly and does not stop any process. Dismiss a node only when it is not running, so you do not leave an orphaned node process behind.
+
+Dismissing removes the registry entry only; it does not itself reclaim disk space. After an eviction, read the eviction reason to see whether cleanup succeeded, and treat `reclaimed_bytes` as the recorded estimate for that attempt, not proof of current free space. Before adding a replacement node, check the actual free disk space on the affected partition and free space manually if the eviction did not. Once enough capacity is available, dismiss the `Evicted` record, then add a replacement node with `ant node add` if you still need it.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `<NODE_ID>` | integer | Yes | ID of the node to dismiss, as shown in the `ant node status` list. |
+
+**Example:**
+
+```bash
+ant node dismiss 3
+```
+
+Output:
+
+```text
+✓ Dismissed node 3 (node3)
 ```
 
 ### `ant node stop`
