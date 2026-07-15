@@ -16,7 +16,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ADR_DIR = Path("docs/adr")
+ADR_DIR = Path("adr")
 ALLOWED_STATUSES = {"Proposed", "Accepted", "Superseded", "Deprecated", "Rejected"}
 REQUIRED_SECTIONS = ["Context", "Decision", "Consequences", "Validation"]
 FILENAME_RE = re.compile(r"^ADR-\d{4}-[a-z0-9][a-z0-9-]*\.md$")

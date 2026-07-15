@@ -3,7 +3,7 @@ name: ADR Governance
 on:
   pull_request:
     paths:
-      - 'docs/adr/**'
+      - 'adr/**'
       - '.adr-kit.yaml'
       - 'scripts/adr-governance.py'
       - '.github/workflows/adr-governance.yml'
@@ -12,7 +12,7 @@ on:
       - main
       - master
     paths:
-      - 'docs/adr/**'
+      - 'adr/**'
       - '.adr-kit.yaml'
       - 'scripts/adr-governance.py'
       - '.github/workflows/adr-governance.yml'
