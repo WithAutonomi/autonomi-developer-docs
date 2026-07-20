@@ -1,6 +1,6 @@
 # Upstream sweep — routine prompt
 
-This is the prompt the Claude Desktop Remote routine executes once per day. The behaviour lives in version control so it is reviewable, diffable, and rollback-able. The Claude Desktop routine config references this file by URL or paste-in. Schedule, model selection, and any `GITHUB_TOKEN` secret value live in Claude Desktop, not in this repo.
+This is the prompt the Claude Code Remote routine executes once per day. The behaviour lives in version control so it is reviewable, diffable, and rollback-able. The hosted routine carries a short bootstrap that instructs the agent to read this committed file from the fresh clone and follow it exactly. Schedule, model selection, and any `GITHUB_TOKEN` secret value live in the routine service, not in this repo.
 
 ## Goal
 

@@ -6,8 +6,8 @@ Tracking notes for unresolved items on the Autonomi developer skill. Referenced 
 
 - **Decision of record (ADR-0012):** the canonical name is `autonomi-developer` — vendor-neutral and self-describing.
 - **Current repo state:** the skill ships as `skills/start/` (`name: start`, plugin `developer`, invocation `/developer:start`).
-- **The gap:** `start` was introduced to produce a clean Claude-plugin slash form, i.e. a vendor channel shaped the canonical identity; `start` is opaque to any non-Claude loader. The provenance of `start` is unclear.
-- **To do:** decide whether to realign the on-disk name to `autonomi-developer` (keeping `/developer:start` only as a Claude-channel alias), and record the resolution in a superseding ADR to 0012.
+- **The gap:** commit `2b290ef` introduced `start` to produce the concise Claude-plugin slash form `/developer:start`; a vendor channel therefore shaped the current package identity, and `start` is opaque to non-Claude loaders. That channel-specific alias does not replace the canonical `autonomi-developer` identity recorded in ADR-0012.
+- **To do:** decide whether to realign the on-disk name to `autonomi-developer` (keeping `/developer:start` only as a Claude-channel alias). Realigning the implementation with ADR-0012 needs no new ADR, but moving the stable raw URL requires a major version and migration under ADR-0013; choosing a different canonical identity does require a superseding ADR.
 
 ## 2. Possible migration to `WithAutonomi/skills`
 
@@ -22,7 +22,7 @@ Tracking notes for unresolved items on the Autonomi developer skill. Referenced 
 
 ## 4. Distribution channels beyond the repo
 
-- Distribution is vendor-agnostic (ADR-0012). The Claude marketplace channel is realised; `skills.sh`, an Anthropic skills directory, and other channels are anticipated.
+- Distribution is vendor-agnostic (ADR-0012). Compatible runtimes can consume the raw `SKILL.md` manually, while the only first-class packaged and documented distribution currently uses Claude-specific plugin conventions. `skills.sh`, an Anthropic skills directory, and other channels are anticipated.
 - **To do:** decide which additional channels to publish through and in what priority.
 
 ---

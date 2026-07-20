@@ -17,7 +17,7 @@ A **stamp refresh** (no version bump, pure verification heartbeat) is a differen
 
 Stamp refreshes typically come in via the daily upstream-sweep routine. See `planning/routines/upstream-sweep.md`.
 
-A skill patch release driven by an upstream-sweep prose PR uses the same envelope as a manual patch release. The prose PR contains the full release set in a single coherent change: `SKILL.md` body and frontmatter, `version.json` (`version` and `published_date`), `CHANGELOG.md` (one new entry whose header matches the new `version`), and the matching `verified_commits` and `verified_date:` refreshes. The `prose-guard` required check enforces this both ways — if the body changes, all release fields must move; if the body is unchanged, none of them may.
+A skill patch release driven by an upstream-sweep prose PR uses the same envelope as a manual patch release. The prose PR contains the full release set in a single coherent change: `SKILL.md` body and frontmatter, `version.json` (`version` and `published_date`), `CHANGELOG.md` (one new entry whose header matches the new `version`), and the matching `verified_commits` and `verified_date:` refreshes. The `prose-guard` required check enforces this both ways: if the body changes, all release fields must move; if the body is unchanged, release fields stay fixed while `verified_commits` and `verified_date` may move as a pure stamp refresh.
 
 ## Current scope
 
@@ -147,7 +147,7 @@ Check these against the relevant docs pages and source repos:
 
 Use Semantic Versioning with these rules:
 
-- major: breaking changes to skill loading or manifest shape
+- major: breaking changes to skill loading or manifest shape, including a move of the stable manifest URL
 - minor: new paths, new verified examples, or new operational capabilities
 - patch: wording fixes, pointer fixes, or substantive re-verification — for example a SHA refresh that reflects an upstream change to a public surface the skill describes (a new flow, a renamed command, a removed step). Pure stamp refreshes that do not touch any described surface are not patches; they are stamp refreshes (see `## Files that move together`).
 
@@ -156,7 +156,7 @@ Keep the `-draft` suffix until the skill has gone through at least one deliberat
 ## Pre-merge checklist
 
 - [ ] `SKILL.md`, `version.json`, and `CHANGELOG.md` agree on the version.
-- [ ] `verified_date` and `published_date` match.
+- [ ] For a linked release, `verified_date` and `published_date` match; for a pure stamp refresh, only `verified_commits` and `verified_date` move.
 - [ ] every `verified_commits` entry is a real SHA.
 - [ ] every live-docs URL in `SKILL.md` resolves.
 - [ ] no hard-coded detail was added without a matching verification source.

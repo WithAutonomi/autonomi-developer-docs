@@ -1,11 +1,12 @@
 # ADR-0002: Architecture Decision Records live at repo-root `/adr`, not `docs/adr`
 
 - **Status:** Accepted
+- **Acceptance:** Prospective — confirmed by Jim Collinson as decision owner during review of PR 73.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
-- **Supersedes:** none
+- **Supersedes:** ADR-0001 (location clause only; ADR governance remains in force)
 - **Superseded by:** none
-- **Related:** ADR-0001 (adopt ADRs — sets `docs/adr` as the team default this repo re-points), ADR-0008 (GitBook platform — why `docs/` is the published product), ADR-0012 (the developer skill kept out of `docs/` for the same reason); `.gitbook.yaml` (`root: ./docs/`), `.adr-kit.yaml` (`adr_directory`), `scripts/adr-governance.py` (`ADR_DIR`), `.github/workflows/adr-governance.yml`
+- **Related:** ADR-0001 (adopt ADRs — its governance decision remains in force while this ADR supersedes its location clause), ADR-0008 (GitBook platform — why `docs/` is the published product), ADR-0012 (the developer skill kept out of `docs/` for the same reason); `.gitbook.yaml` (`root: ./docs/`), `.adr-kit.yaml` (`adr_directory`), `scripts/adr-governance.py` (`ADR_DIR`), `.github/workflows/adr-governance.yml`
 
 > Current (prospective) decision — made while adopting ADRs in this repo, not a retrospective reconstruction. It re-points the team standard's default ADR location for this repo's specific circumstances; the standard's mechanics are untouched.
 
@@ -49,7 +50,7 @@ Architecture Decision Records live at repo-root **`/adr`** in this repo. This is
 ### Negative / Trade-offs
 
 - Diverges from the team-standard default (`docs/adr`), so a contributor arriving from another WithAutonomi/Saorsa repo must notice the repo-local location — this ADR is the signpost, and `docs/adr/` is left empty/removed so nothing looks half-moved.
-- Requires the three config points (`adr_directory`, `ADR_DIR`, workflow paths) to stay in agreement; a mismatch silently skips validation.
+- Requires the three config points (`adr_directory`, `ADR_DIR`, workflow paths) to stay in agreement. The governance script fails closed when they diverge, but the workflow must still become a required check to prevent bypass at merge time.
 
 ### Neutral / Operational
 
@@ -58,7 +59,7 @@ Architecture Decision Records live at repo-root **`/adr`** in this repo. This is
 
 ## Validation
 
-- `scripts/adr-governance.py` (with `ADR_DIR=adr`) validates the `/adr` set on every PR; `docs/adr/` no longer exists.
+- `scripts/adr-governance.py` (with `ADR_DIR=adr`) is the validation entrypoint for the `/adr` set; `docs/adr/` no longer exists. Making its workflow a required check is tracked as an implementation-conformance gap.
 - Spot-check after the move: no ADR path appears in the GitBook nav, site search, or `llms.txt`.
 - Review trigger: a change to `.gitbook.yaml`'s `root`, or a move to a different docs platform, may reopen the location question.
 

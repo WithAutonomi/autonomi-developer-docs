@@ -38,12 +38,16 @@ If the published package name differs on your machine, install from the project 
 Add this project instruction to every AI coding harness profile (`AGENTS.md`, `CLAUDE.md`, Codex/OpenCode project rules, pi harness prompts, etc.):
 
 ```text
-Before changing architecture, protocols, storage formats, crypto, network behaviour, public APIs, data models, or operational invariants, inspect docs/adr/.
-If the change creates or changes an architectural decision, draft or update a Proposed ADR using docs/adr/TEMPLATE.md.
+Before changing architecture, protocols, storage formats, crypto, network behaviour, public APIs, data models, or operational invariants, inspect adr/.
+If the change creates or changes an architectural decision, draft or update a Proposed ADR using adr/TEMPLATE.md.
 Never edit an Accepted ADR. Create a superseding ADR instead.
 Never mark an ADR Accepted autonomously; that requires human engineering review and debate.
 During review, check ADR correctness, rejected alternatives, evidence, consequences, and immutable-Accepted compliance.
 ```
+
+The immutable boundary is the Accepted content on the default branch. An introducing PR remains reviewable until merge. For a retrospective ADR, the original decision owner may confirm that the proposed record faithfully captures a decision made before ADR governance existed and introduce it as Accepted.
+
+When a new ADR supersedes an Accepted record, put the relationship in the new ADR's `Supersedes` field. Do not edit the older record to add a backlink.
 
 ## Review standard
 

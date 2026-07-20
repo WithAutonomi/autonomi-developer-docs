@@ -1,7 +1,7 @@
 # ADR-0014: Skill maintenance — reuse the docs verification workflow, wired via `feeds_skills`
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -71,7 +71,7 @@ The skill has to stay accurate as upstream code moves. The docs repo already own
 ## Validation
 
 - `sweep-guard` / `prose-guard` (ADR-0006) enforce the skill's metadata-only vs linked-release envelopes; a mismatched release fails CI.
-- `MAINTAINING.md` pre-merge checklist: `SKILL.md`/`version.json`/`CHANGELOG.md` agree on version; `verified_date`==`published_date`; every `verified_commits` entry is a real SHA; every live-docs URL resolves; no guessed SDK/CLI/MCP surface.
+- `MAINTAINING.md` pre-merge checklist: `SKILL.md`/`version.json`/`CHANGELOG.md` agree on version; `verified_date` matches `published_date` for a linked release, while a pure stamp refresh updates only `verified_date`; every `verified_commits` entry is a real SHA; every live-docs URL resolves; no guessed SDK/CLI/MCP surface.
 - Registry check: every component the skill covers carries `feeds_skills:`; components it doesn't teach do not.
 - Review trigger: replacing the reuse-the-docs-workflow model, changing the registry wiring, or moving to full unattended auto-release supersedes this ADR (and interacts with ADR-0009).
 

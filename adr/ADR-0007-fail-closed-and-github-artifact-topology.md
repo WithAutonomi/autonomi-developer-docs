@@ -1,7 +1,7 @@
 # ADR-0007: Fail-closed operation and the GitHub artifact topology
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -19,7 +19,7 @@ The routine needed a disciplined, predictable relationship between run outcomes 
 ## Decision Drivers
 
 - Never fail silent: an error must **abort and surface**, never masquerade as "no drift."
-- Never flood: unresolved conditions must **deduplicate**, not re-open daily.
+- Never flood routine output: open-PR collisions and unresolved per-record manual reviews must **deduplicate**, not re-open daily. Whole-run failure issues are the deliberate exception because each failed run is a separate observation requiring triage.
 - Issues are for **things a human must act on**; healthy runs should leave no noise.
 - Diagnostics must distinguish rate-limit vs policy-refusal vs transient outage **from the issue body alone**.
 - Reads must degrade through fallbacks before giving up; writes stay scoped to the docs repo only.

@@ -1,14 +1,14 @@
 # ADR-0011: Documentation information architecture and content design — route-first navigation with Diátaxis, dual-audience pages
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** ADR-0003 (verification trails per page), ADR-0008 (platform & dual audience), ADR-0010 (CLAUDE.md enforces this design operationally); `planning/information-architecture.md` (v4 — detailed IA, per-page briefs, design principles); `docs/SUMMARY.md`; the route-first IA arc (2026-04-17 → 04-21, PR #9 `ia/route-first-docs`)
+- **Related:** ADR-0003 (verification trails per page), ADR-0008 (platform & dual audience), ADR-0010 (CLAUDE.md enforces this design operationally); `planning/information-architecture.md` (historical design context and per-page briefs); the route-first IA implementation arc (2026-04-17 → 04-21, PR #9 `ia/route-first-docs`)
 
-> Retrospective ADR. The IA and content-design decisions were made and iterated across late March → April 2026. This records the durable design of record; `planning/information-architecture.md` holds the page-by-page detail and remains the working reference for specifics.
+> Retrospective ADR. The IA and content-design decisions were made and iterated across late March → April 2026. This ADR records the governing information-architecture and content-design invariants; earlier planning documents preserve the design history rather than defining the current decision.
 
 ## Context
 
@@ -47,7 +47,7 @@ We will structure and write the docs to the following design, which is the stand
 - **Interface stance.** **ant-sdk is the primary interface**; ant-client (Rust/CLI) is the advanced/direct alternative. The **REST API reference is the canonical shared surface** that all language bindings wrap ("learn one, know them all").
 - **Quality bar: correctness over coverage.** Better to ship fewer verified, accurate pages than many speculative ones; every page carries its verification trail (ADR-0003).
 
-`planning/information-architecture.md` holds the concrete expression of this design (directory tree, `SUMMARY.md`, per-page briefs, launch priorities). That file is the working reference; this ADR is the decision and its invariants.
+This ADR is the decision and its invariants. Concrete navigation, page names, and page inventory may evolve as the documentation grows. A change requires a superseding ADR when it changes the route-first navigation model, Diátaxis taxonomy, interface set, interface-purity rules, self-containment requirement, practical-first priority, primary-interface stance, or canonical shared-reference model.
 
 ## Consequences
 
@@ -73,10 +73,10 @@ We will structure and write the docs to the following design, which is the stand
 
 ## Validation
 
-- `docs/SUMMARY.md` and the `docs/{sdk,mcp,cli,rust,guides,reference}/` tree reflect the route-first-with-Diátaxis layout.
+- Review `docs/SUMMARY.md` and the page tree as implementations of this ADR: interfaces remain route-first, Diátaxis types remain within each interface, shared concepts remain tool-neutral, and navigation remains hierarchical but flat. These files are validation targets, not the source of the decision.
 - Review (human today; the ADR-0009 panel later) checks each page for interface purity, single-topic self-containment, correct Diátaxis slot, and practical-first framing — against `CLAUDE.md`.
 - Correctness-over-coverage is observable: pages ship verified (ADR-0003) rather than speculative; unverifiable pages are deferred or stubbed, not guessed.
-- Review trigger: changing the taxonomy (away from Diátaxis), the navigation model (away from route-first), the interface set, the primary-interface stance, or the canonical-REST-reference model supersedes this ADR.
+- Review trigger: changing the route-first navigation model, Diátaxis taxonomy, interface set, interface-purity rules, self-containment requirement, practical-first priority, primary-interface stance, or canonical shared-reference model supersedes this ADR.
 
 ## Notes for AI-assisted work
 

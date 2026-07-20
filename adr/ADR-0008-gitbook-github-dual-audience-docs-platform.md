@@ -1,7 +1,7 @@
 # ADR-0008: GitBook + GitHub as the docs platform, serving a dual human and LLM audience
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -68,7 +68,7 @@ We may in future move to a native or custom-designed UI; GitBook's GitHub integr
 
 ## Validation
 
-- The published site at `docs.autonomi.com/developers` serves both the human pages and the machine surfaces (`llms.txt`, per-page Markdown).
+- GitBook publishes the human developer documentation at `docs.autonomi.com/developers`, includes the developer corpus in the site-wide `docs.autonomi.com/llms.txt`, and serves per-page Markdown representations.
 - Self-containment is enforced by review against `CLAUDE.md` (no "see above" cross-references), so a single page pulled by an agent is intelligible alone.
 - Review trigger: adopting a custom/native UI, or moving off GitBook/Git Sync, supersedes this ADR.
 

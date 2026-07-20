@@ -1,14 +1,14 @@
 # ADR-0004: Tiered execution — deterministic detection, efficient-model metadata sweeps, frontier-model prose
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
 - **Superseded by:** none
 - **Related:** ADR-0003 (verification blocks); `scripts/sweep_poll.py`; `planning/routines/upstream-sweep.md` §"Opus audit/write/verify loop"; build commit `a6bce6be` (2026-05-04); hardening commits `ddeb45a` (2026-05-09), `8c541eb` (2026-05-09), `f447f78`/`1ce7ef9`/`8348c72` (2026-05-11, session `019cz1M7pXuXFQykMZxfdXHm`)
 
-> Retrospective ADR. Implemented 2026-05-04 and hardened through 2026-05-11.
+> Retrospective ADR. The decision was made during the implementation introduced on 2026-05-04 and hardened through 2026-05-11. Current implementation gaps are tracked separately.
 
 ## Context
 

@@ -1,7 +1,7 @@
 # ADR-0012: The Autonomi Developer skill — purpose, single-file format, in-repo location, and vendor-agnostic distribution
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -54,12 +54,12 @@ Crucially, the value is **agent-side opinion**, not a second copy of the referen
 
 - **Ship a portable, single-file `SKILL.md`** (alongside `version.json` and `CHANGELOG.md`) as the canonical artifact, matching the `x0x` precedent. The skill carries agent-side opinion (path selection, terminology enforcement, mainnet/real-money warnings), not a duplicate of the reference docs.
 - **Locate it at `skills/<name>/` at the repo root**, a sibling of `docs/`, `planning/`, `reference/` — co-located with the `CLAUDE.md` style guide and both registries it depends on, and **excluded from GitBook publish** (GitBook scope is `docs/` only) so public docs readers never land on agent instructions.
-- **Distribute it vendor-agnostically from a canonical source, fanned out across channels.** The canonical artifact is the portable `SKILL.md` (plus its `version.json` manifest) at a stable raw URL. Channels include the Claude plugin/marketplace (currently realised via `.claude-plugin/` → marketplace `withautonomi`, plugin `developer`, giving `/developer:start`), **skills.sh**, **manual install** (fetch `SKILL.md` and drop it in), and future channels — with or without human intervention. The Claude marketplace is **one channel, not the definition of the artifact**; whether "plugin" is even the right framing is deliberately open.
-- **Name (intended): `autonomi-developer`.** The canonical, vendor-neutral, self-describing name is `autonomi-developer` — accurate across all four paths (not just SDK), and distinct from a user-facing skill. This is what the ADR records as intended.
+- **Distribute it vendor-agnostically from a canonical source, fanned out across channels.** The canonical artifact is the portable `SKILL.md` (plus its `version.json` manifest) at a stable raw URL, not any particular plugin, marketplace, agent runtime, or installation mechanism. The first-class packaged distribution currently uses the Claude plugin/marketplace (`.claude-plugin/` → marketplace `withautonomi`, plugin `developer`, giving `/developer:start`), while compatible agent runtimes can consume the raw artifact manually. Distribution should evolve toward multiple supported channels, potentially including **skills.sh**, manual installation, Claude's plugin ecosystem, and other compatible registries or runtimes. Claude is one adapter, not the definition of the artifact.
+- **Canonical identity: `autonomi-developer`.** The canonical, vendor-neutral, self-describing machine identifier is `autonomi-developer`, with **Autonomi Developer Skill** as its human-facing name. It is accurate across all four paths (not just SDK) and distinct from a user-facing skill. Distribution adapters may provide channel-specific aliases, but those aliases do not redefine the canonical artifact or identity.
 
 The genesis rationale: `autonomi-developer` is vendor-neutral, self-describing, correct across all four paths (not just SDK), and leaves a distinct name free for a future user-facing skill (rejected `autonomi` as too broad, `autonomi-sdk` as too narrow, `autonomi-development-skill` as clunky). That reserved user-facing slot has since been taken by the `autonomi` skill in the sibling `WithAutonomi/skills` repo, which confirms this one should keep the *developer* identity.
 
-The repo currently ships the skill on-disk as `skills/start/` (`name: start`, plugin `developer`, `/developer:start`) — a form introduced to suit the Claude-plugin slash command rather than the vendor-neutral intent. This divergence, the unclear provenance of `start`, and the open question of a future migration to `WithAutonomi/skills` are tracked in `planning/skill-open-questions.md` and will be closed by a superseding ADR when resolved (see Validation). The automation ADRs (0005–0007) refer to the literal `skills/start/` path because that is what the routine touches today.
+The repo currently ships the skill on-disk as `skills/start/` (`name: start`, plugin `developer`, `/developer:start`). Commit `2b290ef` introduced those identifiers to produce a concise Claude slash command instead of `/autonomi-developer:autonomi-developer`, prioritizing that channel's invocation shape over the vendor-neutral on-disk identity. These are Claude-channel implementation details and do not replace the canonical `autonomi-developer` identity. Whether to realign the path or migrate the artifact to `WithAutonomi/skills` is tracked in `planning/skill-open-questions.md`. Realigning the implementation with the canonical identity does not require a new ADR, but changing the stable raw path requires the major-version and migration treatment in ADR-0013; choosing a different identity or location requires a superseding ADR (see Validation). The automation ADRs (0005–0007) refer to the literal `skills/start/` path because that is what the routine touches today.
 
 ## Consequences
 
@@ -68,11 +68,11 @@ The repo currently ships the skill on-disk as `skills/start/` (`name: start`, pl
 - The skill carries opinion agents can't get from a raw doc fetch: path choice, terminology, real-money warnings.
 - Single-file `SKILL.md` diffs and reviews cleanly in one PR, needs no build step, and any agent that reads Markdown can ingest it.
 - Co-location keeps the skill honest against `CLAUDE.md` and the registries, and lets one PR move skill + context together.
-- Vendor-agnostic distribution keeps reach broad (Claude marketplace, skills.sh, manual, future) and allows agent self-install.
+- The portable artifact is already manually consumable by compatible runtimes; multi-channel distribution can improve discoverability and installation without creating another canonical copy.
 
 ### Negative / Trade-offs
 
-- **Naming debt:** the on-disk name (`start`) reflects a vendor channel, not the canonical `autonomi-developer` intent — tracked in `planning/skill-open-questions.md`, to be closed by a superseding ADR.
+- **Naming and packaging debt:** the on-disk name (`start`) and first-class packaged distribution reflect one vendor channel, not the canonical `autonomi-developer` identity or intended multi-channel distribution — tracked in `planning/skill-open-questions.md`. Bringing the implementation into conformance does not change this decision.
 - Single-file **size ceiling** (~1500 lines): if the surface outgrows it, revisit `.skill` with `references/` (partly mitigated by content tiering, ADR-0013).
 - No place for bundled machine artifacts (helper scripts) in a single file — not needed today.
 - Co-location couples skill release hygiene to the docs repo's PR flow; a future move to `WithAutonomi/skills` would decouple them but re-open the "one PR for skill + context" benefit.
@@ -80,14 +80,14 @@ The repo currently ships the skill on-disk as `skills/start/` (`name: start`, pl
 ### Neutral / Operational
 
 - The repo doubles as a Claude marketplace (`.claude-plugin/`); that is one realised channel, not the artifact's definition.
-- A future migration to `WithAutonomi/skills` is anticipated but not decided here; it would supersede the location and possibly the naming parts of this ADR.
+- A future migration to `WithAutonomi/skills` is anticipated but not decided here; it would supersede the location and stable manifest-URL decisions while preserving the canonical identity and vendor-neutral distribution invariant unless a later ADR explicitly changes them.
 - `MAINTAINING.md` (skill-local) and the registries carry the operational detail; ADR-0014 records the maintenance decision.
 
 ## Validation
 
 - The canonical `SKILL.md` is installable across channels: the Claude path (`/plugin marketplace add …` → `/plugin install developer@withautonomi` → `/developer:start`) and the vendor-neutral path (fetch the raw `SKILL.md` and install it directly).
 - Scope check (human today; the ADR-0009 panel later): reviewers reject material that teaches end-user/operator usage or core-codebase contribution.
-- Naming/location review trigger: resolving the `start` vs `autonomi-developer` question, or migrating the skill to `WithAutonomi/skills`, supersedes the relevant parts of this ADR.
+- Naming/location review trigger: choosing `start` or another identifier as the canonical identity, or migrating the skill to `WithAutonomi/skills`, supersedes the relevant parts of this ADR. Realigning the implementation to `autonomi-developer` does not, but its stable raw URL move is a major version change under ADR-0013.
 - Distribution review trigger: narrowing to a single vendor/channel supersedes this ADR.
 
 ## Notes for AI-assisted work

@@ -1,7 +1,7 @@
 # ADR-0006: Two-track PR envelope — metadata "sweeps" vs prose "pro sweeps" — enforced by branch-scoped CI guards
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -35,7 +35,7 @@ We will split routine output into **two mutually exclusive PR tracks**, distingu
 
 - **Metadata sweep — `claude/sweep-*`, policed by `sweep-guard`.** Allowed: verification-block `source_commit`/`verified_date` lines in `docs/**`, the `verified_commits` maps in `version.json` and `SKILL.md` frontmatter (key sets **locked** — values may refresh, keys may not add/remove), and exactly one new `planning/sweeps/<date>.md`. Forbidden: any prose, any `SKILL.md` body change, `version`/`published_date`/`CHANGELOG` changes, and any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`.
 - **Prose sweep ("pro sweep") — `claude/prose-*` (opened as draft), policed by `prose-guard`.** Allowed: `docs/**` prose, `SKILL.md` body/frontmatter, and — only as part of a **linked release** — `version`, `published_date`, and `CHANGELOG`. Draft status forces a human to promote to ready only after reading the prose.
-- **Linked-release rule (both directions):** if the `SKILL.md` body changes, the same PR must bump `version` (patch), update `published_date`, match frontmatter `version:`, update `verified_date:`, and add one `CHANGELOG` entry. If the body is byte-identical, **none** of those may change. `prose-guard` enforces both directions.
+- **Linked-release rule (both directions):** if the `SKILL.md` body changes, the same PR must bump `version` (patch), update `published_date`, match frontmatter `version:`, update `verified_date:`, and add one `CHANGELOG` entry. If the body is byte-identical, release fields (`version`, `published_date`, frontmatter `version:`, and `CHANGELOG`) stay unchanged; `verified_commits` and `verified_date` may move as a pure stamp refresh. `prose-guard` enforces both directions on the routine branch namespaces.
 - **The two tracks never touch the same page.** A page's classification (via the five-case page-batching rule in `upstream-sweep.md`) sends it to exactly one track; a prose PR that touches a page with a deferred ambiguous record must leave that record's verification block **byte-identical** to base (routine-side deferred-record self-check, since the guards cannot know which records were deferred).
 - Guards run **only** on their own branch prefix and green-skip elsewhere, using a real gate step plus an `if:` on every later step (exit-0 from an early step does not skip later steps in Actions). `sweep-sha-reachability` runs on **both** tracks and validates every changed SHA against upstream.
 

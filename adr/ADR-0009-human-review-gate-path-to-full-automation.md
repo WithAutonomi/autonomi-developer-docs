@@ -1,7 +1,7 @@
 # ADR-0009: Human review gate now, with a path to full automation via AI-panel review and human escalation
 
 - **Status:** Accepted
-- **Acceptance:** Retrospective — predates the ADR process; ratified by the implementation built on it and by this review pass, not by prospective pre-implementation review.
+- **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
@@ -36,7 +36,6 @@ We will keep a **human review gate as the current merge control**, while treatin
 - **Now (settled):** every routine PR is opened for human review; prose PRs are opened as drafts (ADR-0006) and a person promotes and merges them after reading. Ambiguity and failures are surfaced as issues, never merged (ADR-0007). Auto-merge is deferred (`upstream-sweep.md` §"Out of scope" marks it v1.5).
 - **Assessment (current):** the metadata sweeps appear reliable enough to be candidates for full automation first; the prose track is close but not yet trustworthy for unattended merge because of residual inaccuracies. The sweep track and the prose track can therefore cross the automation threshold **independently**.
 - **Intended end-state (not yet built):** replace the routine human read with an **AI review panel** — multiple independent agents reviewing each PR against the source-of-truth evidence and `CLAUDE.md` (ADR-0010) — that can approve and merge a clean PR and **escalate to human team members** when reviewers disagree or confidence is low. Provider diversity is desirable: reviews by both Anthropic and OpenAI frontier models, each run under its own subscription/OAuth (consistent with ADR-0005's no-API-budget constraint), so the reviewers are genuinely independent rather than one model checking itself.
-- **Sequencing:** metadata sweeps are the first candidate for panel-gated auto-merge; the prose track follows once its accuracy is demonstrably high enough. Each step is a config/tooling change, not a change to the source-of-truth model.
 
 ## Consequences
 
