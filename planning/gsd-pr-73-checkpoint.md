@@ -30,13 +30,18 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Restored executable mode on `scripts/adr-governance.py`.
 - On 2026-07-20, Jim resolved the ADR-0013/ADR-0014 metadata ambiguity: `verified_date` belongs only in `skills/start/SKILL.md`, while `skills/start/version.json` is the runtime version manifest and mirrors the fields needed for runtime and external inspection, including `version`, `verification_mode`, and `verified_commits`. Avoiding a duplicate review date removes unnecessary synchronization.
 - Amended ADR-0013 and ADR-0014 within their introducing PR to state that contract consistently. ADR-0015 permits these review corrections before the records reach the default-branch immutability boundary. This amendment matches the existing explicit `skills/start/MAINTAINING.md` contract and creates no implementation debt.
+- Rebased cleanly onto remote PR head `12806a9`. The pre-slice local commits are `f9350fc` and `c43e338`; the bounded correction commit containing this checkpoint remains local and unpushed.
+- Aligned ordinary validation with David's team-standard changed-file scope: when a comparison base exists, format, status, required-section, and Acceptance-metadata checks apply only to current ADR files changed against that base; without a base, they apply to all current ADRs. Duplicate-number checking still covers all current ADRs, and every Accepted ADR on the base remains byte-for-byte immutable.
+- Added focused push-event tests for a normal `GITHUB_EVENT_BEFORE` SHA and the all-zero initial-push fallback. Both prove that edits to an Accepted ADR on the selected base fail governance.
+- Added the repo-root ADR governance instructions to `CLAUDE.md` and refreshed the implementation-conformance review date to 2026-07-20. Malformed ADR-prefix discovery remains an explicitly out-of-scope limitation of the shared standard.
+- Retained workflow `permissions: contents: read` and checkout `persist-credentials: false` as ordinary least-privilege runner hygiene. They are not self-defending governance hardening; this correction adds no workflow self-inspection or action allowlists.
 
 ## Evidence
 
 CI arbiter / green of record:
 
 - Location: PR 73 GitHub checks.
-- Status: Not run for this local correction set. Existing PR green applies only to `bc79a09`; local evidence remains provisional until an approved push runs CI on the correction-set commit.
+- Status: Not run for this local correction set. The remote PR head before the local commits is `12806a9`; local commits `f9350fc`, `c43e338`, and the bounded correction commit containing this checkpoint remain unpushed. Existing remote checks do not cover exact local HEAD.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -45,9 +50,10 @@ Local fast gate / `.gsd/gate.sh`:
   - `python3 -I -m unittest discover -s scripts/tests -p 'test_adr_governance.py'`
   - `python3 -I scripts/adr-governance.py`
   - `GITHUB_BASE_REF=main python3 -I scripts/adr-governance.py`
+  - `GITHUB_EVENT_BEFORE=c43e338 python3 -I scripts/adr-governance.py`
   - `python3 -m py_compile scripts/adr-governance.py scripts/tests/test_adr_governance.py`
   - `git diff --check`
-- Result: Local checks pass after the 2026-07-20 corrections and were re-run after the metadata-contract amendments: 16 focused integration tests passed; both governance modes validated all 15 ADRs; compilation and diff checks passed. This is provisional local evidence, not final review or CI.
+- Result: Local checks pass after the final pre-push correction: 20 focused integration tests passed; ordinary and pull-request governance modes each validated 15 changed ADRs; the practical push-mode invocation against real prior SHA `c43e338` passed with 0 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise meaningful Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI.
 
 Files changed/artifacts produced:
 
@@ -57,6 +63,7 @@ Files changed/artifacts produced:
 - ADR governance workflow, script, and integration tests.
 - Remote routine policy/prompt and skill maintainer guidance.
 - Skill open questions, implementation-conformance plan, work packet, and this checkpoint.
+- Final bounded correction: `CLAUDE.md`, `scripts/adr-governance.py`, `scripts/tests/test_adr_governance.py`, `planning/adr-implementation-conformance.md`, and this checkpoint.
 
 ## Honesty rules check
 
@@ -73,6 +80,7 @@ Local code review:
 - Result: Findings addressed locally; final review remains pending.
 - Findings: HIGH — replace `HEAD^1` fallback with the default-branch merge base and prove multi-commit introducing-PR corrections; MEDIUM — validate current `.adr-kit.yaml` against `ADR_DIR`; LOW — restore checker executable mode.
 - Dispositions: All three fixes and both focused regressions are included in the correction set. The checker remains deliberately small; workflow self-inspection, action allowlists, broad symlink/execution hardening, and an external trusted validator were not reintroduced.
+- Final pre-push correction status: implemented and locally verified, but no final ADR, clean-context, adversarial, Craft, or panel review has run on the bounded correction.
 
 ADR governance review:
 
@@ -112,6 +120,8 @@ Panel review:
 - Jim determined that treating the repository-controlled workflow and checker as mutually self-defending security boundaries was overbuilding. PR 73 now preserves the established team-standard maintenance shape and only adds relocation and Acceptance-metadata behaviour required by this repo's Accepted decisions.
 - A trusted external validator could address organization-wide self-modification concerns without making each repository checker self-inspecting. That is a separate design and rollout question, not PR 73 scope.
 - Making ADR Governance a required branch-protection check remains out of scope and is tracked in `planning/adr-implementation-conformance.md`.
+- Malformed ADR-prefix discovery is a known limitation of David's shared standard and is explicitly out of scope; no discovery logic or tests were added.
+- Workflow read-only contents permission and disabled credential persistence are retained as ordinary runner hygiene, not treated as a governance security boundary. Workflow self-inspection and action allowlists remain out of scope.
 - Model routing, docs-content lint, skill restructuring, registry-driven dependency discovery, and distribution publication remain future slices.
 
 ## Open questions / decisions for Jim
@@ -133,4 +143,4 @@ Run the pending final ADR, adversarial, Craft, and panel reviews on the correcti
 
 ## Handoff note
 
-Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is now recorded consistently in ADR-0013 and ADR-0014 without changing the existing `MAINTAINING.md` contract. Existing PR CI does not cover this state; final ADR, adversarial, Craft, and panel reviews and CI remain pending.
+Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings and aligns ordinary validation with the shared checker's changed-file scope without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is recorded consistently in ADR-0013 and ADR-0014 without changing the existing `MAINTAINING.md` contract. Remote PR head `12806a9` predates all local correction commits; exact local HEAD is unpushed. Final ADR, clean-context, adversarial, Craft, and panel reviews and CI remain pending.

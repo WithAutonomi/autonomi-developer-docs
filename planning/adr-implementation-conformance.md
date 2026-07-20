@@ -1,7 +1,7 @@
 # ADR implementation conformance
 
 **Status:** Active planning record
-**Last reviewed:** 2026-07-16
+**Last reviewed:** 2026-07-20
 
 ## Purpose
 

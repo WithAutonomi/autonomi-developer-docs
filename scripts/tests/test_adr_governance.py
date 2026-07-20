@@ -90,13 +90,20 @@ class AdrGovernanceIntegrationTest(unittest.TestCase):
         self.run_command("git", "commit", "-q", "-m", message)
 
     def run_governance(
-        self, base_ref: str | None = "main"
+        self,
+        base_ref: str | None = "main",
+        *,
+        event_before: str | None = None,
     ) -> subprocess.CompletedProcess[str]:
+        if self.run_command("git", "status", "--porcelain").stdout:
+            self.commit("commit test changes")
         env = os.environ.copy()
         env.pop("GITHUB_BASE_REF", None)
         env.pop("GITHUB_EVENT_BEFORE", None)
         if base_ref:
             env["GITHUB_BASE_REF"] = base_ref
+        if event_before is not None:
+            env["GITHUB_EVENT_BEFORE"] = event_before
         return subprocess.run(
             ["python3", "-I", str(SCRIPT)],
             cwd=self.repo,
@@ -112,7 +119,32 @@ class AdrGovernanceIntegrationTest(unittest.TestCase):
         result = self.run_governance()
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("2 ADR file(s) checked", result.stdout)
+        self.assertIn("1 ADR file(s) checked", result.stdout)
+
+    def test_unchanged_legacy_adr_format_is_not_revalidated(self) -> None:
+        legacy = self.write_adr("ADR-0002-legacy.md", "0002", "Proposed")
+        legacy.write_text("# ADR-0002: Legacy\n\n- **Status:** Proposed\n", encoding="utf-8")
+        self.commit("add legacy ADR")
+        sha = self.run_command("git", "rev-parse", "HEAD").stdout.strip()
+        self.run_command("git", "update-ref", "refs/remotes/origin/main", sha)
+        self.write_adr("ADR-0003-new-decision.md", "0003", "Proposed")
+
+        result = self.run_governance()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("1 ADR file(s) checked", result.stdout)
+
+    def test_without_comparison_base_all_adrs_are_validated(self) -> None:
+        path = self.repo / "adr" / "ADR-0001-existing-decision.md"
+        path.write_text("# ADR-0001: Legacy\n\n- **Status:** Accepted\n", encoding="utf-8")
+        self.commit("make existing ADR malformed")
+        self.run_command("git", "update-ref", "-d", "refs/remotes/origin/main")
+        self.run_command("git", "branch", "-D", "main")
+
+        result = self.run_governance(base_ref=None)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("missing required section", result.stdout)
 
     def test_missing_required_section_fails(self) -> None:
         path = self.write_adr("ADR-0002-broken.md", "0002", "Proposed")
@@ -162,6 +194,34 @@ class AdrGovernanceIntegrationTest(unittest.TestCase):
         old_path.rename(self.repo / "adr" / "ADR-0001-renamed-decision.md")
 
         result = self.run_governance()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Accepted ADRs are immutable", result.stdout)
+
+    def test_push_before_sha_enforces_accepted_immutability(self) -> None:
+        path = self.repo / "adr" / "ADR-0001-existing-decision.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\nChanged.\n", encoding="utf-8")
+        self.commit("edit accepted ADR")
+        pushed_sha = self.run_command("git", "rev-parse", "HEAD").stdout.strip()
+        self.run_command("git", "update-ref", "refs/remotes/origin/main", pushed_sha)
+
+        result = self.run_governance(
+            base_ref=None,
+            event_before=self.main_sha,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("Accepted ADRs are immutable", result.stdout)
+
+    def test_initial_push_zero_before_falls_back_to_default_branch(self) -> None:
+        path = self.repo / "adr" / "ADR-0001-existing-decision.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\nChanged.\n", encoding="utf-8")
+        self.commit("edit accepted ADR")
+
+        result = self.run_governance(
+            base_ref=None,
+            event_before="0" * 40,
+        )
 
         self.assertEqual(result.returncode, 1)
         self.assertIn("Accepted ADRs are immutable", result.stdout)

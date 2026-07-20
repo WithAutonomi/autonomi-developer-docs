@@ -90,6 +90,21 @@ def adr_paths_at(ref: str, directory: Path) -> list[Path]:
     ]
 
 
+def changed_adr_paths_against_base(base: str) -> list[Path]:
+    try:
+        output = run(["git", "diff", "--name-only", f"{base}...HEAD"])
+    except RuntimeError:
+        output = run(["git", "diff", "--name-only", base, "HEAD"])
+    return sorted(
+        path
+        for name in output.splitlines()
+        if (path := Path(name)).parent == ADR_DIR
+        and path.name.startswith("ADR-")
+        and path.suffix == ".md"
+        and path.is_file()
+    )
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -129,6 +144,9 @@ def main() -> int:
             base_files = {
                 path.name: (path, file_bytes_at(base, path)) for path in base_paths
             }
+            files_to_validate = changed_adr_paths_against_base(base)
+        else:
+            files_to_validate = adr_files
     except RuntimeError as exc:
         print(f"ADR governance failed:\n- cannot establish comparison base: {exc}")
         return 1
@@ -147,7 +165,7 @@ def main() -> int:
         for name, (_, content) in base_files.items()
         if status_of(content.decode("utf-8")) == "Accepted"
     }
-    for path in adr_files:
+    for path in files_to_validate:
         if not FILENAME_RE.match(path.name):
             errors.append(f"{path}: filename must match ADR-NNNN-short-title.md")
         text = path.read_text(encoding="utf-8")
@@ -159,7 +177,11 @@ def main() -> int:
             errors.append(f"{path}: invalid Status '{status}' (allowed: {allowed})")
         elif status == "Accepted" and path.name not in base_accepted_names:
             acceptance = ACCEPTANCE_RE.search(text)
-            if not acceptance or not acceptance.group(2).strip() or acceptance.group(2).lstrip().startswith("<"):
+            if (
+                not acceptance
+                or not acceptance.group(2).strip()
+                or acceptance.group(2).lstrip().startswith("<")
+            ):
                 errors.append(
                     f"{path}: newly Accepted ADRs require Prospective or Retrospective "
                     "Acceptance metadata with a non-placeholder basis"
@@ -188,7 +210,7 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
-    print(f"ADR governance passed ({len(adr_files)} ADR file(s) checked).")
+    print(f"ADR governance passed ({len(files_to_validate)} ADR file(s) checked).")
     return 0
 
 
