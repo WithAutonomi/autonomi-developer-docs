@@ -45,7 +45,7 @@ Autonomi's codebase changes almost daily, and a skill has **no runtime — it ca
 
 We will defend skill freshness with a **three-part mechanism that degrades gracefully**, plus a **content-tiering rule** that keeps fast-moving detail out of the snapshot.
 
-**1. Frontmatter fingerprint (passive).** Every release pins a `version` and a per-repo `verified_commits` SHA map (plus `verified_date`, `verification_mode`) in the `SKILL.md` frontmatter, mirrored in `version.json`. Even with no network, a maintainer can see exactly what was verified, when.
+**1. Frontmatter fingerprint (passive).** Every release pins `version`, `verification_mode`, a per-repo `verified_commits` SHA map, and `verified_date` in the `SKILL.md` frontmatter. The runtime `version.json` manifest mirrors the fields needed for runtime and external inspection, including `version`, `verification_mode`, and `verified_commits`; it deliberately does not carry `verified_date`. That date describes when the skill content was reviewed and belongs only in `SKILL.md`. Even with no network, a maintainer can inspect the skill itself to see exactly what was verified, and when.
 
 **2. Runtime version check (active).** The skill's first instruction to the loading agent is to fetch a stable-URL `version.json`, compare its `version` to the skill's own, and **warn the user if a newer version exists**. If the fetch fails (offline, blocked), the skill **continues silently** — the check never blocks use.
 
@@ -69,7 +69,7 @@ We will defend skill freshness with a **three-part mechanism that degrades grace
 
 - The runtime check adds an on-activation HTTP request; airgapped/restricted agents skip it (acceptable — silent continue).
 - Pointer content requires the agent to have **web-fetch** and requires `docs.autonomi.com` to stay up; a domain move breaks every pointer (same stability-contract mitigation as the manifest URL).
-- **Two copies of `version`/SHAs** (frontmatter + `version.json`) must be kept in sync — a maintenance-discipline item (ADR-0014 checklist).
+- Fields needed in both the skill frontmatter and runtime manifest — including `version`, `verification_mode`, and `verified_commits` — must be kept in sync (ADR-0014 checklist). `verified_date` is intentionally not duplicated, avoiding unnecessary date synchronization.
 - The bundle/pointer boundary is a judgement call that must be applied consistently.
 
 ### Neutral / Operational

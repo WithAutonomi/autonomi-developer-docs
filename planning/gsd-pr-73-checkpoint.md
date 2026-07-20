@@ -28,6 +28,8 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Added focused coverage proving an Accepted ADR introduced on a feature branch can be corrected across multiple commits before merge without weakening the default-branch immutability boundary.
 - The checker now validates the current `.adr-kit.yaml` and fails when its `adr_directory` differs from the hard-coded `ADR_DIR`. Focused regression coverage protects the check.
 - Restored executable mode on `scripts/adr-governance.py`.
+- On 2026-07-20, Jim resolved the ADR-0013/ADR-0014 metadata ambiguity: `verified_date` belongs only in `skills/start/SKILL.md`, while `skills/start/version.json` is the runtime version manifest and mirrors the fields needed for runtime and external inspection, including `version`, `verification_mode`, and `verified_commits`. Avoiding a duplicate review date removes unnecessary synchronization.
+- Amended ADR-0013 and ADR-0014 within their introducing PR to state that contract consistently. ADR-0015 permits these review corrections before the records reach the default-branch immutability boundary. This amendment matches the existing explicit `skills/start/MAINTAINING.md` contract and creates no implementation debt.
 
 ## Evidence
 
@@ -45,7 +47,7 @@ Local fast gate / `.gsd/gate.sh`:
   - `GITHUB_BASE_REF=main python3 -I scripts/adr-governance.py`
   - `python3 -m py_compile scripts/adr-governance.py scripts/tests/test_adr_governance.py`
   - `git diff --check`
-- Result: Local checks pass after the 2026-07-20 corrections: 16 focused integration tests passed; both governance modes validated all 15 ADRs; compilation and diff checks passed. This is provisional local evidence, not final review or CI.
+- Result: Local checks pass after the 2026-07-20 corrections and were re-run after the metadata-contract amendments: 16 focused integration tests passed; both governance modes validated all 15 ADRs; compilation and diff checks passed. This is provisional local evidence, not final review or CI.
 
 Files changed/artifacts produced:
 
@@ -116,6 +118,7 @@ Panel review:
 
 - Resolved: Jim accepted ADR-0015 on 2026-07-16.
 - Resolved: Jim directed the governance simplification on 2026-07-16 because broad self-hardening was overbuilding.
+- Resolved: Jim decided on 2026-07-20 that `verified_date` lives only in `skills/start/SKILL.md`; `version.json` deliberately omits it and mirrors only the runtime/external manifest fields that need mirroring.
 - Open: final ADR, adversarial, Craft, and panel review plus CI evidence for the corrected implementation.
 
 PR / upstream action gate:
@@ -130,4 +133,4 @@ Run the pending final ADR, adversarial, Craft, and panel reviews on the correcti
 
 ## Handoff note
 
-Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings without expanding that deliberately small design. Existing PR CI does not cover this state; final reviews and CI remain pending.
+Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is now recorded consistently in ADR-0013 and ADR-0014 without changing the existing `MAINTAINING.md` contract. Existing PR CI does not cover this state; final ADR, adversarial, Craft, and panel reviews and CI remain pending.
