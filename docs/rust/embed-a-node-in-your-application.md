@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: bc4c44817fa63c411256af1e015e483aea4356b1
-  verified_date: 2026-07-13
+  source_commit: 571868a13ce7138c1a29a721856a879e7e21f38b
+  verified_date: 2026-07-17
   verification_mode: current-merged-truth
 -->
 
