@@ -36,6 +36,7 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Added the repo-root ADR governance instructions to `CLAUDE.md` and refreshed the implementation-conformance review date to 2026-07-20. Malformed ADR-prefix discovery remains an explicitly out-of-scope limitation of the shared standard.
 - Retained workflow `permissions: contents: read` and checkout `persist-credentials: false` as ordinary least-privilege runner hygiene. They are not self-defending governance hardening; this correction adds no workflow self-inspection or action allowlists.
 - Addressed the final ADR review's four findings in a separate local commit: made ADR-0014's targeted-foundational scope conditional on actual `feeds_skills` mappings; clarified ADR-0003's rendered-doc, skill-frontmatter, and runtime-manifest metadata schemas; separated default-branch merged truth from the installable/released constraint on installation and version surfaces; and recorded ADR-0013's missing bundled high-level post-quantum cryptography posture as implementation debt rather than adding skill content to PR 73.
+- Addressed the follow-up code review by naming ADR-0003's model per-surface rather than per-claim and requiring the future post-quantum cryptography skill work to source-audit and wire its authoritative components through `feeds_skills` and `verified_commits` before adding bundled guidance.
 - The final ADR review has not rerun on those corrections. Final ADR, clean-context, adversarial, Craft, and panel review and exact-HEAD CI remain pending. No push is approved.
 
 ## Evidence
@@ -91,6 +92,12 @@ Final ADR review:
 - Result: Four findings corrected in a separate local commit; dispositions await review confirmation.
 - Findings and dispositions: ADR-0014 overstated targeted-foundational skill dependencies — restricted to components actually mapped through `feeds_skills`; ADR-0003 conflated the complete rendered-doc schema with intentionally split skill metadata — clarified each artifact contract; ADR-0003 conflated merged source truth with released truth for all pages — limited the installable/released constraint to installation, download, package, and version surfaces; ADR-0013 promised bundled high-level post-quantum cryptography guidance that the skill lacks — recorded the precise minimum follow-up in the conformance plan without changing the skill.
 - Rerun status: Not run on the correction commit. This is a disposition record, not a claim of final review approval.
+
+Follow-up code review:
+
+- Reviewer/tool: code review completed against `8ff203a`; rerun on the follow-up correction commit is pending.
+- Result: Two findings corrected locally; dispositions await review confirmation.
+- Findings and dispositions: ADR-0003 used per-claim language for a per-surface model — corrected; the planned post-quantum cryptography guidance omitted the registry and verification-metadata work needed to keep it fresh — added source-audit, `feeds_skills`, and `verified_commits` prerequisites to the future conformance slice.
 
 ADR governance review:
 

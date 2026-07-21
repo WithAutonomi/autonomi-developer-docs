@@ -28,7 +28,7 @@ A second tension: docs must describe the latest merged default-branch source tru
 
 1. **No embedded provenance** — track freshness out-of-band (a spreadsheet, issue tracker, or reviewer memory). Rejected: unmaintainable, not machine-checkable, drifts immediately.
 2. **Page-level "last reviewed" date only.** Rejected: a date says *when* someone looked, not *what upstream state* was true; it cannot detect that upstream moved.
-3. **Per-claim verification blocks pinning `(source_repo, source_ref, source_commit, verified_date, verification_mode)`, with two explicit modes.** Chosen.
+3. **Per-surface verification records pinning `(source_repo, source_ref, source_commit, verified_date, verification_mode)`, with two explicit modes.** Chosen.
 
 ## Decision
 
