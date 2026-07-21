@@ -4,6 +4,7 @@
 - **Acceptance:** Prospective — accepted by Jim Collinson as decision owner after review of PR 73 on 2026-07-16.
 - **Date:** 2026-07-15
 - **Decision owners:** Jim Collinson
+- **Reviewers:** Jim Collinson
 - **Supersedes:** ADR-0001 (lifecycle entry and immutability timing only)
 - **Superseded by:** none
 - **Related:** PR 73; ADR-0002 through ADR-0014; `adr/README.md`; `adr/TOOLING.md`; `.adr-kit.yaml`; `scripts/adr-governance.py`

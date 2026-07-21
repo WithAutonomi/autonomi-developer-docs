@@ -1,4 +1,4 @@
-# ADR-0014: Skill maintenance — reuse the docs verification workflow, wired via `feeds_skills`
+# ADR-0014: Maintain the skill through the docs verification system
 
 - **Status:** Accepted
 - **Acceptance:** Retrospective — this ADR records a decision made before the ADR process existed. The original decision owner confirms it as a faithful account; current implementation gaps are tracked separately.
@@ -6,74 +6,76 @@
 - **Decision owners:** Jim Collinson
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** ADR-0003 (verification model), ADR-0005 (the routine now runs skill stamp refreshes), ADR-0006 (linked-release rule / guards enforce the skill envelope), ADR-0009 (path to automation), ADR-0010 (CLAUDE.md style contract), ADR-0012 (the skill), ADR-0013 (freshness the workflow keeps current); origin decision log Phases 8, 9, 10 + verification-metadata & style cross-cuts; `repo-registry.yml`, `component-registry.yml` (`feeds_skills`), `planning/verification-workflow.md`, `skills/start/MAINTAINING.md`
+- **Related:** ADR-0003 (verification model), ADR-0005 (scheduled maintenance), ADR-0006 (update tracks and coherent releases), ADR-0009 (review automation), ADR-0010 (authoring contract), ADR-0012 (the skill), ADR-0013 (freshness and stable URLs); `planning/verification-workflow.md`; `skills/start/MAINTAINING.md`; `repo-registry.yml`; `component-registry.yml`; the sweep guard and SHA-reachability workflows
 
-> Retrospective ADR reconstructed from the origin design sessions. At genesis this workflow was manual/agent-driven with automation deferred; the repo has since moved along exactly that trajectory (the daily routine now carries stamp refreshes) — noted where relevant.
+> Retrospective ADR reconstructed from the origin design sessions. Operational maintenance has evolved since the decision; mutable mechanics are documented outside this record.
 
 ## Context
 
-The skill has to stay accurate as upstream code moves. The docs repo already owns the machinery for that: `repo-registry.yml` classifies each upstream repo by change impact (`broad-source`, `targeted-foundational`, `specialist`, `watchlist`, `excluded`, `tangential`) with an `on_change` behaviour; `component-registry.yml` maps each component to the pages it `feeds_pages:`; and `planning/verification-workflow.md` defines the `source audit → draft → verify` pass. The question is whether the skill gets its own maintenance machinery or reuses this.
+The developer skill must stay accurate as its source repositories change. The docs repository already has a verification workflow and machine-readable registries that connect source components to maintained artifacts. A separate skill-only maintenance system would duplicate that model and let documentation and skill verification drift apart.
+
+The skill also has two metadata surfaces with different responsibilities: author-facing frontmatter attached to the skill content and a runtime manifest intended for external inspection. Their shared provenance and release identity must remain coherent without forcing content-review metadata into the runtime manifest.
 
 ## Decision Drivers
 
-- **No fragmentation:** a docs verification pass and a skill verification pass should not be two disconnected chores that drift apart.
-- **No premature automation:** upstream changes too fast for auto-open-PR-on-every-change; follow the docs project's own deliberate manual-then-automate trajectory (ADR-0009).
-- **Machine-consumable dependency graph:** "when X changes, what re-verifies?" must be answerable from the registry alone, not by cross-reading artifacts.
-- **Verification parity with pages** (real SHA per source of truth) without the pages' HTML-comment mechanics.
+- Documentation and skill maintenance should use one source-audit and verification model.
+- The registry must answer which source components require skill re-verification.
+- Skill content must carry review provenance appropriate to an authored artifact.
+- The runtime manifest must expose the release and provenance state needed by runtimes and external consumers.
+- Content, release identity, and verification provenance must not contradict one another.
+- Pure verification movement must not create a content release.
 
 ## Considered Options
 
-**Maintenance workflow (Phase 8).**
-1. *A new parallel workflow just for the skill.* Rejected: fragments maintenance; a docs pass and a skill pass fall out of sync.
-2. *Full CI automation now* (watch upstreams, auto-open skill-bump PRs). Rejected as the v1 approach: too noisy given upstream velocity; the docs project itself introduces automation deliberately, and the skill should follow the same path.
-3. *Reuse the existing docs verification workflow*, treating the skill as another artifact driven by the registries. Chosen.
-
-**Registry wiring (Phase 9).**
-1. *Option A — a new `feeds_skills:` field* on each component, parallel to `feeds_pages:`. Chosen.
-2. *Option B — reuse `feeds_pages:`*, adding the skill path to the same list. Rejected: mixes two artifact types; any tool that opens each `feeds_pages:` entry as a Diátaxis-templated page breaks on the skill entry.
-3. *Option C — the skill declares its own `depends_on:`* in frontmatter. Rejected: inverts the dependency graph — the registry should be the single source of "what updates when X changes."
-
-**Verification metadata shape (cross-cut).**
-1. *One block, first repo only.* Rejected: silent under-verification.
-2. *Multiple HTML comment blocks* (as pages use). Rejected: awkward in a YAML frontmatter world.
-3. *A frontmatter `verified_commits:` dict* (per-repo SHA) plus a single `verified_date` and `verification_mode`, with the runtime/external manifest fields that need mirroring — including `version`, `verification_mode`, and `verified_commits` — in `version.json`. `verified_date` remains only in `SKILL.md` because it records when the skill content was reviewed, not the runtime manifest version. Chosen.
+1. **Create a separate maintenance workflow for the skill.** Rejected: it duplicates verification machinery and lets docs and skill maintenance diverge.
+2. **Treat the skill as a documentation page in the existing page mapping.** Rejected: skills and rendered documentation have different artifact and metadata contracts.
+3. **Reuse the docs verification workflow, add an explicit component-to-skill dependency relationship, and keep distinct skill and runtime metadata responsibilities.** Chosen.
 
 ## Decision
 
-- **Reuse the docs verification workflow.** The skill is a first-class artifact consuming both registries and following `source audit → draft → verify`. Re-verification scope keys off both registries: a source change affects the skill only when the changed component maps to it through `feeds_skills:`. A mapped `broad-source` change (`ant-sdk`, `ant-client`, or `ant-node`) triggers broad re-verification of the skill sections touching that source. A mapped `targeted-foundational` change triggers targeted re-verification of the named concept. The skill's current targeted-foundational inputs are `self_encryption`, `evmlib`, and `ant-protocol`; `saorsa-pqc`, `ant-merkle`, and `saorsa-transport` do not currently feed the skill.
-- **Wire the skill in via `feeds_skills:` (Option A)** in `component-registry.yml` — same YAML shape as `feeds_pages:`, new field name, on the components the skill actually covers (`antd`, `openapi`, `proto`, `ant-dev`, `antd-mcp`, the documented language bindings, `ant-core`, `ant-cli`, `ant-node`, `ant-devnet`, `self_encryption`, `evmlib`, and `ant-protocol`), and *not* on components the skill doesn't teach. This keeps the registry the single machine-readable answer to "what re-verifies when X changes."
-- **Verification metadata:** `SKILL.md` frontmatter carries a `verified_commits:` dict (real SHA per source repo), one `verification_mode`, and one `verified_date`. The runtime `version.json` manifest mirrors the fields needed for runtime and external inspection, including `version`, `verification_mode`, and `verified_commits`; it deliberately has no `verified_date`. No published release may carry a placeholder SHA.
-- **Releases move as a set, SemVer'd.** A release produces a matched change to `SKILL.md`, `version.json`, and `CHANGELOG.md` in one commit. SemVer: **major** = skill-loading / manifest-shape breaks (including a manifest-URL move, per ADR-0013); **minor** = new paths, examples, or capabilities; **patch** = wording/pointer fixes or a re-verification that reflects an upstream change to a described surface. For a release, the mirrored fields agree across `SKILL.md` and `version.json`, and `SKILL.md`'s `verified_date` matches `version.json`'s `published_date`. A pure stamp refresh that touches no described surface is *not* a version bump: it updates `verified_commits` in both files and `verified_date` in `SKILL.md` only, leaving `version`, `published_date`, and `CHANGELOG.md` unchanged. This is the daily routine's normal gesture.
-- **Style compliance:** the skill follows `CLAUDE.md`'s style contract (ADR-0010) as if it were a page, with two carve-outs — it may enumerate prohibited words (that's its terminology-mirror topic), and it may name its own repo (provenance about the skill itself is not provenance about docs content).
-- **Maintainer doc placement:** resolved to **skill-local `MAINTAINING.md`** (`skills/start/MAINTAINING.md`). Alternatives considered (fold into `CLAUDE.md`; a repo-wide `skills/MAINTAINING.md`) remain open only if more skills co-locate here; the content is portable.
+The skill reuses the docs repository's `source audit → draft → verify` workflow. The repository and component registries determine the relevant sources and re-verification scope.
+
+`feeds_skills` is the explicit component-to-skill dependency relationship. It remains distinct from page relationships so tooling can determine which skills a component affects without treating a skill as a Diátaxis page.
+
+Skill frontmatter and the runtime manifest have distinct responsibilities:
+
+- skill frontmatter records provenance attached to the reviewed content, including when that content was verified; and
+- the runtime manifest exposes the release identity and verification provenance required for runtime and external inspection, without duplicating content-review metadata that has no runtime responsibility.
+
+Fields shared by those surfaces must agree, and the skill body, release identity, release history, and verification provenance must form one coherent state. A pure verification refresh that changes no described surface updates provenance without changing the content version or release history.
+
+Breaking changes to the runtime manifest's shape or to a stable manifest URL receive major-version treatment. Other release classification and the exact maintenance procedure remain defined by the skill's operational maintenance contract.
+
+Operational mechanics live in `skills/start/MAINTAINING.md`, `repo-registry.yml`, `component-registry.yml`, and the guard and reachability workflows. Those sources may evolve without rewriting this decision, provided they preserve these invariants.
 
 ## Consequences
 
 ### Positive
 
-- Zero new infrastructure and one workflow to learn; a docs pass and a skill pass are the same muscle.
-- `feeds_skills:` keeps the "what re-verifies when X changes" answer in the registry, machine-consumable, without conflating pages and skills.
-- The frontmatter `verified_commits` dict gives page-equivalent verification (real SHA per repo); the runtime manifest exposes the mirrored provenance fields needed for external inspection, while human and CI review can inspect the skill's review date in `SKILL.md`.
-- The trajectory matched the docs project's: the daily routine (ADR-0005) now performs the skill's stamp refreshes, and the linked-release rule is CI-enforced (ADR-0006) — the "automate later" the genesis session anticipated has largely arrived for the metadata half.
+- Documentation and skill verification use one maintenance model.
+- `feeds_skills` provides a machine-readable dependency relationship without conflating artifact types.
+- Content review metadata stays with the content while runtime metadata stays focused on runtime and external needs.
+- Pure provenance refreshes do not imply a new content release.
+- Breaking manifest and stable-URL changes remain visible through major-version treatment.
 
 ### Negative / Trade-offs
 
-- Depends on `on_change` triggers actually being followed; if no one runs a pass after a `broad-source` change, the skill drifts silently and the runtime warning (ADR-0013) is the only user-side safety net — a human-paced fix rate.
-- Skill and docs maintenance are coupled: a large docs PR can pull a skill re-verification along. Fine while docs volume is bounded; decouples if the skill migrates to `WithAutonomi/skills` (ADR-0012).
-- Mirrored runtime/external fields — including `version`, `verification_mode`, and the SHA map — must stay synchronized between frontmatter and `version.json`. Keeping `verified_date` only in `SKILL.md` avoids a second date that could drift without adding runtime-manifest value.
-- `feeds_skills:` adds a one-time teach-the-tooling cost (link validators / verification tooling must iterate the new field).
+- Registry mappings and verification metadata must remain consistent.
+- Shared release and provenance fields require synchronization across the two metadata surfaces.
+- Coupling skill maintenance to the docs verification system means changes to that system can affect both artifact types.
 
 ### Neutral / Operational
 
-- `feeds_skills:` was drafted-then-deferred at genesis and has since been **applied** to `component-registry.yml`; the covered-component set tracks the skill's actual scope and evolves with it (e.g. `saorsa-pqc` out, `ant-protocol` in relative to the genesis draft).
-- The manual/agent-driven maintenance path and the automated daily routine coexist: the routine handles metadata stamps and prose drafts; deliberate releases (version promotion out of `-draft`) remain a human gesture (ADR-0009).
+- The set of components feeding the skill, exact files that move together, field-level checklists, guard behavior, and maintenance sequencing are mutable implementation details documented in the operational sources.
+- Moving the skill to another repository would require preserving the dependency relationship and verification contract or superseding this decision.
 
 ## Validation
 
-- `sweep-guard` / `prose-guard` (ADR-0006) enforce the skill's metadata-only vs linked-release envelopes; a mismatched release fails CI.
-- `MAINTAINING.md` pre-merge checklist: `SKILL.md`/`version.json`/`CHANGELOG.md` agree on version; mirrored `verification_mode` and `verified_commits` agree between `SKILL.md` and `version.json`; for a linked release, `SKILL.md`'s `verified_date` matches `version.json`'s `published_date`; for a pure stamp refresh, `verified_commits` moves in both files and `verified_date` moves only in `SKILL.md`, while `version`, `published_date`, and `CHANGELOG.md` remain unchanged; every `verified_commits` entry is a real SHA; every live-docs URL resolves; no guessed SDK/CLI/MCP surface.
-- Registry check: every component the skill covers carries `feeds_skills:`; components it doesn't teach do not.
-- Review trigger: replacing the reuse-the-docs-workflow model, changing the registry wiring, or moving to full unattended auto-release supersedes this ADR (and interacts with ADR-0009).
+- Tooling can determine skill re-verification scope from registry relationships and detect disagreement between the dependency graph and skill provenance.
+- Maintenance checks reject contradictory skill content, release, and provenance state.
+- Pure verification refreshes leave the content version and release history unchanged.
+- Manifest-shape and stable-manifest-URL breaks receive major-version treatment.
+- Review trigger: replacing the shared verification workflow, removing the distinct `feeds_skills` relationship, changing metadata responsibilities, or allowing incoherent release and provenance state requires a superseding ADR.
 
 ## Notes for AI-assisted work
 

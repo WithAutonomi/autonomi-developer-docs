@@ -4,6 +4,7 @@
 - **Acceptance:** Prospective — confirmed by Jim Collinson as decision owner during review of PR 73.
 - **Date:** 2026-07-14
 - **Decision owners:** Jim Collinson
+- **Reviewers:** Jim Collinson
 - **Supersedes:** ADR-0001 (location clause only; ADR governance remains in force)
 - **Superseded by:** none
 - **Related:** ADR-0001 (adopt ADRs — its governance decision remains in force while this ADR supersedes its location clause), ADR-0008 (GitBook platform — why `docs/` is the published product), ADR-0012 (the developer skill kept out of `docs/` for the same reason); `.gitbook.yaml` (`root: ./docs/`), `.adr-kit.yaml` (`adr_directory`), `scripts/adr-governance.py` (`ADR_DIR`), `.github/workflows/adr-governance.yml`

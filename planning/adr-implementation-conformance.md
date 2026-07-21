@@ -26,7 +26,7 @@ This file tracks known or suspected implementation gaps separately so correcting
 | ADR | Question to resolve before implementation |
 |---|---|
 | ADR-0007 | Define the exact guarantee when issue, PR, or backlink creation fails after an earlier GitHub artifact has already been created. Decide whether compensation, reconciliation, or explicit partial-state reporting is the intended fail-closed behaviour. |
-| ADR-0009 | Define the evidence threshold and review protocol for moving metadata and prose tracks independently from human merge control to panel-gated automation. The intended sequence is metadata sweeps first, followed by prose once its accuracy is demonstrably high enough. |
+| ADR-0009 | Specify and implement the independent AI review panel against source evidence and repository policy. Define reviewer independence, agreement handling, human escalation, and measured evidence requirements. Roll out panel-gated automation to metadata updates first; add prose only after measured accuracy warrants it. Each track qualifies independently, and exact bars and measurement windows belong in the future panel specification. |
 
 ## Proposed implementation slices
 
@@ -76,6 +76,14 @@ This file tracks known or suspected implementation gaps separately so correcting
 - Specify outcome semantics for partial GitHub writes.
 - Make failure issues report durable partial state precisely.
 - Add idempotent reconciliation where it reduces duplicate or stranded artifacts without hiding failures.
+
+### 8. Independent review-panel automation
+
+- Write the panel specification before changing the human merge boundary.
+- Define independent provider or model lanes, source-evidence and repository-policy review, agreement handling, and human escalation for disagreement, uncertainty, or insufficient evidence.
+- Put exact accuracy bars, measurement windows, and qualification evidence in that specification.
+- Introduce panel-gated automation for metadata updates first while retaining human review for prose.
+- Let the prose track qualify later only when its measured accuracy meets the specified bar; preserve independent qualification and rollback for each track.
 
 ## Verification principle
 

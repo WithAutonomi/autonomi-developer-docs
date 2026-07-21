@@ -39,13 +39,17 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Addressed the follow-up code review by naming ADR-0003's model per-surface rather than per-claim and requiring the future post-quantum cryptography skill work to source-audit and wire its authoritative components through `feeds_skills` and `verified_commits` before adding bundled guidance.
 - Completed the per-surface terminology correction throughout ADR-0003 after repeat review found three residual per-claim statements in its context, decision drivers, and consequences.
 - The final ADR review has not rerun on those corrections. Final ADR, clean-context, adversarial, Craft, and panel review and exact-HEAD CI remain pending. No push is approved.
+- On 2026-07-21, Jim confirmed the ADR artifact boundary: Accepted ADRs preserve original intent and accepted future architecture even when unimplemented, while mutable mechanics and rollout sequencing belong in planning, specifications, maintainer guidance, and tooling.
+- Amended ADR-0006, ADR-0009, and ADR-0014 within their introducing PR to retain their durable invariants while moving or pointing mutable mechanics to the existing operational sources. ADR-0006 now has the outcome-focused path `adr/ADR-0006-separate-metadata-and-prose-update-tracks.md`; the exact envelopes remain in `planning/routines/upstream-sweep.md` and the existing guard workflows. ADR-0009 still commits to the unbuilt independent AI review panel, and its rollout sequence now lives in `planning/adr-implementation-conformance.md`.
+- Added truthful `Reviewers: Jim Collinson` metadata to prospective ADR-0002 and ADR-0015. Retrospective ADRs remain without invented reviewer metadata.
+- At the point of Jim's amendment decision, local evidence required a rerun and final ADR, clean-context, adversarial, Craft, and panel reviews remained pending. The remote PR head remains `51724df`; no push is approved.
 
 ## Evidence
 
 CI arbiter / green of record:
 
 - Location: PR 73 GitHub checks.
-- Status: Not run for this local correction set. The remote PR head before the local commits is `51724df`; all six rebased correction commits remain unpushed. Existing remote checks do not cover exact local HEAD.
+- Status: Not run for this local correction set. The remote PR head before the local commits is `51724df`; the local correction commits remain unpushed. Existing remote checks do not cover exact local HEAD.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -57,7 +61,7 @@ Local fast gate / `.gsd/gate.sh`:
   - `GITHUB_EVENT_BEFORE="$(git rev-parse origin/main)" python3 -I scripts/adr-governance.py`
   - `python3 -m py_compile scripts/adr-governance.py scripts/tests/test_adr_governance.py`
   - `git diff --check`
-- Result: Local checks pass after the final ADR-review correction: 20 focused integration tests passed; ordinary, pull-request, and push governance modes each validated 15 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI.
+- Result: Local checks pass after the artifact-boundary amendment: 20 focused integration tests passed; ordinary, pull-request, and push governance modes each validated 14 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI; final ADR, clean-context, adversarial, Craft, and panel reviews remain pending.
 
 Files changed/artifacts produced:
 
@@ -69,6 +73,7 @@ Files changed/artifacts produced:
 - Skill open questions, implementation-conformance plan, work packet, and this checkpoint.
 - Final bounded correction: `CLAUDE.md`, `scripts/adr-governance.py`, `scripts/tests/test_adr_governance.py`, `planning/adr-implementation-conformance.md`, and this checkpoint.
 - Final ADR-review correction: ADR-0003, ADR-0014, `planning/adr-implementation-conformance.md`, and this checkpoint. The skill implementation is unchanged.
+- Artifact-boundary amendment: ADR-0002, renamed ADR-0006, ADR-0009, ADR-0014, ADR-0015, `planning/adr-implementation-conformance.md`, and this checkpoint. Guard behavior and skill content are unchanged.
 
 ## Honesty rules check
 
@@ -150,6 +155,7 @@ Panel review:
 - Resolved: Jim directed the governance simplification on 2026-07-16 because broad self-hardening was overbuilding.
 - Resolved: Jim decided on 2026-07-20 that `verified_date` lives only in `skills/start/SKILL.md`; `version.json` deliberately omits it and mirrors only the runtime/external manifest fields that need mirroring.
 - Open: rerun final ADR review, then complete adversarial, Craft, and panel review plus CI evidence for the exact corrected HEAD.
+- Resolved: Jim confirmed the durable-ADR versus mutable-implementation boundary and required prospective reviewer metadata on ADR-0002 and ADR-0015 only.
 
 PR / upstream action gate:
 
