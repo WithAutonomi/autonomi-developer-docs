@@ -43,6 +43,7 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Amended ADR-0006, ADR-0009, and ADR-0014 within their introducing PR to retain their durable invariants while moving or pointing mutable mechanics to the existing operational sources. ADR-0006 now has the outcome-focused path `adr/ADR-0006-separate-metadata-and-prose-update-tracks.md`; the exact envelopes remain in `planning/routines/upstream-sweep.md` and the existing guard workflows. ADR-0009 still commits to the unbuilt independent AI review panel, and its rollout sequence now lives in `planning/adr-implementation-conformance.md`.
 - Added truthful `Reviewers: Jim Collinson` metadata to prospective ADR-0002 and ADR-0015. Retrospective ADRs remain without invented reviewer metadata.
 - At the point of Jim's amendment decision, local evidence required a rerun and final ADR, clean-context, adversarial, Craft, and panel reviews remained pending. The remote PR head remains `51724df`; no push is approved.
+- Aligned the routine's future auto-merge note with ADR-0009: structural guard history is not enough to replace human review without the specified and proven independent panel. Preserved ADR-0014's two skill-authoring carve-outs in `skills/start/MAINTAINING.md`, clarified numbering and human acceptance authority in `adr/README.md`, and corrected the local governance evidence count.
 
 ## Evidence
 
@@ -61,7 +62,7 @@ Local fast gate / `.gsd/gate.sh`:
   - `GITHUB_EVENT_BEFORE="$(git rev-parse origin/main)" python3 -I scripts/adr-governance.py`
   - `python3 -m py_compile scripts/adr-governance.py scripts/tests/test_adr_governance.py`
   - `git diff --check`
-- Result: Local checks pass after the artifact-boundary amendment: 20 focused integration tests passed; ordinary, pull-request, and push governance modes each validated 14 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI; final ADR, clean-context, adversarial, Craft, and panel reviews remain pending.
+- Result: Local checks pass after the artifact-boundary amendment: 20 focused integration tests passed; ordinary, pull-request, and push governance modes each validated 15 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI; final ADR, clean-context, adversarial, Craft, and panel reviews remain pending.
 
 Files changed/artifacts produced:
 

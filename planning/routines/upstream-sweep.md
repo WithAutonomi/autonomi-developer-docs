@@ -318,5 +318,5 @@ Forward compatibility: when `notify-docs.yml` rolls out in upstream repos, the s
 - Claude Code Remote routine config (model = Opus 4.8 or higher, schedule, any optional `GITHUB_TOKEN` secret value) lives in the hosted routine service, not in this repo. The behaviour (the prompt) is committed at `planning/routines/upstream-sweep-prompt.md`.
 - `notify-docs.yml` installation in any upstream repo — tracked under `planning/implementation-plan.md` Section 8.2.
 - Per-event sweep PRs — deferred to v2 of the trigger shape.
-- Auto-merge — deferred to v1.5. The label-driven `sweep-auto-merge` workflow ships once all three required checks have run cleanly for several weeks.
+- Auto-merge — remains out of scope until the independent review panel in ADR-0009 is specified, implemented, and proven against the measured qualification criteria for each update track. A history of clean structural guard checks is necessary evidence, but is not sufficient on its own to replace human review.
 - Terminology lint, Greptile reviewer setup, and broader v2 verification-staleness checks beyond the sweep envelope.

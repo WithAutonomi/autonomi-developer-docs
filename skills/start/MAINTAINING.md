@@ -137,6 +137,15 @@ Check these against the relevant docs pages and source repos:
 - local devnet workflow
 - protocol-adjacent operational details such as devnet-manifest handoff and prepare/finalize variants
 
+## Style contract
+
+Apply `CLAUDE.md` to the skill as you would to rendered documentation, with two narrow carve-outs:
+
+- The skill may enumerate prohibited terms when terminology guidance is the subject being taught.
+- The skill may name its own repository when recording the skill's provenance.
+
+These exceptions do not permit provenance narration or prohibited wording in ordinary user-facing guidance.
+
 ## Update order
 
 1. Update `SKILL.md`.
