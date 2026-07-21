@@ -30,7 +30,7 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Restored executable mode on `scripts/adr-governance.py`.
 - On 2026-07-20, Jim resolved the ADR-0013/ADR-0014 metadata ambiguity: `verified_date` belongs only in `skills/start/SKILL.md`, while `skills/start/version.json` is the runtime version manifest and mirrors the fields needed for runtime and external inspection, including `version`, `verification_mode`, and `verified_commits`. Avoiding a duplicate review date removes unnecessary synchronization.
 - Amended ADR-0013 and ADR-0014 within their introducing PR to state that contract consistently. ADR-0015 permits these review corrections before the records reach the default-branch immutability boundary. This amendment matches the existing explicit `skills/start/MAINTAINING.md` contract and creates no implementation debt.
-- Rebased cleanly onto remote PR head `12806a9`. The pre-slice local commits are `f9350fc` and `c43e338`; the bounded correction commit containing this checkpoint remains local and unpushed.
+- Rebased the complete local correction series cleanly onto the updated remote PR head `51724df` after `main` advanced. All six correction commits remain local and unpushed.
 - Aligned ordinary validation with David's team-standard changed-file scope: when a comparison base exists, format, status, required-section, and Acceptance-metadata checks apply only to current ADR files changed against that base; without a base, they apply to all current ADRs. Duplicate-number checking still covers all current ADRs, and every Accepted ADR on the base remains byte-for-byte immutable.
 - Added focused push-event tests for a normal `GITHUB_EVENT_BEFORE` SHA and the all-zero initial-push fallback. Both prove that edits to an Accepted ADR on the selected base fail governance.
 - Added the repo-root ADR governance instructions to `CLAUDE.md` and refreshed the implementation-conformance review date to 2026-07-20. Malformed ADR-prefix discovery remains an explicitly out-of-scope limitation of the shared standard.
@@ -45,7 +45,7 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 CI arbiter / green of record:
 
 - Location: PR 73 GitHub checks.
-- Status: Not run for this local correction set. The remote PR head before the local commits is `12806a9`; local commits `f9350fc`, `c43e338`, `c515299`, and the separate final ADR-review correction commit containing this checkpoint remain unpushed. Existing remote checks do not cover exact local HEAD.
+- Status: Not run for this local correction set. The remote PR head before the local commits is `51724df`; all six rebased correction commits remain unpushed. Existing remote checks do not cover exact local HEAD.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -163,4 +163,4 @@ Rerun the final ADR review on the separate correction commit, then run the pendi
 
 ## Handoff note
 
-Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings and aligns ordinary validation with the shared checker's changed-file scope without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is recorded consistently without changing the existing `MAINTAINING.md` contract. The separate 2026-07-21 local commit corrects the final four ADR-review findings without changing skill implementation. Remote PR head `12806a9` predates all local correction commits; exact local HEAD is unpushed. Final ADR review must rerun, and clean-context, adversarial, Craft, panel reviews and CI remain pending. The no-push gate remains in force.
+Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The correction series addresses the local code- and ADR-review findings while preserving the shared checker's changed-file scope and the existing `MAINTAINING.md` contract. The series is rebased onto remote PR head `51724df`; exact local HEAD remains unpushed. Final ADR, clean-context, adversarial, Craft, and panel reviews and exact-SHA CI remain pending. The no-push gate remains in force.
