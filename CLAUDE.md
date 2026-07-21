@@ -15,6 +15,10 @@ This repo documents the Autonomi 2.0 network. See `repo-registry.yml` for which 
 - ant-quic (excluded — older ancestor/fork; use saorsa-transport instead)
 - Any repo not listed in the repo registry
 
+## ADR governance
+
+Before changing architecture, protocols, storage formats, cryptography, network behaviour, public APIs, data models, or operational invariants, inspect `adr/`. Use `adr/TEMPLATE.md` for new or changed architectural decisions. Never edit an Accepted ADR; create a superseding ADR instead. Never mark an ADR Accepted autonomously. Validate ADR work with `python3 -I scripts/adr-governance.py` and the repository's ADR governance tests.
+
 ## Audience and objectives
 
 ### Who these docs are for

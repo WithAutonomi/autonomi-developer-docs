@@ -1,5 +1,5 @@
 # ADR kit configuration for repository-level decision governance.
-adr_directory: docs/adr
+adr_directory: adr
 filename_pattern: "ADR-[0-9]{4}-[a-z0-9-]+\.md"
 statuses:
   - Proposed

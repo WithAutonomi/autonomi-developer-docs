@@ -8,7 +8,7 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 
 ## Trigger shape
 
-- Execution venue: Claude Desktop → Routines → New routine → Remote.
+- Execution venue: Claude Code Remote routine.
 - Schedule: daily at 09:00 UTC. Comfortably above the documented one-hour minimum interval for Remote-routine schedules.
 - Routine model: **Opus 4.8 or higher** end-to-end. The audit/write/verify loop in `## Opus audit/write/verify loop` requires the model to inspect upstream diffs and source at pinned SHAs, compare against docs and `SKILL.md`, write actual prose into draft PRs, and run practical verification. No subagent layer.
 - Prompt: the committed prompt at `planning/routines/upstream-sweep-prompt.md`.
@@ -285,7 +285,7 @@ That page is held back as a `manual review needed` issue.
 - Deleted or renamed source repo. Same handling.
 - Force-push that invalidates a recorded SHA. Caught by the `sweep-sha-reachability` required check on the resulting PR.
 - Routine missing the 09:00 UTC slot. Recovery: next-day run picks up the drift; latency at most 24h. No GitHub artifact.
-- Claude Desktop routine credential or token expiry. Routine fails closed; the failure issue captures the diagnostic; user refreshes the secret.
+- Claude Code Remote routine credential or token expiry. Routine fails closed; the hosted run history captures the diagnostic. The routine opens a failure issue only when its GitHub write credentials still permit issue creation.
 - Daily routine-start cap exhausted on Max plan. Same recovery as missed slot.
 - Collision skip when a prior PR is left open for many days. The open PR is itself the signal; the next-day run resumes once the prior PR merges or closes.
 - SHA-fetch failure for a single record (both fetch paths). Recovery: page deferred to an `upstream-sweep-manual-review` issue; the rest of the run proceeds.
@@ -311,12 +311,12 @@ Forward compatibility: when `notify-docs.yml` rolls out in upstream repos, the s
    If either label is missing, the routine still creates the issue when needed, falls back to creating it unlabeled, and adds an in-body note explaining the missed label and the underlying `gh` error. The labels can be created and reapplied to existing issues at any time.
 2. Add `sweep-guard`, `prose-guard`, and `sweep-sha-reachability` (the exact workflow `name:` strings) as required checks on `main` in repo settings → Branch protection.
 3. Confirm the routine's bot identity has push access. If branch protection requires reviewers, ensure the bot is granted bypass or has CODEOWNERS coverage on `planning/sweeps/*` and the metadata-only paths, or accept that the user reviews each PR by hand.
-4. If using a `GITHUB_TOKEN` secret, provision it in the Claude Desktop routine config per the credentials section above. The secret is optional; when unset the routine derives a token from `gh auth token` and falls back to anonymous reads.
+4. If using a `GITHUB_TOKEN` secret, provision it in the Claude Code Remote routine config per the credentials section above. The secret is optional; when unset the routine derives a token from `gh auth token` and falls back to anonymous reads.
 
 ## Out of scope
 
-- Claude Desktop Remote routine config (model = Opus 4.8 or higher, schedule, any optional `GITHUB_TOKEN` secret value) — lives in Claude Desktop, not in this repo. The behaviour (the prompt) is committed at `planning/routines/upstream-sweep-prompt.md`.
+- Claude Code Remote routine config (model = Opus 4.8 or higher, schedule, any optional `GITHUB_TOKEN` secret value) lives in the hosted routine service, not in this repo. The behaviour (the prompt) is committed at `planning/routines/upstream-sweep-prompt.md`.
 - `notify-docs.yml` installation in any upstream repo — tracked under `planning/implementation-plan.md` Section 8.2.
 - Per-event sweep PRs — deferred to v2 of the trigger shape.
-- Auto-merge — deferred to v1.5. The label-driven `sweep-auto-merge` workflow ships once all three required checks have run cleanly for several weeks.
+- Auto-merge — remains out of scope until the independent review panel in ADR-0009 is specified, implemented, and proven against the measured qualification criteria for each update track. A history of clean structural guard checks is necessary evidence, but is not sufficient on its own to replace human review.
 - Terminology lint, Greptile reviewer setup, and broader v2 verification-staleness checks beyond the sweep envelope.

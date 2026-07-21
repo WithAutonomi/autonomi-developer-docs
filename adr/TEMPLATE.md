@@ -1,9 +1,10 @@
 # ADR-NNNN: <Decision Title>
 
 - **Status:** Proposed
+- **Acceptance:** Prospective | Retrospective — <basis; required when Status is Accepted>
 - **Date:** YYYY-MM-DD
 - **Decision owners:** <names/handles>
-- **Reviewers:** <names/handles>
+- **Reviewers:** <names/handles; omit for retrospective records with no historical reviewers>
 - **Supersedes:** <ADR-NNNN or none>
 - **Superseded by:** <ADR-NNNN or none>
 - **Related:** <issues/PRs/specs>
