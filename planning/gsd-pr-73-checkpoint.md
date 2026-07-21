@@ -37,6 +37,7 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Retained workflow `permissions: contents: read` and checkout `persist-credentials: false` as ordinary least-privilege runner hygiene. They are not self-defending governance hardening; this correction adds no workflow self-inspection or action allowlists.
 - Addressed the final ADR review's four findings in a separate local commit: made ADR-0014's targeted-foundational scope conditional on actual `feeds_skills` mappings; clarified ADR-0003's rendered-doc, skill-frontmatter, and runtime-manifest metadata schemas; separated default-branch merged truth from the installable/released constraint on installation and version surfaces; and recorded ADR-0013's missing bundled high-level post-quantum cryptography posture as implementation debt rather than adding skill content to PR 73.
 - Addressed the follow-up code review by naming ADR-0003's model per-surface rather than per-claim and requiring the future post-quantum cryptography skill work to source-audit and wire its authoritative components through `feeds_skills` and `verified_commits` before adding bundled guidance.
+- Completed the per-surface terminology correction throughout ADR-0003 after repeat review found three residual per-claim statements in its context, decision drivers, and consequences.
 - The final ADR review has not rerun on those corrections. Final ADR, clean-context, adversarial, Craft, and panel review and exact-HEAD CI remain pending. No push is approved.
 
 ## Evidence
@@ -98,6 +99,7 @@ Follow-up code review:
 - Reviewer/tool: code review completed against `8ff203a`; rerun on the follow-up correction commit is pending.
 - Result: Two findings corrected locally; dispositions await review confirmation.
 - Findings and dispositions: ADR-0003 used per-claim language for a per-surface model — corrected; the planned post-quantum cryptography guidance omitted the registry and verification-metadata work needed to keep it fresh — added source-audit, `feeds_skills`, and `verified_commits` prerequisites to the future conformance slice.
+- Repeat review found residual per-claim wording at ADR-0003 lines 15, 22, and 52. All three statements now describe documented surfaces or verification records; rerun on the final correction commit is pending.
 
 ADR governance review:
 

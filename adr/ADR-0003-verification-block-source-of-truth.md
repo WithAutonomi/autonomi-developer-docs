@@ -12,14 +12,14 @@
 
 ## Context
 
-The Autonomi developer docs describe fast-moving upstream code (`ant-sdk`, `ant-client`, `ant-node`, `ant-protocol`, `saorsa-*`, and others). Documentation that drifts from the code is worse than no documentation: it silently misleads developers. The repo needed a way to state, for every technical claim on every page, *exactly which upstream commit that claim was verified against*, so drift is detectable mechanically rather than by re-reading everything by eye.
+The Autonomi developer docs describe fast-moving upstream code (`ant-sdk`, `ant-client`, `ant-node`, `ant-protocol`, `saorsa-*`, and others). Documentation that drifts from the code is worse than no documentation: it silently misleads developers. The repo needed a way to state, for every documented surface, *exactly which upstream commits that surface was verified against*, so drift is detectable mechanically rather than by re-reading everything by eye.
 
 A second tension: docs must describe the latest merged default-branch source truth, not the expected future product shape. Installation, download, package, and version surfaces have an additional constraint: they must describe artifacts a developer can actually install or download, even when merged source is newer. Without explicit rules, pages tend to drift toward aspirational descriptions of unmerged branches or present unreleased artifacts as available. But a launch-hardening pass needs the opposite of following moving branches — the ability to pin a set of pages to a fixed release target.
 
 ## Decision Drivers
 
 - Drift must be **detectable by a machine**, not only by human review.
-- Every rendered claim must be **traceable to an exact upstream commit SHA**.
+- Every documented surface must be **traceable to exact upstream commit SHAs**.
 - Docs must default to **current merged default-branch source truth**, never future state; installation, download, package, and version surfaces must additionally stay within installable or released truth.
 - A launch/release pass must be able to **pin** pages to fixed refs without inverting the day-to-day default.
 - Provenance metadata must not leak into rendered prose.
@@ -49,7 +49,7 @@ This model is the foundation the automation in ADR-0004 through ADR-0007 operate
 ### Positive
 
 - Drift becomes a deterministic diff: compare each `source_commit` against upstream HEAD (see ADR-0004). No human re-reading required to *detect* staleness.
-- Every claim is auditable to an exact SHA, so a reviewer can reproduce the evidence.
+- Every verification record is auditable to exact SHAs, so a reviewer can reproduce the evidence for that documented surface.
 - The default keeps docs aligned with merged source truth, while install and release surfaces remain honest about artifacts developers can obtain; the `target-manifest` escape hatch supports launch hardening without weakening the default.
 
 ### Negative / Trade-offs
