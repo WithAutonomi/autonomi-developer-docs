@@ -1,6 +1,6 @@
 # GSD Checkpoint — PR 73 ADR corrections
 
-Date: 2026-07-20
+Date: 2026-07-21
 Project: Autonomi Developer Documentation
 Slice/question: Correct PR 73's retrospective ADRs and relocated governance
 Prepared by: OpenCode orchestrator
@@ -35,13 +35,15 @@ Unreviewed backlog if deferred: complete corrected PR 73 work-unit
 - Added focused push-event tests for a normal `GITHUB_EVENT_BEFORE` SHA and the all-zero initial-push fallback. Both prove that edits to an Accepted ADR on the selected base fail governance.
 - Added the repo-root ADR governance instructions to `CLAUDE.md` and refreshed the implementation-conformance review date to 2026-07-20. Malformed ADR-prefix discovery remains an explicitly out-of-scope limitation of the shared standard.
 - Retained workflow `permissions: contents: read` and checkout `persist-credentials: false` as ordinary least-privilege runner hygiene. They are not self-defending governance hardening; this correction adds no workflow self-inspection or action allowlists.
+- Addressed the final ADR review's four findings in a separate local commit: made ADR-0014's targeted-foundational scope conditional on actual `feeds_skills` mappings; clarified ADR-0003's rendered-doc, skill-frontmatter, and runtime-manifest metadata schemas; separated default-branch merged truth from the installable/released constraint on installation and version surfaces; and recorded ADR-0013's missing bundled high-level post-quantum cryptography posture as implementation debt rather than adding skill content to PR 73.
+- The final ADR review has not rerun on those corrections. Final ADR, clean-context, adversarial, Craft, and panel review and exact-HEAD CI remain pending. No push is approved.
 
 ## Evidence
 
 CI arbiter / green of record:
 
 - Location: PR 73 GitHub checks.
-- Status: Not run for this local correction set. The remote PR head before the local commits is `12806a9`; local commits `f9350fc`, `c43e338`, and the bounded correction commit containing this checkpoint remain unpushed. Existing remote checks do not cover exact local HEAD.
+- Status: Not run for this local correction set. The remote PR head before the local commits is `12806a9`; local commits `f9350fc`, `c43e338`, `c515299`, and the separate final ADR-review correction commit containing this checkpoint remain unpushed. Existing remote checks do not cover exact local HEAD.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -50,10 +52,10 @@ Local fast gate / `.gsd/gate.sh`:
   - `python3 -I -m unittest discover -s scripts/tests -p 'test_adr_governance.py'`
   - `python3 -I scripts/adr-governance.py`
   - `GITHUB_BASE_REF=main python3 -I scripts/adr-governance.py`
-  - `GITHUB_EVENT_BEFORE=c43e338 python3 -I scripts/adr-governance.py`
+  - `GITHUB_EVENT_BEFORE="$(git rev-parse origin/main)" python3 -I scripts/adr-governance.py`
   - `python3 -m py_compile scripts/adr-governance.py scripts/tests/test_adr_governance.py`
   - `git diff --check`
-- Result: Local checks pass after the final pre-push correction: 20 focused integration tests passed; ordinary and pull-request governance modes each validated 15 changed ADRs; the practical push-mode invocation against real prior SHA `c43e338` passed with 0 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise meaningful Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI.
+- Result: Local checks pass after the final ADR-review correction: 20 focused integration tests passed; ordinary, pull-request, and push governance modes each validated 15 changed ADRs; compilation and diff checks passed. The push-event tests separately exercise Accepted-ADR immutability for both normal and all-zero `GITHUB_EVENT_BEFORE` paths. This is provisional local evidence, not final review or CI.
 
 Files changed/artifacts produced:
 
@@ -64,6 +66,7 @@ Files changed/artifacts produced:
 - Remote routine policy/prompt and skill maintainer guidance.
 - Skill open questions, implementation-conformance plan, work packet, and this checkpoint.
 - Final bounded correction: `CLAUDE.md`, `scripts/adr-governance.py`, `scripts/tests/test_adr_governance.py`, `planning/adr-implementation-conformance.md`, and this checkpoint.
+- Final ADR-review correction: ADR-0003, ADR-0014, `planning/adr-implementation-conformance.md`, and this checkpoint. The skill implementation is unchanged.
 
 ## Honesty rules check
 
@@ -81,6 +84,13 @@ Local code review:
 - Findings: HIGH — replace `HEAD^1` fallback with the default-branch merge base and prove multi-commit introducing-PR corrections; MEDIUM — validate current `.adr-kit.yaml` against `ADR_DIR`; LOW — restore checker executable mode.
 - Dispositions: All three fixes and both focused regressions are included in the correction set. The checker remains deliberately small; workflow self-inspection, action allowlists, broad symlink/execution hardening, and an external trusted validator were not reintroduced.
 - Final pre-push correction status: implemented and locally verified, but no final ADR, clean-context, adversarial, Craft, or panel review has run on the bounded correction.
+
+Final ADR review:
+
+- Reviewer/tool: final ADR review completed against `c515299`; rerun on the correction commit is pending.
+- Result: Four findings corrected in a separate local commit; dispositions await review confirmation.
+- Findings and dispositions: ADR-0014 overstated targeted-foundational skill dependencies — restricted to components actually mapped through `feeds_skills`; ADR-0003 conflated the complete rendered-doc schema with intentionally split skill metadata — clarified each artifact contract; ADR-0003 conflated merged source truth with released truth for all pages — limited the installable/released constraint to installation, download, package, and version surfaces; ADR-0013 promised bundled high-level post-quantum cryptography guidance that the skill lacks — recorded the precise minimum follow-up in the conformance plan without changing the skill.
+- Rerun status: Not run on the correction commit. This is a disposition record, not a claim of final review approval.
 
 ADR governance review:
 
@@ -123,13 +133,14 @@ Panel review:
 - Malformed ADR-prefix discovery is a known limitation of David's shared standard and is explicitly out of scope; no discovery logic or tests were added.
 - Workflow read-only contents permission and disabled credential persistence are retained as ordinary runner hygiene, not treated as a governance security boundary. Workflow self-inspection and action allowlists remain out of scope.
 - Model routing, docs-content lint, skill restructuring, registry-driven dependency discovery, and distribution publication remain future slices.
+- The missing high-level post-quantum cryptography posture remains a tracked ADR-0013 conformance gap. PR 73 does not add or otherwise alter skill content.
 
 ## Open questions / decisions for Jim
 
 - Resolved: Jim accepted ADR-0015 on 2026-07-16.
 - Resolved: Jim directed the governance simplification on 2026-07-16 because broad self-hardening was overbuilding.
 - Resolved: Jim decided on 2026-07-20 that `verified_date` lives only in `skills/start/SKILL.md`; `version.json` deliberately omits it and mirrors only the runtime/external manifest fields that need mirroring.
-- Open: final ADR, adversarial, Craft, and panel review plus CI evidence for the corrected implementation.
+- Open: rerun final ADR review, then complete adversarial, Craft, and panel review plus CI evidence for the exact corrected HEAD.
 
 PR / upstream action gate:
 
@@ -139,8 +150,8 @@ PR / upstream action gate:
 
 ## Recommended next step
 
-Run the pending final ADR, adversarial, Craft, and panel reviews on the correction-set commit. Seek explicit approval before pushing, then confirm PR 73 CI on the pushed SHA.
+Rerun the final ADR review on the separate correction commit, then run the pending adversarial, Craft, and panel reviews. Seek explicit approval before pushing, then confirm PR 73 CI on the pushed SHA.
 
 ## Handoff note
 
-Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings and aligns ordinary validation with the shared checker's changed-file scope without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is recorded consistently in ADR-0013 and ADR-0014 without changing the existing `MAINTAINING.md` contract. Remote PR head `12806a9` predates all local correction commits; exact local HEAD is unpushed. Final ADR, clean-context, adversarial, Craft, and panel reviews and CI remain pending.
+Jim's 2026-07-16 simplification decision supersedes stale readiness claims for the overbuilt checker. The 2026-07-20 local correction set addresses all three latest code-review findings and aligns ordinary validation with the shared checker's changed-file scope without expanding that deliberately small design. Jim's 2026-07-20 metadata decision is recorded consistently without changing the existing `MAINTAINING.md` contract. The separate 2026-07-21 local commit corrects the final four ADR-review findings without changing skill implementation. Remote PR head `12806a9` predates all local correction commits; exact local HEAD is unpushed. Final ADR review must rerun, and clean-context, adversarial, Craft, panel reviews and CI remain pending. The no-push gate remains in force.
