@@ -10,15 +10,15 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 5cec8579db9d40fded3632b5ef34ec98ffcd520a
-  verified_date: 2026-07-27
+  source_commit: 81848a0900fa9972e9af2d323bf3b49bf8d382aa
+  verified_date: 2026-07-28
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 28fc354b3723850cfa7afea10d07a13a0617a035
-  verified_date: 2026-07-13
+  source_commit: 933138710747c887e1962d9ebe26bed4a93e6ead
+  verified_date: 2026-07-28
   verification_mode: current-merged-truth
 -->
 

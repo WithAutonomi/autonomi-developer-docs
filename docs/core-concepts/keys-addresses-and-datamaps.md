@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 5cec8579db9d40fded3632b5ef34ec98ffcd520a
-  verified_date: 2026-07-27
+  source_commit: 81848a0900fa9972e9af2d323bf3b49bf8d382aa
+  verified_date: 2026-07-28
   verification_mode: current-merged-truth
 -->
 <!-- verification:

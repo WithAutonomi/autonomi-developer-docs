@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 28fc354b3723850cfa7afea10d07a13a0617a035
-  verified_date: 2026-07-13
+  source_commit: 933138710747c887e1962d9ebe26bed4a93e6ead
+  verified_date: 2026-07-28
   verification_mode: current-merged-truth
 -->
 
