@@ -9,9 +9,9 @@
   "verification_mode": "current-merged-truth",
   "verified_commits": {
     "ant-sdk": "09da0f4c94fb15d928b5e9f1d4a9ae484176c995",
-    "ant-client": "6f0c957289371cc0b0e766f2c580adc8ecb69074",
-    "ant-node": "f4c8cd56a85790031666254c333aa053fe56e6cd",
-    "ant-protocol": "0cc5faed154d380c925aea2d093d4084f91cd0b3",
+    "ant-client": "81a0a2470ea74fa8608ed60c8ff214ff1fe2fc3d",
+    "ant-node": "c8f0ce15c8d146ccbedcbec251f0b101c43b225d",
+    "ant-protocol": "54c93a8de885ec8e822581381905ea034866d2fe",
     "self_encryption": "0deb040084f94bea2ebb53bda20fa23464bbcfe0",
     "evmlib": "933138710747c887e1962d9ebe26bed4a93e6ead"
   },
