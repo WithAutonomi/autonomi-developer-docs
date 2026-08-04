@@ -24,8 +24,8 @@
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: bb2aa1981afe94340160b70f65bd633098da6e5b
-  verified_date: 2026-06-15
+  source_commit: 4fbb31d3d29f710726edd32e12ce7b1f64a2aae1
+  verified_date: 2026-08-04
   verification_mode: current-merged-truth
 -->
 
