@@ -17,8 +17,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: c8f0ce15c8d146ccbedcbec251f0b101c43b225d
-  verified_date: 2026-07-30
+  source_commit: 0c6977a8ead757c33a88bf660b4d67aa594f4520
+  verified_date: 2026-08-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -45,8 +45,8 @@
 <!-- verification:
   source_repo: saorsa-pqc
   source_ref: main
-  source_commit: bb2aa1981afe94340160b70f65bd633098da6e5b
-  verified_date: 2026-06-15
+  source_commit: 4fbb31d3d29f710726edd32e12ce7b1f64a2aae1
+  verified_date: 2026-08-04
   verification_mode: current-merged-truth
 -->
 <!-- verification:
