@@ -17,8 +17,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 0c6977a8ead757c33a88bf660b4d67aa594f4520
-  verified_date: 2026-08-04
+  source_commit: db4c851eb71acd2c6576ecfc355134f918447941
+  verified_date: 2026-08-05
   verification_mode: current-merged-truth
 -->
 <!-- verification:
