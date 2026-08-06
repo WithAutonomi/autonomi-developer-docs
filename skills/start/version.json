@@ -10,7 +10,7 @@
   "verified_commits": {
     "ant-sdk": "09da0f4c94fb15d928b5e9f1d4a9ae484176c995",
     "ant-client": "81a0a2470ea74fa8608ed60c8ff214ff1fe2fc3d",
-    "ant-node": "db4c851eb71acd2c6576ecfc355134f918447941",
+    "ant-node": "9a50c6b59e2a1c2cc12a1eeedf5fb8dc757f37c5",
     "ant-protocol": "54c93a8de885ec8e822581381905ea034866d2fe",
     "self_encryption": "0deb040084f94bea2ebb53bda20fa23464bbcfe0",
     "evmlib": "933138710747c887e1962d9ebe26bed4a93e6ead"
