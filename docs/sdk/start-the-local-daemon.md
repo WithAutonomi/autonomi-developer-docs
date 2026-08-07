@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 9a50c6b59e2a1c2cc12a1eeedf5fb8dc757f37c5
-  verified_date: 2026-08-06
+  source_commit: 20db1f919909dc2be12b357e203f8be6cc72c42a
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 
