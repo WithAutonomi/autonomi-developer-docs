@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 26ae4843d62d5d7fc8b5aefc4be1fa43136c2b15
-  verified_date: 2026-08-07
+  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -17,7 +17,7 @@
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: 20db1f919909dc2be12b357e203f8be6cc72c42a
+  source_commit: fe2d43d32c4950e70f6418691a21e29226c1305c
   verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
@@ -31,8 +31,8 @@
 <!-- verification:
   source_repo: saorsa-core
   source_ref: main
-  source_commit: ea8124bc705f270069a9b62bd12638522077ec94
-  verified_date: 2026-07-30
+  source_commit: 043391cecc62aa2eff6e6900e74f4c5b055b531d
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -52,29 +52,29 @@
 <!-- verification:
   source_repo: self_encryption
   source_ref: master
-  source_commit: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
-  verified_date: 2026-05-16
+  source_commit: 4021f663612c5b963bef935b277eb65416b7d958
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 933138710747c887e1962d9ebe26bed4a93e6ead
-  verified_date: 2026-07-28
+  source_commit: 88e20df634f7c80f16777d38a1598c9b651b41b5
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-merkle
   source_ref: master
-  source_commit: 80af80a5df1e26e3b6fb386d041178889c4ed993
-  verified_date: 2026-05-16
+  source_commit: 176ab0a1cafaeee712b3442d9d5af09769149d31
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-keygen
   source_ref: main
-  source_commit: 3a2953f384a3b16391968de451b703843b98ed86
-  verified_date: 2026-05-16
+  source_commit: 902442f123e16f57de0aeb0f1bfbacf385aa2e87
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 
