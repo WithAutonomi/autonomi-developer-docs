@@ -4,12 +4,12 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: review Proposed ADR-0016
-- Status: adversarial blockers; attended remediation checkpoint
+- Task: remediate Proposed ADR-0016 review findings
+- Status: code-review blockers; attended checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Proposed ADR commit: `5716bbe539c352b7da880b3a0ad54dd3d475e546`
+- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; remediation `735091d7ed55db90eb48129c879796dc6ebfe963`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -21,19 +21,12 @@
 
 ## Review State
 
-- Repo-local ADR review: valid after the first correction pass.
-- Goal verification: passed; commit adds only one Proposed ADR and changes no Accepted ADR or implementation.
-- Structural validation: ADR governance passed with 1 ADR checked; 20 governance tests passed; `git diff --check` passed.
-- Adversarial review: `NOT-READY`.
-  - HIGH: ADR-0004 supersession must cover default-branch detector/source-resolution semantics for released records, not only restamping.
-  - HIGH: release promotion needs durable minimum evidence semantics for release identity, clean obtainability, capability/runtime evidence, deployed-network identity, and retaining an older baseline.
-  - HIGH: the motivating v0.11.2 audit is not reproducible from this branch or an immutable link.
-  - MEDIUM: skill capability/defect consistency needs explicit validation, not only matching refs.
-  - MEDIUM: rendered installation/version guidance must identify an older supported baseline when a newer public release is unsuitable.
-- Craft Review: concerns.
-  - CONFORMANCE: add template-aligned prospective Acceptance metadata.
-  - CONFORMANCE: replace the informal audit reference with an inspectable immutable artifact.
-  - CONFORMANCE: replace British spellings with repo-required American English.
+- Remediation commit `735091d` addresses the first adversarial and Craft findings: ADR-0004 source-resolution/drift semantics, seven durable promotion-evidence groups, branch-local audit evidence, docs/skill capability consistency, explicit older-baseline guidance, Prospective Acceptance metadata, and American English.
+- Structural validation after remediation: ADR governance passed with 1 ADR checked; 20 governance tests passed; `git diff --check origin/main...HEAD` passed; worktree was clean.
+- Independent code review: `issues_found`.
+  - HIGH: the retained-incumbent rule can preserve a release that has itself become withdrawn, insecure, network-incompatible, or baseline-noncompliant. Retention must require the incumbent still to pass applicable safety and baseline requirements; otherwise guidance must narrow or state that no supported baseline exists.
+  - MEDIUM: the audit calls Python and Rust exact-source routes installable without clean-install commands/results. Add reproducible evidence or relabel them as identified but not runtime-verified.
+- Goal verification, adversarial re-review, and Craft re-review have not run on remediation commit `735091d` because code review blocked advancement.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: no remote branch/PR exists; local evidence is weaker and must not be called CI-green.
@@ -47,4 +40,4 @@
 
 ## Next
 
-- Remediate the Proposed ADR and evidence reproducibility findings, rerun ADR review, verification, adversarial, Craft, and the deferred clean-context gate, then return to Jim for the human acceptance decision.
+- With Jim's attended approval, add the incumbent-disqualification invariant and correct the audit's Python/Rust installability evidence labels, then rerun code review, goal verification, adversarial, Craft, and the deferred clean-context gate before returning for the human acceptance decision.
