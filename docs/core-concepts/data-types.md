@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 26ae4843d62d5d7fc8b5aefc4be1fa43136c2b15
-  verified_date: 2026-08-07
+  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -17,8 +17,8 @@
 <!-- verification:
   source_repo: self_encryption
   source_ref: master
-  source_commit: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
-  verified_date: 2026-05-16
+  source_commit: 4021f663612c5b963bef935b277eb65416b7d958
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 
