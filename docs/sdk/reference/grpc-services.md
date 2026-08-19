@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
-  verified_date: 2026-08-08
+  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 
@@ -206,9 +206,10 @@ Both prepare RPCs return `PrepareUploadResponse`:
 | `upload_id` | string | Opaque token to pass to `FinalizeUpload` |
 | `payment_type` | string | `"wave_batch"` or `"merkle"` |
 | `payments` | repeated PaymentEntry | Wave-batch: per-quote entries for `payForQuotes()`; see [Common messages](#common-messages) |
-| `depth` | uint32 | Merkle: tree depth (1–8) |
-| `pool_commitments` | repeated PoolCommitmentEntry | Merkle: pool commitments for `payForMerkleTree2()`; each entry has exactly 16 candidate nodes; see [Common messages](#common-messages) |
-| `merkle_payment_timestamp` | uint64 | Merkle: unix timestamp for the payment |
+| `merkle_batches` | repeated MerkleBatchEntry | Merkle: one entry per on-chain payment, each with its own `depth`, `pool_commitments`, and `merkle_payment_timestamp`. A single Merkle tree covers up to 256 fresh chunks; larger uploads split across several entries |
+| `depth` | uint32 | Merkle, legacy single-batch: tree depth (1–8). Populated only when `merkle_batches` has exactly one entry |
+| `pool_commitments` | repeated PoolCommitmentEntry | Merkle, legacy single-batch: pool commitments for `payForMerkleTree2()`; each entry has exactly 16 candidate nodes; populated only when `merkle_batches` has exactly one entry; see [Common messages](#common-messages) |
+| `merkle_payment_timestamp` | uint64 | Merkle, legacy single-batch: unix timestamp for the payment. Populated only when `merkle_batches` has exactly one entry |
 | `total_amount` | string | Total amount in atto tokens (`"0"` for Merkle) |
 | `payment_vault_address` | string | Payment vault contract address (hex with `0x` prefix) |
 | `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
@@ -226,7 +227,8 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 |------|------|-------------|
 | `upload_id` | string | The `upload_id` returned from a prepare RPC |
 | `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex). Must be empty for Merkle |
-| `winner_pool_hash` | string | Merkle: winner pool hash (hex with `0x` prefix) from the `MerklePaymentMade` event. Must be empty for wave-batch |
+| `winner_pool_hashes` | repeated string | Merkle: one winner pool hash (hex with `0x` prefix) per entry in `merkle_batches`, in the same order. An empty string marks a batch the signer did not pay. Required over `winner_pool_hash` when the upload has more than one batch |
+| `winner_pool_hash` | string | Merkle, legacy single-batch: winner pool hash from the `MerklePaymentMade` event. Accepted only when the upload has exactly one batch; must be empty for wave-batch and must not be combined with `winner_pool_hashes` |
 | `store_data_map` | bool | If `true`, stores the DataMap through `antd`'s configured wallet and returns its address in `address` |
 
 **Response fields:**
@@ -237,6 +239,8 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 | `address` | string | Autonomi Network address of the stored DataMap; only set when `store_data_map` is `true` |
 | `data_map_address` | string | Autonomi Network address of the bundled DataMap chunk; only set when the upload was prepared with `visibility = "public"` |
 | `chunks_stored` | uint64 | Number of chunks stored on the Autonomi Network |
+
+When the payment lands but some chunks miss quorum after retries (or belong to a batch the signer did not pay), `FinalizeUpload` returns the `ABORTED` status code with a message reporting how many chunks stored and failed. The stored chunks persist; re-prepare the same content and finalize again to store only the remainder.
 
 ## Wallet Service
 
@@ -352,6 +356,7 @@ The proto files define these reusable shapes:
 | `GetDataRequest` | `data_map` |
 | `FileCostRequest` | `path`, `is_public`, `payment_mode` |
 | `PaymentEntry` | `quote_hash`, `rewards_address`, `amount` |
+| `MerkleBatchEntry` | `depth`, `pool_commitments`, `merkle_payment_timestamp` |
 | `PoolCommitmentEntry` | `pool_hash`, `candidates` |
 | `CandidateNodeEntry` | `rewards_address`, `amount` |
 

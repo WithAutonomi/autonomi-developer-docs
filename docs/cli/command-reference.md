@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 81a0a2470ea74fa8608ed60c8ff214ff1fe2fc3d
-  verified_date: 2026-07-30
+  source_commit: 50b4370bc08acf57c93f1c763063d3582ecf3aef
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 
@@ -523,19 +523,23 @@ ant node reset --force
 
 ### `ant update`
 
-Checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place.
+Checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+| `--channel <CHANNEL>` | string | No | Release channel to update along: `stable` or `beta`. Defaults to the channel the running binary belongs to |
 | `--force` | boolean | No | Re-download even if the current version is already latest |
+
+Without `--channel`, the channel is inferred from the running binary: a `-beta.N` build tracks `beta` and every other build tracks `stable`. On `beta`, both `-beta.N` and stable releases are accepted and the highest wins; release candidates (`-rc.N`) are rejected on both channels. Because a beta build outranks the stable release it was cut from, `--channel stable` cannot walk a beta build backwards and reports that you are already up to date; leaving the beta channel means installing a stable build manually.
 
 **Example:**
 
 ```bash
 ant update
 ant update --force
+ant update --channel beta
 ```
 
 ## Related pages
