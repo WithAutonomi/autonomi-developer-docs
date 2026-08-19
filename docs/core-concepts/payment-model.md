@@ -3,36 +3,36 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
-  verified_date: 2026-08-08
+  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: 81a0a2470ea74fa8608ed60c8ff214ff1fe2fc3d
-  verified_date: 2026-07-30
+  source_commit: 50b4370bc08acf57c93f1c763063d3582ecf3aef
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-node
   source_ref: main
-  source_commit: fe2d43d32c4950e70f6418691a21e29226c1305c
-  verified_date: 2026-08-08
+  source_commit: 661e68aa0f6edfd5884003025c34647389256872
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 88e20df634f7c80f16777d38a1598c9b651b41b5
-  verified_date: 2026-08-08
+  source_commit: fbf879b1f7068b5b072a936589721272c62f2ca0
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-protocol
   source_ref: main
-  source_commit: 54c93a8de885ec8e822581381905ea034866d2fe
-  verified_date: 2026-07-30
+  source_commit: 2bd604a88aaee8cf9a8bf60bf4e61268ed0d0581
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 

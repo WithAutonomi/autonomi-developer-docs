@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: 24f18c37103fa02c8d7188868c32a0ce83b93cf1
-  verified_date: 2026-07-30
+  source_commit: ace6d07a227b1530f3d63e4e02e9c5606aa96887
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
