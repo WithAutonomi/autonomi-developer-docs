@@ -3,15 +3,15 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
-  verified_date: 2026-08-08
+  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: evmlib
   source_ref: main
-  source_commit: 88e20df634f7c80f16777d38a1598c9b651b41b5
-  verified_date: 2026-08-08
+  source_commit: fbf879b1f7068b5b072a936589721272c62f2ca0
+  verified_date: 2026-08-19
   verification_mode: current-merged-truth
 -->
 
