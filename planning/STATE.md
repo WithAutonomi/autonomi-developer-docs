@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: rerun adversarial review of Proposed ADR-0016
-- Status: code review and goal verification passed; adversarial pending
+- Task: obtain exact-SHA ADR Governance CI before gauntlet re-review
+- Status: code review and goal verification passed; blocked on explicit draft-PR authorization
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
@@ -64,4 +64,4 @@
 
 ## Next
 
-- Rerun adversarial against the proposal and branch-local review evidence. If it passes, run Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- With Jim's explicit authorization, push `adr/released-and-usable-truth` and open a draft PR into `main` solely for ADR review and the PR-triggered ADR Governance CI. After exact-SHA CI is green, rerun adversarial, Craft, and clean-context. Do not merge, accept the ADR, or begin implementation.

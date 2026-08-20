@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — code review and 10/10 goal verification passed; adversarial re-review is pending.
+Stop for decision — code review and 10/10 goal verification passed; explicit draft-PR authorization is required to obtain CI green before gauntlet re-review.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit re-review in progress
@@ -137,17 +137,19 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No owner decision is pending until the gauntlet completes. ADR acceptance is not yet ready for decision.
+Authorize or decline this exact membrane action: push branch `adr/released-and-usable-truth` and open a draft PR into `main` to run ADR Governance CI and host review evidence. The PR will not be merged and ADR-0016 will remain Proposed.
 
 PR / upstream action gate, if applicable:
 
-- PR ready to raise? No
+- PR ready to raise? Yes — as a draft CI/review vehicle only; not acceptance-ready or merge-ready
 - Jim confirmed PR may be opened? No
-- Draft PR title/description prepared: No
+- Draft PR title/description prepared: Yes
+  - Title: `docs(adr): adopt released truth for public documentation`
+  - Description: proposes ADR-0016, carries its dated motivating audit and branch-local review evidence, states that no implementation is included, and requests ADR Governance CI plus review before the human acceptance decision.
 
 ## Recommended next step
 
-Rerun adversarial against the proposal and committed review evidence. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
+Obtain Jim's explicit authorization for the named draft PR. If authorized, push the branch, open only that draft PR, wait for exact-SHA ADR Governance CI, and then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
