@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: re-review Proposed ADR-0016 lifecycle corrections
-- Status: lifecycle findings remediated; code review and verification pending
+- Task: remediate Proposed ADR-0016 pointer security and alias consistency
+- Status: code-review issues; attended checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
@@ -42,7 +42,11 @@
   - HIGH: continuing incumbent requalification omits provenance-integrity changes, mandatory-baseline changes, and newly discovered non-security runtime/capability evidence.
   - MEDIUM: mutable installation aliases can move to an unqualified release after a point-in-time clean-install check.
 - Goal verification did not run because code review blocked advancement. Adversarial re-review, Craft, and fresh clean-context remain pending.
-- Lifecycle correction commit `9c2f1da` defines deterministic newest-first evaluation across all eligible sets, requalification on every qualification-input change, immutable default install selectors, and alias-target requalification. Local ADR governance, 20 governance tests, and `git diff --check` passed; independent re-review remains pending.
+- Lifecycle correction commit `9c2f1da` defines deterministic newest-first evaluation across all eligible sets, requalification on every qualification-input change, immutable default install selectors, and alias-target requalification. Local ADR governance, 20 governance tests, and `git diff --check` passed.
+- Independent code review at `2dd687b` resolved the two previous HIGH lifecycle findings and found two remaining issues; the exact report is `planning/adr-0016-code-review-2dd687b.md`.
+  - HIGH: skill pointers require fetched released docs but lack a durable untrusted-content/prompt-injection boundary.
+  - MEDIUM: mutable aliases are prohibited as default/recommended selectors but later language allows them to continue being recommended after requalification.
+- Goal verification did not run because code review blocked advancement.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -57,4 +61,4 @@
 
 ## Next
 
-- Rerun code review and goal verification against lifecycle correction `9c2f1da`, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- With Jim's attended approval, add the untrusted-content boundary for skill pointers and make mutable aliases never default or recommended commands; then rerun code review and goal verification before adversarial, Craft, and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
