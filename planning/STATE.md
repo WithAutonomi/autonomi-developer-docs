@@ -4,10 +4,11 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: obtain exact-SHA ADR Governance CI before gauntlet re-review
-- Status: code review and goal verification passed; blocked on explicit draft-PR authorization
+- Task: rerun adversarial review after CI green
+- Status: draft PR open; initial PR head CI green; state-only update pending CI rerun
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
+- Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
 - Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`
 - Implementation: not started; ADR acceptance remains human-only
@@ -52,7 +53,7 @@
 - Exact-HEAD goal verification at `9bd4f6f`: passed, 10/10 decision-contract goals verified with no gaps. The report is committed at `planning/adr-0016-verification-9bd4f6f.md`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
-- CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
+- CI arbiter: draft PR #98. Initial PR head `d8e7300` passed ADR Governance, prose-guard, sweep-guard, sweep-sha-reachability, and both GitBook checks. This state-only update must also pass before gauntlet re-review.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -64,4 +65,4 @@
 
 ## Next
 
-- With Jim's explicit authorization, push `adr/released-and-usable-truth` and open a draft PR into `main` solely for ADR review and the PR-triggered ADR Governance CI. After exact-SHA CI is green, rerun adversarial, Craft, and clean-context. Do not merge, accept the ADR, or begin implementation.
+- Push this state-only update, confirm draft PR #98 is green at the new exact head, then rerun adversarial. If it passes, run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.

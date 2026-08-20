@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Stop for decision — code review and 10/10 goal verification passed; explicit draft-PR authorization is required to obtain CI green before gauntlet re-review.
+Continue — Jim authorized draft PR #98; initial PR head CI is green and the state-only update requires its rerun before adversarial review.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit re-review in progress
@@ -27,7 +27,7 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 CI arbiter / green of record:
 
 - Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: the CI arbiter exists, but no remote branch, pull request, or exact-SHA CI run exists. Local evidence is weaker and is not CI-green.
+- Status: draft PR #98 is open. Initial head `d8e7300` passed ADR Governance, prose-guard, sweep-guard, sweep-sha-reachability, GitBook, and the docs preview check. This state-only update must also pass at the new exact head before gauntlet re-review.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -137,19 +137,19 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-Authorize or decline this exact membrane action: push branch `adr/released-and-usable-truth` and open a draft PR into `main` to run ADR Governance CI and host review evidence. The PR will not be merged and ADR-0016 will remain Proposed.
+No owner decision is pending until the remaining gauntlet completes. The draft PR does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
 - PR ready to raise? Yes — as a draft CI/review vehicle only; not acceptance-ready or merge-ready
-- Jim confirmed PR may be opened? No
+- Jim confirmed PR may be opened? Yes — exact draft PR action authorized in chat on 2026-08-20
 - Draft PR title/description prepared: Yes
   - Title: `docs(adr): adopt released truth for public documentation`
   - Description: proposes ADR-0016, carries its dated motivating audit and branch-local review evidence, states that no implementation is included, and requests ADR Governance CI plus review before the human acceptance decision.
 
 ## Recommended next step
 
-Obtain Jim's explicit authorization for the named draft PR. If authorized, push the branch, open only that draft PR, wait for exact-SHA ADR Governance CI, and then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Push this state-only update, wait for exact-head draft PR checks, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
