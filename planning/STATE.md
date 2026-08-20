@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: adversarial re-review of journey-local qualification
-- Status: journey-local code review and goal verification passed; adversarial pending
+- Task: remediate complete-route continuity and ADR-0011 supersession
+- Status: adversarial NOT-READY; attended checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -58,12 +58,18 @@
 - Craft and clean-context did not run because adversarial blocked advancement.
 - Jim chose option 2 on 2026-08-20: one active coherent release set with journey-local support status, no mixed versions or per-journey old-release fallback, and global no-supported-baseline only when no eligible set supplies complete routes for every mandatory core outcome.
 - Journey-local amendment `fb00f10` formalizes that decision, including same-interface complete routes, global set selection/fallback, atomic optional-journey regression disclosure, journey-keyed manifest/docs/skill parity, and the minimum end-to-end store-and-retrieve outcome. Local ADR governance and 20 tests passed; exact-head draft-PR CI and GitBook checks are green.
-- Exact-head goal verification and adversarial re-review remain pending for the journey-local amendment.
+- Exact-head adversarial re-review remained pending after the journey-local amendment.
 - Exact-head code review at `b1e4846`: passed with no findings and all qualification truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
 - Exact-head goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
+- Exact-head adversarial re-review at `ef646b9`: `NOT-READY`. Report: `planning/adr-0016-adversarial-ef646b9.md`.
+  - HIGH: top-level `SDK` continuity still permits incompatible bindings/transports to be combined into a false complete route.
+  - HIGH: allowing CLI to become the only recommended complete route changes ADR-0011's unconditional SDK-primary stance, so ADR-0011 must be precisely superseded rather than called intact.
+  - MEDIUM: branch-local truth-table evidence must include concrete binding, transport, installation, runtime/configuration, and carried-state identities.
+  - LOW: state/checkpoint/PR evidence was stale, and the historical v0.11.2 defect sentence needs past-tense scoping.
+- Craft and clean-context did not run because adversarial blocked advancement.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
-- CI arbiter: draft PR #98. Exact reviewed head `dfd14da` passed ADR Governance and both GitBook checks. Prose/sweep checks also returned success but were scope-gate no-ops for this branch, not substantive coverage.
+- CI arbiter: draft PR #98. Exact reviewed head `ef646b9` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -75,4 +81,4 @@
 
 ## Next
 
-- Push this verification record, confirm exact-head CI, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- With Jim's attended approval, add concrete complete-route continuity, precisely supersede ADR-0011's unconditional SDK-primary clause, scope the historical v0.11.2 sentence, and add inspectable concrete truth-table evidence; then rerun code review, verification, CI, and adversarial. Do not merge, accept the ADR, or begin implementation.

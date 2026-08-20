@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — journey-local code review and 10/10 goal verification passed; adversarial re-review is pending.
+Revise — journey-local code review and goal verification passed, but adversarial re-review found route-continuity and ADR-0011 blockers.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit re-review in progress
-Unreviewed backlog if deferred: Craft and clean-context remain unrun until the amended proposal passes adversarial review
+Review cadence: per-unit blocked at adversarial review
+Unreviewed backlog if deferred: Craft and clean-context remain unrun because adversarial did not pass
 
 ## What happened
 
@@ -27,7 +27,7 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 CI arbiter / green of record:
 
 - Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: draft PR #98 is open. Exact reviewed head `dfd14da` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
+- Status: draft PR #98 is open. Exact reviewed head `ef646b9` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -48,6 +48,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-adversarial-dfd14da.md`
 - `planning/adr-0016-code-review-b1e4846.md`
 - `planning/adr-0016-verification-39e2cdf.md`
+- `planning/adr-0016-adversarial-ef646b9.md`
 
 Checks run:
 
@@ -133,6 +134,12 @@ Adversarial review:
 - Report: `planning/adr-0016-adversarial-dfd14da.md`
 - Owner disposition: Jim chose journey-local support within one active coherent release set. Amendment `fb00f10` resolves the ambiguity; adversarial re-review pending.
 - Independent code-review disposition at `b1e4846`: ambiguity resolved with no new findings.
+- Re-review at `ef646b9`: `NOT-READY`.
+  - HIGH: a top-level SDK route can still combine incompatible bindings or transports.
+  - HIGH: ADR-0016 changes ADR-0011's unconditional SDK-primary stance but does not supersede it.
+  - MEDIUM: truth-table evidence lacks concrete route-continuity identities and clause derivations.
+  - LOW: state/checkpoint/PR evidence and the v0.11.2 present-tense sentence need correction.
+- Report: `planning/adr-0016-adversarial-ef646b9.md`
 
 Craft Review:
 
@@ -149,7 +156,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No owner decision is pending until re-review completes. Jim's choice does not authorize merge or ADR acceptance.
+Approve or decline remediation of the route-continuity and ADR-0011 findings. Jim's prior choice does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -161,8 +168,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Push the verification record, confirm exact-head CI, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Add concrete complete-route continuity, precisely supersede ADR-0011's unconditional SDK-primary clause, scope the historical v0.11.2 sentence, and commit a concrete truth table. Then rerun code review, goal verification, exact-head CI, and adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-The first adversarial findings were remediated; adversarial re-review at `dfd14da` found one decision ambiguity. Jim chose journey-local qualification, amendment `fb00f10` implements it, code review passed at `b1e4846`, and 10/10 goal verification passed at `39e2cdf`. Adversarial re-review, Craft, and clean-context remain. No implementation is authorized.
+Jim chose journey-local qualification, amendment `fb00f10` implemented it, code review passed at `b1e4846`, and goal verification passed at `39e2cdf`. Adversarial re-review at `ef646b9` found two remaining HIGH blockers. Craft and clean-context have not run. No implementation is authorized.
