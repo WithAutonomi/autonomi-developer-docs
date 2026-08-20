@@ -4,19 +4,19 @@ Date: 2026-08-20
 Project: Autonomi Developer Documentation
 Slice/question: Should released truth replace moving merged truth as the default public documentation source?
 Prepared by: orchestrator
-Agents/tools used: operative, codereviewer, verifier; adversarial, Craft, and clean-context pending
+Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and clean-context not run after adversarial blocker
 
 ## Status
 
-Continue through remaining review gates; not yet ready for the human acceptance decision.
+Revise — adversarial review returned NOT-READY.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit in progress
-Unreviewed backlog if deferred: none; remaining gates are pending for this unit
+Review cadence: per-unit blocked at adversarial review
+Unreviewed backlog if deferred: Craft and clean-context are not run because adversarial blocked advancement
 
 ## What happened
 
-Proposed ADR-0016 makes released, publicly obtainable, compatible, capability-evidenced truth the default for public rendered developer documentation and the published developer skill. It preserves moving default branches as next-release watch inputs, retains `target-manifest` for isolated pre-release previews, defines promotion and honest fallback evidence, and supersedes only the relevant portions of ADR-0003 and ADR-0004.
+Proposed ADR-0016 makes released, publicly obtainable, compatible, capability-evidenced truth the default for public rendered developer documentation and the published developer skill. It preserves moving default branches as next-release watch inputs, retains `target-manifest` for isolated pre-release previews, and defines promotion and honest fallback evidence. It currently claims to supersede only portions of ADR-0003 and ADR-0004; adversarial review found that the proposal also conflicts with provenance-refresh invariants in ADR-0006 and ADR-0014 and affects ADR-0013.
 
 The branch also carries the dated v0.11.2 motivating audit as inspectable evidence. The audit explicitly distinguishes historical policy from current authority, records evidence gaps, and notes that Python and Rust source-install routes were identified but not clean-install or runtime verified.
 
@@ -26,8 +26,8 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 
 CI arbiter / green of record:
 
-- Location: none; no remote branch, PR, or repository CI workflow exists for this work-unit.
-- Status: no CI arbiter exists; evidence is weaker.
+- Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
+- Status: the CI arbiter exists, but no remote branch, pull request, or exact-SHA CI run exists. Local evidence is weaker and is not CI-green.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -47,16 +47,16 @@ Checks run:
 - `python3 -I scripts/adr-governance.py`
 - `python3 -I -m unittest discover -s scripts/tests -p 'test_adr_governance.py'`
 - `git diff --check origin/main...HEAD`
-- Independent code review of the complete diff.
-- Goal-backward verification against the approved decision intent and Accepted ADR boundaries.
+- Independent code review through commit `5dbecd5`, before the later state/checkpoint-only commit.
+- Goal-backward verification through commit `5dbecd5` against the approved decision intent and Accepted ADR boundaries.
 
 Results:
 
 - ADR governance: passed, 1 ADR checked.
 - Governance tests: 20 passed.
 - Diff check: passed.
-- Code review: passed, no findings.
-- Goal verification: passed, 7/7 goals verified.
+- Code review through `5dbecd5`: passed, no findings; detailed reviewer output was session-local rather than a committed report.
+- Goal verification through `5dbecd5`: passed, 7/7 goals verified; detailed verifier output was session-local rather than a committed report.
 - Accepted ADRs: byte-identical to the base.
 
 ## Honesty rules check
@@ -65,9 +65,9 @@ Results:
   - No test, harness, daemon, build, environment, gate, or CI change.
 - Baseline-diff for evidence: Pass
   - No failure or skip was dismissed as environmental, flaky, or pre-existing.
-- Evidence reproducible-from-branch: Pass
-  - The motivating audit and representative commands are committed on this branch; no uncommitted wrapper or environment variable is required.
-- Local vs CI consistency: N/A — no CI arbiter exists; local evidence is explicitly weaker.
+- Evidence reproducible-from-branch: Concern
+  - The motivating audit and representative commands are committed and require no uncommitted wrapper or environment variable. Detailed code-review and verifier reports were session-local and must be persisted or their claims narrowed before readiness.
+- Local vs CI consistency: no conflict observed, but the applicable CI arbiter has not run.
 
 ## Ledger / forks
 
@@ -79,22 +79,28 @@ Clean-context test:
 
 - Reviewer/tool: panel Claude lane
 - Result: Not run for the corrected proposal
-- Findings: a prior attempt was deferred because authentication was unavailable (`models: unavailable (auth) · 0s`); a fresh attempt remains pending.
+- Findings: a prior attempt was deferred because authentication was unavailable (`models: unavailable (auth) · 0s`); no fresh attempt ran because adversarial review blocked advancement.
 
 Adversarial review:
 
-- Reviewer/tool: adversarial
+- Reviewer/tool: adversarial — OpenAI GPT-5.6-sol; implementer provider unrecorded, so cross-provider independence is unconfirmed
 - Required? Yes — architecture and public documentation policy.
-- Result: Not run on the corrected proposal
-- If Not run: pending before the acceptance checkpoint.
-- Findings: none yet.
+- Result: Blockers
+- Findings:
+  - HIGH: candidate eligibility must explicitly require stable/general-availability status and symmetric candidate safety/security qualification.
+  - HIGH: deterministic newest-candidate discovery/ordering and continuing incumbent requalification are missing.
+  - HIGH: supersession conflicts with ADR-0006 and ADR-0014, with an ADR-0013 stamp-refresh impact.
+  - HIGH: applicable PR-triggered ADR Governance CI exists but has not run.
+  - MEDIUM: skill parity is ambiguous under the pointer-based skill model.
+  - MEDIUM: distributable release identity and transitive dependency identity are conflated.
+  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated.
 
 Craft Review:
 
 - Reviewer/tool: craft
 - Required? Yes — repository-governance and maintainer-conformance work.
-- Verdict: Not run on the corrected proposal
-- If Not run: pending before the acceptance checkpoint.
+- Verdict: Not run
+- If Not run: adversarial NOT-READY blocked advancement; rerun after remediation.
 - CONFORMANCE findings and dispositions: none yet.
 - SIMPLICITY / NIT findings carried: none yet.
 
@@ -104,7 +110,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-After the remaining review gates: accept, reject, or request changes to Proposed ADR-0016.
+Approve or decline remediation of the adversarial findings. ADR acceptance is not yet ready for decision.
 
 PR / upstream action gate, if applicable:
 
@@ -114,8 +120,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Run adversarial, Craft, and clean-context gates. If they pass, return to Jim for the ADR acceptance decision. Do not begin implementation.
+Revise the proposal and evidence record, rerun code review and goal verification against the resulting HEAD, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
 
 ## Handoff note
 
-The proposal is code-reviewed and goal-verified but is not Accepted and has not completed its gauntlet. No implementation is authorized.
+The proposal passed code review and goal verification at `5dbecd5`, but adversarial review of `ff9761a` returned NOT-READY. It is not acceptance-ready, Craft and clean-context have not run, CI has not run, and no implementation is authorized.
