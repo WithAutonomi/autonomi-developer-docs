@@ -4,12 +4,13 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: rerun adversarial review after CI green
-- Status: draft PR open; initial PR head CI green; state-only update pending CI rerun
+- Task: decide ADR-0016 qualification granularity
+- Status: adversarial NOT-READY; attended decision checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
-- Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
+- Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
+- Current draft-PR base: `origin/main` at `487866a249fcb5ad7d8dd7829c017ed63d421343`
 - Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`
 - Implementation: not started; ADR acceptance remains human-only
 
@@ -51,9 +52,13 @@
 - Pointer-security correction commit `4873f36` makes fetched docs untrusted factual input that cannot override instructions or gates, and prohibits mutable aliases from ever being default, supported, or recommended install commands. Local ADR governance, 20 governance tests, and `git diff --check` passed.
 - Final independent code review at `481ca8c`: passed with no findings. The exact report is committed at `planning/adr-0016-code-review-481ca8c.md`.
 - Exact-HEAD goal verification at `9bd4f6f`: passed, 10/10 decision-contract goals verified with no gaps. The report is committed at `planning/adr-0016-verification-9bd4f6f.md`.
+- Exact-head adversarial re-review at `dfd14da`: `NOT-READY`. The report is committed at `planning/adr-0016-adversarial-dfd14da.md`.
+  - HIGH: the ADR simultaneously makes mandatory-baseline qualification global to one coherent release set and permits journey-local retention/withdrawal. One unit of qualification and fallback must be chosen.
+  - LOW: state/checkpoint must distinguish the historical branch point from the current PR base and describe scope-gated CI checks honestly.
+- Craft and clean-context did not run because adversarial blocked advancement.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
-- CI arbiter: draft PR #98. Initial PR head `d8e7300` passed ADR Governance, prose-guard, sweep-guard, sweep-sha-reachability, and both GitBook checks. This state-only update must also pass before gauntlet re-review.
+- CI arbiter: draft PR #98. Exact reviewed head `dfd14da` passed ADR Governance and both GitBook checks. Prose/sweep checks also returned success but were scope-gate no-ops for this branch, not substantive coverage.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -65,4 +70,4 @@
 
 ## Next
 
-- Push this state-only update, confirm draft PR #98 is green at the new exact head, then rerun adversarial. If it passes, run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.
+- Jim must choose global release-set qualification or journey-local qualification reconciled with one active manifest. After that decision, revise the Proposed ADR and verification evidence, rerun code review, goal verification, CI, and adversarial before Craft and clean-context. Do not merge, accept the ADR, or begin implementation.

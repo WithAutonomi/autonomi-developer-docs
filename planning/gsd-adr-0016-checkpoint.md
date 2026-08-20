@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — Jim authorized draft PR #98; initial PR head CI is green and the state-only update requires its rerun before adversarial review.
+Stop for decision — exact-head CI is green, but adversarial review returned NOT-READY on qualification granularity.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit re-review in progress
-Unreviewed backlog if deferred: Craft and clean-context remain unrun until adversarial passes
+Review cadence: per-unit blocked at adversarial decision finding
+Unreviewed backlog if deferred: Craft and clean-context remain unrun because adversarial did not pass
 
 ## What happened
 
@@ -27,7 +27,7 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 CI arbiter / green of record:
 
 - Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: draft PR #98 is open. Initial head `d8e7300` passed ADR Governance, prose-guard, sweep-guard, sweep-sha-reachability, GitBook, and the docs preview check. This state-only update must also pass at the new exact head before gauntlet re-review.
+- Status: draft PR #98 is open. Exact reviewed head `dfd14da` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -45,6 +45,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-code-review-2dd687b.md`
 - `planning/adr-0016-code-review-481ca8c.md`
 - `planning/adr-0016-verification-9bd4f6f.md`
+- `planning/adr-0016-adversarial-dfd14da.md`
 
 Checks run:
 
@@ -78,8 +79,8 @@ Results:
 - Baseline-diff for evidence: Pass
   - No failure or skip was dismissed as environmental, flaky, or pre-existing.
 - Evidence reproducible-from-branch: Pass for local review evidence
-  - The motivating audit, representative commands, latest passing exact-SHA code-review report, and 10/10 goal-verification report are committed and require no uncommitted wrapper or environment variable. CI evidence remains absent.
-- Local vs CI consistency: no conflict observed, but the applicable CI arbiter has not run.
+  - The motivating audit, representative commands, latest passing exact-SHA code-review report, 10/10 goal-verification report, and adversarial report are committed and require no uncommitted wrapper or environment variable.
+- Local vs CI consistency: no conflict observed; exact reviewed head `dfd14da` was green.
 
 ## Ledger / forks
 
@@ -121,6 +122,10 @@ Adversarial review:
   - MEDIUM: skill parity is ambiguous under the pointer-based skill model. Remediated at `fb67648`; re-review pending.
   - MEDIUM: distributable release identity and transitive dependency identity are conflated. Remediated at `fb67648`; re-review pending.
   - MEDIUM: review/verification evidence and exact reviewed SHA were overstated. Claims were narrowed and exact-SHA code-review/verification reports are now branch-local; adversarial re-review pending.
+- Re-review at `dfd14da`: `NOT-READY`.
+  - HIGH: qualification is ambiguous between one global coherent release set and journey-local support/withdrawal.
+  - LOW: checkpoint/base/CI wording was stale; corrected in this post-review record.
+- Report: `planning/adr-0016-adversarial-dfd14da.md`
 
 Craft Review:
 
@@ -137,7 +142,12 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No owner decision is pending until the remaining gauntlet completes. The draft PR does not authorize merge or ADR acceptance.
+Choose the qualification unit:
+
+1. Global coherent release set — any mandatory-baseline failure disqualifies the set.
+2. Journey-local — support can remain for unaffected journeys, requiring per-journey qualification semantics reconciled with one active manifest.
+
+The draft PR does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -149,8 +159,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Push this state-only update, wait for exact-head draft PR checks, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+After Jim chooses the qualification unit, revise the proposal and verification evidence, rerun code review and goal verification, push, wait for exact-head CI, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-Adversarial review of `ff9761a` returned NOT-READY. Its findings and subsequent lifecycle/pointer findings are remediated; code review passed at `481ca8c` and 10/10 goal verification passed at `9bd4f6f`. The proposal still needs adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.
+The first adversarial review's findings were remediated; code review passed at `481ca8c`, goal verification passed at `9bd4f6f`, and exact-head CI passed at `dfd14da`. Adversarial re-review at `dfd14da` found one remaining HIGH decision ambiguity. Craft and clean-context have not run. No implementation is authorized.
