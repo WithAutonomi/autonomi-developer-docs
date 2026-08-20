@@ -3,7 +3,7 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  source_commit: a4accf1fb617a8b4d8b53e928a279d212411540f
   verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
@@ -228,7 +228,7 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 | Name | Type | Description |
 |------|------|-------------|
 | `upload_id` | string | The `upload_id` returned from a prepare RPC |
-| `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex). Must be empty for Merkle |
+| `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex) from the on-chain payment. Empty when the prepare RPC reported no `payments` because every chunk is already stored, in which case the upload finalizes without an on-chain payment. Must be empty for Merkle |
 | `winner_pool_hashes` | repeated string | Merkle: one winner pool hash (hex with `0x` prefix) per entry in `merkle_batches`, in the same order. An empty string marks a batch the signer did not pay; keep unpaid slots in place rather than compacting or reordering the list. Required over `winner_pool_hash` when the upload has more than one batch |
 | `winner_pool_hash` | string | Merkle, legacy single-batch: winner pool hash from the `MerklePaymentMade` event. Accepted only when the upload has exactly one batch; must be empty for wave-batch and must not be combined with `winner_pool_hashes` |
 | `store_data_map` | bool | If `true`, stores the DataMap through `antd`'s configured wallet and returns its address in `address` |

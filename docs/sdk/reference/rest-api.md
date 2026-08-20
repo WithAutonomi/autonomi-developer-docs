@@ -3,7 +3,7 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  source_commit: a4accf1fb617a8b4d8b53e928a279d212411540f
   verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
@@ -729,7 +729,7 @@ Finalizes a prepared upload after the external signer has submitted the matching
 | `winner_pool_hash` | string | No | Merkle, legacy single-batch: winner pool hash emitted by `MerklePaymentMade`. Accepted only when the upload has exactly one batch; do not combine it with `winner_pool_hashes` |
 | `store_data_map` | boolean | No | If `true`, also stores the DataMap on-network |
 
-Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batch"`. When it returned `payment_type: "merkle"`, provide `winner_pool_hashes` with one hash per `merkle_batches` entry; a single-batch upload may instead provide `winner_pool_hash`.
+Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batch"`. When that response reported no `payments` because every chunk is already stored on the Autonomi Network, send an empty `tx_hashes` object; finalize completes without any on-chain payment. When it returned `payment_type: "merkle"`, provide `winner_pool_hashes` with one hash per `merkle_batches` entry; a single-batch upload may instead provide `winner_pool_hash`.
 
 **Response:**
 
@@ -750,6 +750,14 @@ Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batc
 curl -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"},"store_data_map":true}'
+```
+
+Wave-batch upload where every chunk is already stored, so prepare reported no `payments`:
+
+```bash
+curl -X POST http://localhost:8082/v1/upload/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","tx_hashes":{}}'
 ```
 
 ```bash
