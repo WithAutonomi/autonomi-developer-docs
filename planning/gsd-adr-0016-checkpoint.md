@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — code review passed at `481ca8c`; goal verification is pending.
+Continue — code review and 10/10 goal verification passed; adversarial re-review is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit re-review in progress
@@ -44,6 +44,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-code-review-e3df509.md`
 - `planning/adr-0016-code-review-2dd687b.md`
 - `planning/adr-0016-code-review-481ca8c.md`
+- `planning/adr-0016-verification-9bd4f6f.md`
 
 Checks run:
 
@@ -52,6 +53,7 @@ Checks run:
 - `git diff --check origin/main...HEAD`
 - Independent code review through commit `5dbecd5`, before the later state/checkpoint-only commit.
 - Goal-backward verification through commit `5dbecd5` against the approved decision intent and Accepted ADR boundaries.
+- Final code review through `481ca8c` and goal verification through `9bd4f6f`, with branch-local reports.
 
 Results:
 
@@ -67,6 +69,7 @@ Results:
 - Code review at exact commit `2dd687bdd4a958694a53049014791ede0b67c0be`: `issues_found`; previous lifecycle HIGH findings resolved, with one new HIGH and one MEDIUM finding. Full report: `planning/adr-0016-code-review-2dd687b.md`.
 - Pointer-security local validation at `4873f36`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 - Code review at exact commit `481ca8cb653b32823851d38b2bcc36b4007ddf7a`: passed with no findings. Full report: `planning/adr-0016-code-review-481ca8c.md`.
+- Goal verification at exact commit `9bd4f6f0780d3a431a134214f9abaa3fddb45ea4`: passed, 10/10 decision-contract goals verified with no gaps. Full report: `planning/adr-0016-verification-9bd4f6f.md`.
 
 ## Honesty rules check
 
@@ -74,8 +77,8 @@ Results:
   - No test, harness, daemon, build, environment, gate, or CI change.
 - Baseline-diff for evidence: Pass
   - No failure or skip was dismissed as environmental, flaky, or pre-existing.
-- Evidence reproducible-from-branch: Concern
-  - The motivating audit, representative commands, and latest exact-SHA code-review report are committed and require no uncommitted wrapper or environment variable. The earlier verifier report was session-local; a new exact-SHA verification remains pending after remediation.
+- Evidence reproducible-from-branch: Pass for local review evidence
+  - The motivating audit, representative commands, latest passing exact-SHA code-review report, and 10/10 goal-verification report are committed and require no uncommitted wrapper or environment variable. CI evidence remains absent.
 - Local vs CI consistency: no conflict observed, but the applicable CI arbiter has not run.
 
 ## Ledger / forks
@@ -87,8 +90,8 @@ Not applicable; attended run. No forks or split decisions were created.
 Independent code review:
 
 - Reviewer/tool: codereviewer — OpenAI GPT-5.6-sol (`openai/gpt-5.6-sol`)
-- Reviewed commit: `e3df50957d2691b8661c503bfd6f34cc960aece9`
-- Result: Issues found
+- Reviewed commit: latest passing review `481ca8cb653b32823851d38b2bcc36b4007ddf7a`; prior issue rounds `e3df509` and `2dd687b`
+- Result: Passed after two recorded remediation rounds
 - Findings:
   - HIGH: define deterministic behavior when maximal eligible sets fail but a dominated older eligible set might qualify.
   - HIGH: incumbent requalification must trigger whenever any qualification input changes, not only availability, security, or network evidence.
@@ -97,7 +100,7 @@ Independent code review:
 - Re-review disposition at `2dd687b`: deterministic fallback and complete requalification passed; immutable defaults passed, but alias recommendation language remained inconsistent. A new HIGH pointer-security finding was added.
 - Disposition: pointer-security and alias-consistency findings were remediated in `4873f36` and re-reviewed at `481ca8c`.
 - Re-review disposition at `481ca8c`: both findings resolved; code-review gate passed.
-- Report: `planning/adr-0016-code-review-e3df509.md`
+- Reports: `planning/adr-0016-code-review-e3df509.md`, `planning/adr-0016-code-review-2dd687b.md`, and `planning/adr-0016-code-review-481ca8c.md`
 
 Clean-context test:
 
@@ -117,7 +120,7 @@ Adversarial review:
   - HIGH: applicable PR-triggered ADR Governance CI exists but has not run.
   - MEDIUM: skill parity is ambiguous under the pointer-based skill model. Remediated at `fb67648`; re-review pending.
   - MEDIUM: distributable release identity and transitive dependency identity are conflated. Remediated at `fb67648`; re-review pending.
-  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated. Claims remain narrowed; exact-SHA re-review evidence is pending.
+  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated. Claims were narrowed and exact-SHA code-review/verification reports are now branch-local; adversarial re-review pending.
 
 Craft Review:
 
@@ -134,7 +137,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No owner decision is pending until goal and gauntlet verification complete. ADR acceptance is not yet ready for decision.
+No owner decision is pending until the gauntlet completes. ADR acceptance is not yet ready for decision.
 
 PR / upstream action gate, if applicable:
 
@@ -144,8 +147,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Run exact-HEAD goal verification, persist its report, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
+Rerun adversarial against the proposal and committed review evidence. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
 
 ## Handoff note
 
-Adversarial review of `ff9761a` returned NOT-READY. Its policy findings and subsequent lifecycle/pointer findings are remediated; code review passed at `481ca8c`. The proposal still needs goal verification, adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.
+Adversarial review of `ff9761a` returned NOT-READY. Its findings and subsequent lifecycle/pointer findings are remediated; code review passed at `481ca8c` and 10/10 goal verification passed at `9bd4f6f`. The proposal still needs adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.
