@@ -3,7 +3,7 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  source_commit: a4accf1fb617a8b4d8b53e928a279d212411540f
   verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
@@ -194,7 +194,7 @@ Use your signer stack to submit the EVM payment transaction described by the pre
 
 `antd` does not sign or broadcast those transactions in this flow.
 
-- For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`.
+- For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`. When the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network, there is nothing to submit — go straight to finalize.
 - For `merkle`, call `payForMerkleTree2()` once per entry in `merkle_batches`, passing that entry's `depth`, `pool_commitments`, and `merkle_payment_timestamp`. Keep the `winner_pool_hash` from each transaction's `MerklePaymentMade` event, in the same order as the batches.
 
 Both calls use the `payment_vault_address` returned by the prepare step.
@@ -209,6 +209,14 @@ Wave-batch finalize request:
 curl -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
+```
+
+When the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network — for example on a repeated upload — finalize with an empty `tx_hashes` object. No on-chain payment is needed, and `antd` returns the DataMap directly:
+
+```bash
+curl -X POST http://localhost:8082/v1/upload/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","tx_hashes":{}}'
 ```
 
 Merkle finalize request. Pass `winner_pool_hashes` as an array holding one winner hash per entry in the prepare response's `merkle_batches`, in the same order:
