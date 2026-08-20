@@ -4,12 +4,12 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: remediate Proposed ADR-0016 adversarial findings
-- Status: adversarial NOT-READY; attended checkpoint
+- Task: re-review Proposed ADR-0016 after adversarial remediation
+- Status: adversarial findings remediated; code review and verification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`
+- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -35,7 +35,9 @@
   - MEDIUM: public release identity requirements do not distinguish distributable artifacts from exact transitive dependency refs without their own release.
   - MEDIUM: code-review and goal-verification claims covered commit `5dbecd5`, not the later checkpoint/state-only HEAD, and their detailed reports were not branch-local.
 - Adversarial reviewer: OpenAI GPT-5.6-sol; implementer provider was not recorded, so cross-provider independence cannot be confirmed and evidence is weaker.
-- Craft re-review and fresh clean-context were not run because the adversarial gate blocked advancement.
+- ADR governance review confirmed that the policy corrections belong in existing Proposed ADR-0016 and require no new ADR.
+- Adversarial remediation commit `fb67648` addresses the policy findings by adding stable/general-availability eligibility, symmetric security qualification, deterministic release discovery/ordering, continuing incumbent requalification, precise ADR-0003/0004/0006/0013/0014 supersession, pointer-compatible skill parity, and separate distributable/dependency identity contracts.
+- Code review and goal verification have not yet run against the remediated content. Craft re-review and fresh clean-context remain blocked until adversarial passes.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -50,4 +52,4 @@
 
 ## Next
 
-- With Jim's attended approval, remediate the adversarial policy, supersession, skill-parity, dependency-identity, and evidence-record findings; rerun code review and goal verification against the resulting HEAD; then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- Rerun code review and goal verification against the remediated branch and persist exact-SHA evidence, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.

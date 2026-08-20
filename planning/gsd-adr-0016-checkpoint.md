@@ -8,15 +8,15 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — adversarial review returned NOT-READY.
+Continue — previous adversarial findings are remediated at `fb67648`; re-review is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit blocked at adversarial review
-Unreviewed backlog if deferred: Craft and clean-context are not run because adversarial blocked advancement
+Review cadence: per-unit re-review in progress
+Unreviewed backlog if deferred: Craft and clean-context remain unrun until adversarial passes
 
 ## What happened
 
-Proposed ADR-0016 makes released, publicly obtainable, compatible, capability-evidenced truth the default for public rendered developer documentation and the published developer skill. It preserves moving default branches as next-release watch inputs, retains `target-manifest` for isolated pre-release previews, and defines promotion and honest fallback evidence. It currently claims to supersede only portions of ADR-0003 and ADR-0004; adversarial review found that the proposal also conflicts with provenance-refresh invariants in ADR-0006 and ADR-0014 and affects ADR-0013.
+Proposed ADR-0016 makes released, publicly obtainable, compatible, capability-evidenced truth the default for public rendered developer documentation and the published developer skill. It preserves moving default branches as next-release watch inputs, retains `target-manifest` for isolated pre-release previews, and defines promotion and honest fallback evidence. Remediation commit `fb67648` adds stable/general-availability candidate rules, symmetric candidate/incumbent safety, deterministic release-set discovery and ordering, continuing incumbent requalification, pointer-compatible skill parity, separate distributable/dependency identities, and precise partial supersession of ADR-0003, ADR-0004, ADR-0006, ADR-0013, and ADR-0014.
 
 The branch also carries the dated v0.11.2 motivating audit as inspectable evidence. The audit explicitly distinguishes historical policy from current authority, records evidence gaps, and notes that Python and Rust source-install routes were identified but not clean-install or runtime verified.
 
@@ -58,6 +58,7 @@ Results:
 - Code review through `5dbecd5`: passed, no findings; detailed reviewer output was session-local rather than a committed report.
 - Goal verification through `5dbecd5`: passed, 7/7 goals verified; detailed verifier output was session-local rather than a committed report.
 - Accepted ADRs: byte-identical to the base.
+- Adversarial-remediation local validation at `fb67648`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 
 ## Honesty rules check
 
@@ -87,13 +88,13 @@ Adversarial review:
 - Required? Yes — architecture and public documentation policy.
 - Result: Blockers
 - Findings:
-  - HIGH: candidate eligibility must explicitly require stable/general-availability status and symmetric candidate safety/security qualification.
-  - HIGH: deterministic newest-candidate discovery/ordering and continuing incumbent requalification are missing.
-  - HIGH: supersession conflicts with ADR-0006 and ADR-0014, with an ADR-0013 stamp-refresh impact.
+  - HIGH: candidate eligibility must explicitly require stable/general-availability status and symmetric candidate safety/security qualification. Remediated at `fb67648`; re-review pending.
+  - HIGH: deterministic newest-candidate discovery/ordering and continuing incumbent requalification are missing. Remediated at `fb67648`; re-review pending.
+  - HIGH: supersession conflicts with ADR-0006 and ADR-0014, with an ADR-0013 stamp-refresh impact. Remediated at `fb67648`; re-review pending.
   - HIGH: applicable PR-triggered ADR Governance CI exists but has not run.
-  - MEDIUM: skill parity is ambiguous under the pointer-based skill model.
-  - MEDIUM: distributable release identity and transitive dependency identity are conflated.
-  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated.
+  - MEDIUM: skill parity is ambiguous under the pointer-based skill model. Remediated at `fb67648`; re-review pending.
+  - MEDIUM: distributable release identity and transitive dependency identity are conflated. Remediated at `fb67648`; re-review pending.
+  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated. Claims remain narrowed; exact-SHA re-review evidence is pending.
 
 Craft Review:
 
@@ -110,7 +111,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-Approve or decline remediation of the adversarial findings. ADR acceptance is not yet ready for decision.
+No owner decision is pending until the remediated proposal completes re-review. ADR acceptance is not yet ready for decision.
 
 PR / upstream action gate, if applicable:
 
@@ -120,8 +121,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Revise the proposal and evidence record, rerun code review and goal verification against the resulting HEAD, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
+Rerun code review and goal verification against the remediated branch, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
 
 ## Handoff note
 
-The proposal passed code review and goal verification at `5dbecd5`, but adversarial review of `ff9761a` returned NOT-READY. It is not acceptance-ready, Craft and clean-context have not run, CI has not run, and no implementation is authorized.
+Adversarial review of `ff9761a` returned NOT-READY. The policy findings are remediated in the content commit `fb67648`, but that commit has not yet passed independent re-review. The proposal is not acceptance-ready, Craft and clean-context have not run, CI has not run, and no implementation is authorized.
