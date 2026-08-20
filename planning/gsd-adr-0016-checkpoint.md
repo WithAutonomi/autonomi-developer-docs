@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Stop for decision — exact-head CI is green, but adversarial review returned NOT-READY on qualification granularity.
+Continue — Jim chose journey-local qualification within one coherent active release set; amendment `fb00f10` and exact-head CI are green, with re-review pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit blocked at adversarial decision finding
-Unreviewed backlog if deferred: Craft and clean-context remain unrun because adversarial did not pass
+Review cadence: per-unit re-review in progress
+Unreviewed backlog if deferred: Craft and clean-context remain unrun until the amended proposal passes adversarial review
 
 ## What happened
 
@@ -71,6 +71,7 @@ Results:
 - Pointer-security local validation at `4873f36`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 - Code review at exact commit `481ca8cb653b32823851d38b2bcc36b4007ddf7a`: passed with no findings. Full report: `planning/adr-0016-code-review-481ca8c.md`.
 - Goal verification at exact commit `9bd4f6f0780d3a431a134214f9abaa3fddb45ea4`: passed, 10/10 decision-contract goals verified with no gaps. Full report: `planning/adr-0016-verification-9bd4f6f.md`.
+- Journey-local content amendment `fb00f10`: local ADR governance and 20 tests passed; exact-head ADR Governance and GitBook checks passed on draft PR #98.
 
 ## Honesty rules check
 
@@ -126,6 +127,7 @@ Adversarial review:
   - HIGH: qualification is ambiguous between one global coherent release set and journey-local support/withdrawal.
   - LOW: checkpoint/base/CI wording was stale; corrected in this post-review record.
 - Report: `planning/adr-0016-adversarial-dfd14da.md`
+- Owner disposition: Jim chose journey-local support within one active coherent release set. Amendment `fb00f10` resolves the ambiguity; adversarial re-review pending.
 
 Craft Review:
 
@@ -142,12 +144,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-Choose the qualification unit:
-
-1. Global coherent release set — any mandatory-baseline failure disqualifies the set.
-2. Journey-local — support can remain for unaffected journeys, requiring per-journey qualification semantics reconciled with one active manifest.
-
-The draft PR does not authorize merge or ADR acceptance.
+No owner decision is pending until re-review completes. Jim's choice does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -159,8 +156,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-After Jim chooses the qualification unit, revise the proposal and verification evidence, rerun code review and goal verification, push, wait for exact-head CI, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Run exact-head code review and goal verification for `fb00f10`, persist their reports, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-The first adversarial review's findings were remediated; code review passed at `481ca8c`, goal verification passed at `9bd4f6f`, and exact-head CI passed at `dfd14da`. Adversarial re-review at `dfd14da` found one remaining HIGH decision ambiguity. Craft and clean-context have not run. No implementation is authorized.
+The first adversarial findings were remediated; code review passed at `481ca8c`, goal verification passed at `9bd4f6f`, and CI passed. Adversarial re-review at `dfd14da` found one decision ambiguity; Jim chose journey-local qualification and amendment `fb00f10` implements it. Exact-head re-review, Craft, and clean-context remain. No implementation is authorized.

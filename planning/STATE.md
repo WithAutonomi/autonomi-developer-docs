@@ -4,14 +4,14 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: decide ADR-0016 qualification granularity
-- Status: adversarial NOT-READY; attended decision checkpoint
+- Task: re-review journey-local qualification amendment
+- Status: Jim chose journey-local qualification; amendment committed and CI green; code review pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
 - Current draft-PR base: `origin/main` at `487866a249fcb5ad7d8dd7829c017ed63d421343`
-- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`
+- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`; journey-local amendment `fb00f10b5620ce502345fdbdb1689ac7c0014d98`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -56,6 +56,9 @@
   - HIGH: the ADR simultaneously makes mandatory-baseline qualification global to one coherent release set and permits journey-local retention/withdrawal. One unit of qualification and fallback must be chosen.
   - LOW: state/checkpoint must distinguish the historical branch point from the current PR base and describe scope-gated CI checks honestly.
 - Craft and clean-context did not run because adversarial blocked advancement.
+- Jim chose option 2 on 2026-08-20: one active coherent release set with journey-local support status, no mixed versions or per-journey old-release fallback, and global no-supported-baseline only when no eligible set supplies complete routes for every mandatory core outcome.
+- Journey-local amendment `fb00f10` formalizes that decision, including same-interface complete routes, global set selection/fallback, atomic optional-journey regression disclosure, journey-keyed manifest/docs/skill parity, and the minimum end-to-end store-and-retrieve outcome. Local ADR governance and 20 tests passed; exact-head draft-PR CI and GitBook checks are green.
+- Exact-head code review, goal verification, and adversarial re-review remain pending for `fb00f10`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reviewed head `dfd14da` passed ADR Governance and both GitBook checks. Prose/sweep checks also returned success but were scope-gate no-ops for this branch, not substantive coverage.
@@ -70,4 +73,4 @@
 
 ## Next
 
-- Jim must choose global release-set qualification or journey-local qualification reconciled with one active manifest. After that decision, revise the Proposed ADR and verification evidence, rerun code review, goal verification, CI, and adversarial before Craft and clean-context. Do not merge, accept the ADR, or begin implementation.
+- Run exact-head code review and goal verification for the journey-local amendment, persist new reports, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
