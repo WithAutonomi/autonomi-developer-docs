@@ -4,12 +4,12 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: remediate Proposed ADR-0016 lifecycle edge cases
-- Status: code-review issues; attended checkpoint
+- Task: re-review Proposed ADR-0016 lifecycle corrections
+- Status: lifecycle findings remediated; code review and verification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`
+- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -42,6 +42,7 @@
   - HIGH: continuing incumbent requalification omits provenance-integrity changes, mandatory-baseline changes, and newly discovered non-security runtime/capability evidence.
   - MEDIUM: mutable installation aliases can move to an unqualified release after a point-in-time clean-install check.
 - Goal verification did not run because code review blocked advancement. Adversarial re-review, Craft, and fresh clean-context remain pending.
+- Lifecycle correction commit `9c2f1da` defines deterministic newest-first evaluation across all eligible sets, requalification on every qualification-input change, immutable default install selectors, and alias-target requalification. Local ADR governance, 20 governance tests, and `git diff --check` passed; independent re-review remains pending.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -56,4 +57,4 @@
 
 ## Next
 
-- With Jim's attended approval, define deterministic qualified-set fallback, requalify on every qualification-input change, and close mutable-alias drift; then rerun code review and goal verification before adversarial, Craft, and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- Rerun code review and goal verification against lifecycle correction `9c2f1da`, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.

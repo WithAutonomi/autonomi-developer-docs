@@ -8,10 +8,10 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — independent code review of the adversarial remediation found two HIGH lifecycle gaps and one MEDIUM alias gap.
+Continue — lifecycle findings are remediated at `9c2f1da`; independent re-review is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit blocked at code review
+Review cadence: per-unit re-review in progress
 Unreviewed backlog if deferred: Craft and clean-context remain unrun until adversarial passes
 
 ## What happened
@@ -61,6 +61,7 @@ Results:
 - Accepted ADRs: byte-identical to the base.
 - Adversarial-remediation local validation at `fb67648`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 - Code review at exact commit `e3df50957d2691b8661c503bfd6f34cc960aece9`: `issues_found`; two HIGH and one MEDIUM finding. Full report: `planning/adr-0016-code-review-e3df509.md`.
+- Lifecycle-correction local validation at `9c2f1da`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 
 ## Honesty rules check
 
@@ -87,6 +88,7 @@ Independent code review:
   - HIGH: define deterministic behavior when maximal eligible sets fail but a dominated older eligible set might qualify.
   - HIGH: incumbent requalification must trigger whenever any qualification input changes, not only availability, security, or network evidence.
   - MEDIUM: default install routes must pin immutable versions/digests or alias-target movement must trigger requalification.
+- Disposition: all three are remediated in `9c2f1da`; independent re-review pending.
 - Report: `planning/adr-0016-code-review-e3df509.md`
 
 Clean-context test:
@@ -124,7 +126,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-Approve or decline remediation of the new lifecycle findings. ADR acceptance is not yet ready for decision.
+No owner decision is pending until lifecycle corrections complete re-review. ADR acceptance is not yet ready for decision.
 
 PR / upstream action gate, if applicable:
 
@@ -134,8 +136,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Define deterministic qualified-set fallback, trigger requalification on every qualification-input change, and close mutable-alias drift. Then rerun code review and goal verification against the resulting content commit before adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
+Rerun code review and goal verification against lifecycle correction `9c2f1da`, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
 
 ## Handoff note
 
-Adversarial review of `ff9761a` returned NOT-READY. The first policy findings were remediated in `fb67648`, but code review of `e3df509` found three remaining lifecycle edge cases. The proposal is not acceptance-ready, goal verification/adversarial re-review/Craft/clean-context have not run, CI has not run, and no implementation is authorized.
+Adversarial review of `ff9761a` returned NOT-READY. The first policy findings were remediated in `fb67648`; three later lifecycle edge cases are remediated in `9c2f1da`. The proposal still needs code review, goal verification, adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.
