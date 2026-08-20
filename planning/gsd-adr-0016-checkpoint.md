@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — journey-local code review passed at `b1e4846`; goal verification is pending.
+Continue — journey-local code review and 10/10 goal verification passed; adversarial re-review is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit re-review in progress
@@ -47,6 +47,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-verification-9bd4f6f.md`
 - `planning/adr-0016-adversarial-dfd14da.md`
 - `planning/adr-0016-code-review-b1e4846.md`
+- `planning/adr-0016-verification-39e2cdf.md`
 
 Checks run:
 
@@ -74,6 +75,7 @@ Results:
 - Goal verification at exact commit `9bd4f6f0780d3a431a134214f9abaa3fddb45ea4`: passed, 10/10 decision-contract goals verified with no gaps. Full report: `planning/adr-0016-verification-9bd4f6f.md`.
 - Journey-local content amendment `fb00f10`: local ADR governance and 20 tests passed; exact-head ADR Governance and GitBook checks passed on draft PR #98.
 - Journey-local code review at `b1e4846`: passed with no findings; all global/journey truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
+- Journey-local goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
 
 ## Honesty rules check
 
@@ -159,8 +161,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Run exact-head goal verification for `fb00f10`, persist its report, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Push the verification record, confirm exact-head CI, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-The first adversarial findings were remediated; adversarial re-review at `dfd14da` found one decision ambiguity. Jim chose journey-local qualification, amendment `fb00f10` implements it, and exact-head code review passed at `b1e4846`. Goal verification, adversarial re-review, Craft, and clean-context remain. No implementation is authorized.
+The first adversarial findings were remediated; adversarial re-review at `dfd14da` found one decision ambiguity. Jim chose journey-local qualification, amendment `fb00f10` implements it, code review passed at `b1e4846`, and 10/10 goal verification passed at `39e2cdf`. Adversarial re-review, Craft, and clean-context remain. No implementation is authorized.
