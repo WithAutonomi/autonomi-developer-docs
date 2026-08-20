@@ -4,12 +4,12 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: remediate Proposed ADR-0016 pointer security and alias consistency
-- Status: code-review issues; attended checkpoint
+- Task: re-review Proposed ADR-0016 pointer security corrections
+- Status: pointer findings remediated; code review and verification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`
+- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -47,6 +47,7 @@
   - HIGH: skill pointers require fetched released docs but lack a durable untrusted-content/prompt-injection boundary.
   - MEDIUM: mutable aliases are prohibited as default/recommended selectors but later language allows them to continue being recommended after requalification.
 - Goal verification did not run because code review blocked advancement.
+- Pointer-security correction commit `4873f36` makes fetched docs untrusted factual input that cannot override instructions or gates, and prohibits mutable aliases from ever being default, supported, or recommended install commands. Local ADR governance, 20 governance tests, and `git diff --check` passed; independent re-review remains pending.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -61,4 +62,4 @@
 
 ## Next
 
-- With Jim's attended approval, add the untrusted-content boundary for skill pointers and make mutable aliases never default or recommended commands; then rerun code review and goal verification before adversarial, Craft, and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- Rerun code review and goal verification against pointer-security correction `4873f36`, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
