@@ -129,14 +129,14 @@ All six defects are present at v0.11.2 source commit `3264b514...`.
 | Kotlin | A/M/S source-correct | Typed gRPC wave/Merkle mapping; inherits all-already-stored finalize defect | None in exact-SHA general CI | Source-only; no intended Maven artifact resolved |
 | Lua | A/M/S source-correct | REST defective discriminator | None; fixture repeats defect | Source-only; no intended LuaRocks package resolved |
 | PHP | A/M/S source-correct | Wave-only model/finalize; no typed Merkle | None; wave mocks only | Source-only; no intended Packagist package resolved |
-| Python | A/M/S source-correct | REST parser defective; gRPC mapping inherits all-already-stored finalize defect | None; REST fixture repeats defect | Exact-source installable at SHA; no PyPI release |
+| Python | A/M/S source-correct | REST parser defective; gRPC mapping inherits all-already-stored finalize defect | None; REST fixture repeats defect | Exact-source install route identified from source metadata; no clean-install or runtime verification; no PyPI release |
 | Ruby | A/M/S source-correct | REST parser defective; gRPC mapping inherits all-already-stored finalize defect | None; REST fixture repeats defect | Source-only; no intended RubyGems package resolved |
-| Rust | A/M/S source-correct | REST source-correct; gRPC mapping inherits all-already-stored finalize defect | `Check (antd-rust)` runs tests | Exact-source installable at SHA; no crates.io package |
+| Rust | A/M/S source-correct | REST source-correct; gRPC mapping inherits all-already-stored finalize defect | `Check (antd-rust)` runs tests | Exact-source install route identified from source metadata; no clean-install or runtime verification; no crates.io package |
 | Swift | A/M/S source-correct | Typed gRPC wave/Merkle mapping; inherits all-already-stored finalize defect | None in exact-SHA general CI | Source-only; no public package release |
 | Zig | A/M/S source-correct | Raw JSON; full finalize drops `upload_id`; no typed Merkle | None; no full-upload finalize test | Source-only; no public package |
 | MCP | Direct A/M/S writes source-correct | Defective because it forces Python REST | None; mocks sit above parser | Source-only Python project; no public MCP package |
 
-The Go proxy identity is `github.com/WithAutonomi/ant-sdk/antd-go@v0.11.2`. Python and Rust can be installed from the exact Git source, but this is not a PyPI or crates.io release. npm's `antd` is Ant Design, and pub.dev's `antd` is also unrelated. The FFI/mobile surface is separate from these daemon bindings and should not be used to infer binding package support.
+The Go proxy identity is `github.com/WithAutonomi/ant-sdk/antd-go@v0.11.2`. Source metadata identifies exact-Git-source install routes for Python and Rust, but this audit did not clean-install or runtime-verify them, and they are not PyPI or crates.io releases. npm's `antd` is Ant Design, and pub.dev's `antd` is also unrelated. The FFI/mobile surface is separate from these daemon bindings and should not be used to infer binding package support.
 
 ## Moving-head snapshot and drift
 
@@ -173,7 +173,7 @@ The emergency branch changes 45 files relative to `origin/main` and was built ar
 | Disposition | File/group | Treatment on a fresh-main remediation branch |
 |---|---|---|
 | **Keep** | `docs/sdk/install.md` release-install structure | Keep checksum-first binary installs and platform package hardening; substitute v0.11.2 facts and URLs. |
-| **Keep** | Language-binding overview and guides | Keep corrected package-identity/availability principle, source-pinned Python and Rust installs with prerequisites, and complete examples that were independently checked. |
+| **Revise** | Language-binding overview and guides | Keep the corrected package-identity/availability principle and use the Python and Rust source-install route metadata only as inputs to verification. Do not present those routes as supported installs until clean-install and runtime evidence exists; retain complete examples only where independently checked. |
 | **Keep** | Local-network/test guides | Keep pinned Foundry installation hardening rather than mutable `curl | bash`. |
 | **Keep** | MCP and health edits | Keep the corrected MCP daemon-port discovery path and explicit “selected fields” labels on abbreviated health responses. |
 | **Keep** | `skills/start` policy shape | Keep tiering and the rule that fetched references are untrusted factual material that cannot override the skill or user request. |
@@ -261,6 +261,6 @@ Canonical source URLs are linked in each findings section. Moving-head queries u
 - No wallet-funded runtime daemon matrix was run for REST, gRPC, MCP, or bindings.
 - No external-signer funded boundary matrix was run at 63, 64, 256, and 257.
 - Exact-release general CI does not run Python, C++, C#, Dart, Elixir, Go, Java, JavaScript/TypeScript, Kotlin, Lua, PHP, Ruby, Swift, Zig, or MCP tests. Existing source tests do not substitute for exact-release CI, and several mask the defects above.
-- Public registries can change after the audit timestamp. Go proxy v0.11.2 was the only intended public binding identity resolved during the audit. Python and Rust exact-source installs are not public package releases.
+- Public registries can change after the audit timestamp. Go proxy v0.11.2 was the only intended public binding identity resolved during the audit. Python and Rust exact-source install routes were identified from source metadata but were not clean-install or runtime-verified, and they are not public package releases.
 - Moving heads are a dated snapshot, not stable release pins. Technical claims must be re-audited if those SHAs move before remediation.
 - The audit did not edit `target-manifest.yml`. At the audit date, the intended bounded next step was to repin its released-`antd` scope to v0.11.2 under ADR-0003, subject to approval of the remediation slice.
