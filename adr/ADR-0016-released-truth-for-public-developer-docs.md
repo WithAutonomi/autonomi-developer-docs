@@ -5,7 +5,7 @@
 - **Date:** 2026-08-12
 - **Decision owners:** Jim Collinson
 - **Reviewers:** Jim Collinson
-- **Supersedes:** ADR-0003 (source-selection default and verification-mode set only); ADR-0004 (source resolution and drift semantics for the default public surface only)
+- **Supersedes:** ADR-0003 (public source-selection default, verification-mode set, and HEAD-based freshness semantics for default public docs and skill only); ADR-0004 (default-public source resolution, staleness detection, and provenance-advance semantics only); ADR-0006 (conditions under which metadata-only provenance may advance for default public artifacts only); ADR-0013 (default-branch stamp-refresh interpretation for published-skill provenance only); ADR-0014 (source and conditions for pure public-skill provenance refresh only)
 - **Superseded by:** none
 - **Related:** ADR-0005 through ADR-0007; ADR-0012 through ADR-0014; `planning/verification-workflow.md`; `planning/implementation-plan.md` §5; `planning/released-antd-v0.11.2-audit.md`; [WithAutonomi/ant-sdk issue #233](https://github.com/WithAutonomi/ant-sdk/issues/233)
 
@@ -42,24 +42,49 @@ The existing `target-manifest` mode can pin a release-hardening pass, but ADR-00
 
 Public rendered developer documentation and the published developer skill will describe **released truth** by default: the newest coherent release set that passes the mandatory public-baseline evidence below. The release set must be publicly obtainable through documented standard routes, compatible with its shipped dependencies and the deployed Autonomi Network for the claims made, and supported by capability-specific evidence.
 
+### Verification modes and authorities
+
 The verification model will retain exact per-surface provenance while changing its default:
 
-- **`released-truth` is the default mode for public rendered documentation and the published developer skill.** Verification resolves every documented surface to exact refs in one machine-readable release manifest. A ref may identify a component's own release or the exact dependency ref shipped by another released product.
+- **`released-truth` is the default mode for public rendered documentation and the published developer skill.** Verification resolves every documented surface to exact refs in one machine-readable active released-truth manifest.
 - **The release manifest represents a coherent product set, not a bag of latest tags.** Component versions, transitive refs that carry documented behavior, and deployed Autonomi Network compatibility must agree for the claims that depend on them.
+- **The active released-truth manifest is the sole mutable machine-readable authority for active public release identities and capability support statuses.** Each promotion leaves an immutable promotion record as the evidence for why that manifest state was selected. Verification records and skill metadata identify the exact sources audited for their surfaces, but do not independently select a different active release or support status.
 - **`target-manifest` remains an explicit pre-release, launch-hardening, or release-candidate mode.** It does not become the current public developer surface before release. If target content is published, it must be isolated and clearly labeled as a versioned preview rather than replacing the default docs.
 - **`current-merged-truth` is retired as a verification mode for public rendered documentation and the published skill.** Moving default branches remain research inputs for drift detection, impact assessment, and next-release preparation. A merge can open an audit queue; it cannot silently advance rendered prose or verification SHAs.
 
+### Release identities and candidate eligibility
+
+An independently obtainable component is eligible for a `released-truth` candidate only through a stable or general-availability public distributable release identity published by its canonical publisher. That identity records its stable or general-availability publication state and canonical release URL or registry identity, immutable source identity, published artifacts and checksums where artifacts are distributed, and standard installation identity. Drafts; alpha, beta, release-candidate (RC), preview, nightly, canary, or equivalent prereleases; branch builds; and mutable aliases without an immutable underlying release identity are ineligible. They may appear only in isolated `target-manifest` preview mode.
+
+A transitive shipped dependency has a different identity contract. It records the exact locked ref and an inspectable dependency path from the parent distributable release. It needs its own stable or general-availability release URL only when the public guidance presents it as independently obtainable. A transitive ref proves what a parent release shipped; it never by itself establishes that the dependency is independently installable or eligible as a released-truth candidate.
+
+### Deterministic lifecycle and symmetric qualification
+
+Candidate discovery reads canonical stable or general-availability publication state, independently of default-branch movement and prior watch-state observations. A stable release remains discoverable even when its source commit was already observed on a default branch before publication.
+
+Eligible coherent release sets are ordered by a deterministic component-wise partial order. One set dominates another only when it is not older for every component under the component's immutable canonical release ordering and is newer for at least one component. Every maximal non-dominated eligible set is considered. When maximal sets are incomparable, selection uses a committed, predeclared, reviewed total extension with a fixed component-identity order and immutable release-identity tie-breakers. The result must not depend on HEAD, API or filesystem result order, audit time, or evidence-completion order. Exact release-order extraction and comparator mechanics belong in the later specification.
+
+Candidate and incumbent qualification is symmetric. Both must independently pass applicable obtainability, provenance-integrity, safety and security, deployed-network identity and compatibility, and mandatory public-baseline requirements. Promotion is not permanent: the incumbent is requalified during every promotion decision and whenever artifact availability or withdrawal, applicable safety or security evidence, or deployed-network identity or compatibility changes, even when there is no new candidate. Default-branch movement alone neither qualifies nor disqualifies a candidate or incumbent.
+
+Artifact-wide disqualifiers and capability-local defects have different scope. Withdrawal or unobtainability, failed provenance integrity, an artifact-wide safety or security failure, or incompatible deployed-network behavior disqualifies the artifact for every affected journey. A defect confined to a non-baseline capability may leave the rest of a qualified release set active when the affected capability is classified honestly and its remaining guidance is safe. If safety or security evidence does not establish whether a defect is artifact-wide or capability-local, qualification fails closed for every plausibly affected journey until the scope is established.
+
+If no eligible candidate qualifies and no incumbent remains qualified, the public surface must not fall back to moving source, a prerelease, or an old artifact that has not been evaluated under the active baseline. Affected guidance is narrowed or withdrawn and states that no supported baseline exists.
+
+### Promotion evidence
+
 Every candidate release set requires a committed, machine-readable release manifest and an inspectable promotion record. Promotion fails closed if any mandatory field or evidence is absent. The record must contain, at minimum:
 
-- **Immutable release identity:** the public version and release URL for each component, immutable tag object and peeled source commit where applicable, exact shipped dependency refs, artifact names and checksums, publication timestamp, and the standard installation identity for every interface presented as installable.
+- **Immutable release identity:** the public stable or general-availability distributable identity for every independently obtainable component, including canonical publication state and URL or registry identity, immutable tag object and peeled source commit where applicable, artifact names and checksums, publication timestamp, and the standard installation identity for every interface presented as installable; plus the exact locked ref and inspectable parent path for each transitive shipped dependency that carries documented behavior.
 - **Clean obtainability:** a successful installation of each documented standard installation route in a fresh supported environment. The check must prove that the package, binary, container, or source-install identity resolves to the intended Autonomi artifact and version; source-directory presence and an unrelated registry name do not pass.
 - **Release-set compatibility and deployed-network identity:** locked dependency evidence for the shipped set and, for network-dependent claims, the network environment, observation date, protocol or configuration anchor, and the most precise inspectable deployment identity available. If the deployed state cannot be identified precisely enough to reproduce a claim, that claim remains unverified and cannot be promoted.
 - **Capability and runtime evidence:** a matrix mapping each public interface, capability, and material operation to its evidence and one of `supported`, `supported-with-known-limitation`, `unavailable`, or `deferred`. Source and schema inspection can establish contract existence, but cannot establish a runnable journey. Installation claims require clean-install evidence; getting-started and how-to claims require the complete documented journey to run; network-dependent behavior requires execution against the identified compatible network state.
 - **Known limitations and alternatives:** known defects, affected versions and operations, upstream issue links for material defects, and a verified safe alternative where one exists. `supported-with-known-limitation` is permitted only when the supported usage remains safe and reproducible; otherwise the capability is `unavailable` or `deferred`.
-- **Cross-surface consistency:** the public docs and published developer skill must map every covered interface and capability to the same support status, known defect or limitation, and safe alternative. Matching refs alone is insufficient. A mismatch blocks promotion.
+- **Cross-surface consistency:** the public docs and published developer skill must map the enumerable coverage set defined below to the same support status, known defect or limitation, and safe alternative. Matching refs alone is insufficient. A mismatch blocks promotion.
 - **Objective supported-baseline retention:** the incumbent supported release set, the candidate release set, each result against the predeclared mandatory public baseline, and the resulting promote-or-retain outcome. A candidate replaces the incumbent only when every mandatory promotion requirement passes. If any requirement fails, the incumbent remains the supported default only for journeys where it continues to satisfy applicable obtainability, safety and security, deployed-network compatibility, and mandatory baseline requirements. A withdrawn or unobtainable, unsafe or insecure, incompatible, or baseline-noncompliant incumbent is disqualified for the affected journey. If no qualifying incumbent exists, the candidate remains unpromoted, affected guidance is narrowed or withdrawn, and public guidance explicitly states that no supported baseline exists for that journey until a released candidate passes.
 
 The mandatory public baseline is committed and reviewed before a candidate audit; changing it is a separate reviewed policy change, not part of producing promotion evidence. It includes, at minimum, a clean standard installation plus successful store and retrieve journeys for every interface the public docs present as the default or recommended way to use Autonomi. A safe alternative may preserve a non-baseline capability, but it cannot waive a mandatory baseline failure. Subject to the incumbent qualification rule above, the prior supported release set remains the default until a candidate passes every promotion requirement. When a newer available release is unsuitable and the incumbent remains qualified, installation and version guidance must name both that newer release and the older supported baseline, explain the affected boundary, and give the supported install command; retaining an older baseline through stale metadata or omission is prohibited. When the incumbent is disqualified, the affected guidance must instead narrow or withdraw the journey and state that no supported baseline exists until a released candidate passes.
+
+### Capability truth and skill parity
 
 Released truth is capability-specific and evidence-based:
 
@@ -69,6 +94,10 @@ Released truth is capability-specific and evidence-based:
 - A release is promoted into public docs only when its manifest and promotion record satisfy the mandatory fields and evidence floors in this decision.
 - Non-baseline capabilities do not block the whole release set when their status and guidance are honest. They remain `unavailable` or `deferred`, or `supported-with-known-limitation` when a safe, verified usage boundary exists.
 
+The active manifest defines an enumerable coverage set of stable interface, capability, and material-operation identifiers. It covers every claim represented in the rendered docs and everything the published skill bundles, recommends, warns about, or routes through a pointer.
+
+For each covered identifier, the skill may represent released guidance as bundled content or as an explicit pointer to the default released-truth docs. A pointer satisfies parity only when it resolves under the same active manifest, the skill carries no contradictory claim, and the agent fetches the released guidance before answering release-sensitive detail. If that fetch fails, the agent defers the release-sensitive detail instead of consulting moving source or fabricating an answer. Parity does not require duplication of pointered prose. Any claim, recommendation, warning, limitation, alternative, or routing instruction that the skill does bundle must match the active released guidance directly.
+
 The existing verification-block invariants remain:
 
 - Every rendered documentation surface carries one or more machine-readable verification records with source repository, ref, exact commit SHA, verification date, and verification mode.
@@ -76,7 +105,19 @@ The existing verification-block invariants remain:
 - A surface presented as verified never uses `source_commit: TBD`.
 - Provenance mechanics remain outside rendered prose, while released defects, limitations, and safe alternatives appear in rendered guidance when developers need them.
 
-ADR-0004 continues to govern deterministic detection, fail-closed behavior, and model-tiered auditing, but this ADR supersedes its source-resolution and drift semantics for the default public surface. Released-record conformance and next-release source movement are separate detector outcomes. A released-truth record resolves through the active release manifest, not through the repository registry plus a GitHub default branch; deterministic comparison against that manifest detects corruption or inconsistency in released records. Default branches remain registry-resolved watch inputs and are compared with a separately tracked, last-audited watch state. Their movement creates next-release impact candidates, but does not mark released records stale, authorize a metadata re-stamp, or advance released provenance. Completing a next-release impact audit may advance the watch state without changing the released record. Metadata-only and prose audit tiers remain, but public SHAs change only through release promotion. ADR-0005 through ADR-0007 continue to govern scheduling, update-track separation, and fail-closed operation. Detailed manifest and watch-state schemas, promotion and detection mechanics, migration sequencing, and automation changes belong in a follow-up specification and plan.
+Released-record conformance and next-release source movement are separate detector outcomes. A released-truth record resolves through the active release manifest, not through the repository registry plus a GitHub default branch; deterministic comparison against that manifest detects corruption or inconsistency in released records. Default branches remain registry-resolved watch inputs and are compared with a separately tracked, last-audited watch state. Their movement creates next-release impact candidates, but does not mark released records stale, authorize a metadata re-stamp, or advance released provenance. Completing a next-release impact audit may advance the watch state without changing the released record.
+
+### Supersession scope and preserved invariants
+
+This ADR supersedes only the named default-public source and provenance-advance semantics in Accepted ADRs:
+
+- **ADR-0003:** superseded for the public source-selection default, verification-mode set, and HEAD-based freshness semantics of default public rendered docs and the published skill. Its exact provenance schema, exact-SHA requirement, no-placeholder rule, provenance/body separation, and explicit target pinning remain intact.
+- **ADR-0004:** superseded for default-public source resolution, staleness detection, and provenance-advance semantics. Its deterministic, model-free, fail-closed detection; candidate-not-directive rule; and efficient-model versus frontier-model audit tiers remain intact.
+- **ADR-0006:** superseded only for the conditions under which metadata-only provenance may advance for default public artifacts. Its two mutually exclusive tracks, mechanical change envelopes, stronger prose review, reachability checks, and coherent skill-state requirement remain intact. Under `released-truth`, metadata-only public provenance advances only to refs authorized by promotion into the active manifest, never merely because HEAD moved.
+- **ADR-0013:** superseded only for the default-branch stamp-refresh interpretation of published-skill provenance. Its three-part freshness defense, pointer content tier, runtime version check, and stable-URL contract remain intact. A skill stamp refresh now means conformance to the active released-truth manifest, not conformance to moving HEAD.
+- **ADR-0014:** superseded only for the source and conditions of a pure public-skill provenance refresh. Its shared source-audit workflow, `feeds_skills` relationship, distinct metadata responsibilities, and coherent-state requirement remain intact. Pure skill provenance may advance only with a released-truth promotion. The content version and release history may remain unchanged only when bundled claims, recommendations, warnings, limitations, alternatives, and pointers remain unchanged.
+
+ADR-0005 and ADR-0007 remain fully intact. Scheduling, adapters, detailed manifest and watch-state schemas, exact comparator mechanics, promotion and detection mechanics, migration sequencing, and automation changes belong in a follow-up specification and plan.
 
 ## Consequences
 
@@ -92,7 +133,7 @@ ADR-0004 continues to govern deterministic detection, fail-closed behavior, and 
 
 - Documentation can intentionally lag merged source until a release is promoted.
 - Maintaining a coherent manifest across multiple repositories and deployed-network dependencies adds release-management work.
-- If release promotion is neglected, public docs can become stale even while drift detection is working.
+- If promotion or incumbent requalification is neglected, public docs can become stale even while source-movement detection is working.
 - Capability-specific evidence and known-defect guidance require continuing judgment and maintenance.
 - Some source-present bindings or APIs will remain undocumented as supported until an obtainable, verified route exists.
 
@@ -100,20 +141,29 @@ ADR-0004 continues to govern deterministic detection, fail-closed behavior, and 
 
 - Default-branch movement still matters: it starts impact assessment and prepares future documentation, but does not itself change released truth.
 - Versioned previews may describe a target release when clearly separated from the default public docs.
-- Accepted ADR-0003 remains immutable; this ADR's `Supersedes` field is the authoritative supersession link if this proposal is accepted.
-- The exact release-manifest shape, migration from existing modes, release-promotion workflow, and automation updates require a separate reviewed specification and execution plan.
+- Accepted ADRs remain immutable; this ADR's `Supersedes` field is the authoritative supersession link if this proposal is accepted.
+- The exact release-manifest shape, comparator, migration from existing modes, release-promotion workflow, and automation updates require a separate reviewed specification and execution plan.
 
 ## Validation
 
 This decision is satisfied when all of the following remain true:
 
 - Every public installation or package identity resolves through its documented supported route from a clean environment.
+- Candidate discovery rejects drafts, prereleases of every named class, branch builds, and mutable aliases without immutable release identity; those identities can appear only in isolated target previews.
+- A stable or general-availability release remains discoverable from canonical publication state when its source commit was already observed on HEAD before publication.
+- Shuffling API, registry, or filesystem discovery results does not change the eligible sets, maximal non-dominated sets, precedence, or promotion outcome.
+- Incomparable maximal release sets resolve identically through the committed total extension and its fixed component order and immutable release-identity tie-breakers.
 - Every public verification record resolves to exact refs in one coherent release manifest, including shipped dependency refs where they carry documented behavior.
 - Every release promotion record contains all seven minimum evidence groups required by this decision and identifies the predeclared mandatory public baseline.
+- Candidate and incumbent qualification apply the same obtainability, provenance-integrity, safety and security, deployed-network compatibility, and mandatory-baseline requirements.
+- Artifact withdrawal or loss, applicable advisory or safety evidence, and deployed-network identity or compatibility change requalify the incumbent without requiring a new candidate.
 - Claims that depend on deployed Autonomi Network behavior are checked against the identified compatible deployed state; claims without a reproducible deployment anchor remain unverified.
 - Getting-started and how-to journeys have complete runtime evidence for the released interface they recommend; source or schema inspection alone does not pass.
 - Known released defects and boundaries are represented in rendered guidance with safe alternatives where available, and material upstream defects are tracked.
-- Every covered capability has the same status, known defect or limitation, and safe alternative in the rendered docs and published developer skill.
+- A capability-local non-baseline defect changes only its covered capability when evidence establishes that isolation; uncertain safety or security scope fails closed for every plausibly affected journey.
+- Every coverage-set identifier has the same status, known defect or limitation, and safe alternative in the rendered docs and published developer skill.
+- Pointer parity resolves against the active released-truth manifest, fetches released guidance before release-sensitive answers, and defers that detail on fetch failure; bundled skill guidance matches directly without requiring duplicated pointer prose.
+- A transitive dependency ref with no independent release URL remains valid shipped-dependency provenance but does not establish independent installability or candidate eligibility.
 - If a newer available release fails the mandatory baseline and the incumbent remains qualified, installation and version guidance names the newer release, the retained supported baseline, the reason, and the supported install command.
 - If an incumbent becomes withdrawn or unobtainable, unsafe or insecure, incompatible with the deployed Autonomi Network, or noncompliant with the mandatory baseline, affected guidance narrows or withdraws the journey and states that no supported baseline exists until a released candidate passes.
 - No verification record backing the default public rendered documentation or published developer skill uses `current-merged-truth`.
