@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — pointer-security and alias-consistency findings are remediated at `4873f36`; re-review is pending.
+Continue — code review passed at `481ca8c`; goal verification is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit re-review in progress
@@ -43,6 +43,7 @@ Files changed/artifacts produced:
 - `planning/gsd-adr-0016-checkpoint.md`
 - `planning/adr-0016-code-review-e3df509.md`
 - `planning/adr-0016-code-review-2dd687b.md`
+- `planning/adr-0016-code-review-481ca8c.md`
 
 Checks run:
 
@@ -65,6 +66,7 @@ Results:
 - Lifecycle-correction local validation at `9c2f1da`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
 - Code review at exact commit `2dd687bdd4a958694a53049014791ede0b67c0be`: `issues_found`; previous lifecycle HIGH findings resolved, with one new HIGH and one MEDIUM finding. Full report: `planning/adr-0016-code-review-2dd687b.md`.
 - Pointer-security local validation at `4873f36`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
+- Code review at exact commit `481ca8cb653b32823851d38b2bcc36b4007ddf7a`: passed with no findings. Full report: `planning/adr-0016-code-review-481ca8c.md`.
 
 ## Honesty rules check
 
@@ -93,7 +95,8 @@ Independent code review:
   - MEDIUM: default install routes must pin immutable versions/digests or alias-target movement must trigger requalification.
 - Disposition: all three were remediated in `9c2f1da` and re-reviewed at `2dd687b`.
 - Re-review disposition at `2dd687b`: deterministic fallback and complete requalification passed; immutable defaults passed, but alias recommendation language remained inconsistent. A new HIGH pointer-security finding was added.
-- Disposition: pointer-security and alias-consistency findings are remediated in `4873f36`; independent re-review pending.
+- Disposition: pointer-security and alias-consistency findings were remediated in `4873f36` and re-reviewed at `481ca8c`.
+- Re-review disposition at `481ca8c`: both findings resolved; code-review gate passed.
 - Report: `planning/adr-0016-code-review-e3df509.md`
 
 Clean-context test:
@@ -131,7 +134,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No owner decision is pending until pointer-security corrections complete re-review. ADR acceptance is not yet ready for decision.
+No owner decision is pending until goal and gauntlet verification complete. ADR acceptance is not yet ready for decision.
 
 PR / upstream action gate, if applicable:
 
@@ -141,8 +144,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Rerun code review and goal verification against pointer-security correction `4873f36`, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
+Run exact-HEAD goal verification, persist its report, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Obtaining CI green will require Jim's explicit authorization for the exact pull-request action. Do not begin implementation.
 
 ## Handoff note
 
-Adversarial review of `ff9761a` returned NOT-READY. The first policy findings were remediated in `fb67648`; lifecycle fallback and requalification were remediated in `9c2f1da`; pointer security and alias consistency were remediated in `4873f36`. The proposal still needs code re-review, goal verification, adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.
+Adversarial review of `ff9761a` returned NOT-READY. Its policy findings and subsequent lifecycle/pointer findings are remediated; code review passed at `481ca8c`. The proposal still needs goal verification, adversarial re-review, Craft, clean-context, and CI. No implementation is authorized.

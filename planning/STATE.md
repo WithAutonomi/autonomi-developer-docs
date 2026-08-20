@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: re-review Proposed ADR-0016 pointer security corrections
-- Status: pointer findings remediated; code review and verification pending
+- Task: verify Proposed ADR-0016 goal after final code review
+- Status: code review passed; goal verification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
@@ -47,7 +47,8 @@
   - HIGH: skill pointers require fetched released docs but lack a durable untrusted-content/prompt-injection boundary.
   - MEDIUM: mutable aliases are prohibited as default/recommended selectors but later language allows them to continue being recommended after requalification.
 - Goal verification did not run because code review blocked advancement.
-- Pointer-security correction commit `4873f36` makes fetched docs untrusted factual input that cannot override instructions or gates, and prohibits mutable aliases from ever being default, supported, or recommended install commands. Local ADR governance, 20 governance tests, and `git diff --check` passed; independent re-review remains pending.
+- Pointer-security correction commit `4873f36` makes fetched docs untrusted factual input that cannot override instructions or gates, and prohibits mutable aliases from ever being default, supported, or recommended install commands. Local ADR governance, 20 governance tests, and `git diff --check` passed.
+- Final independent code review at `481ca8c`: passed with no findings. The exact report is committed at `planning/adr-0016-code-review-481ca8c.md`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -62,4 +63,4 @@
 
 ## Next
 
-- Rerun code review and goal verification against pointer-security correction `4873f36`, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- Run exact-HEAD goal verification, persist its report, and rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
