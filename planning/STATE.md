@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: re-review Proposed ADR-0016 after adversarial remediation
-- Status: adversarial findings remediated; code review and verification pending
+- Task: remediate Proposed ADR-0016 lifecycle edge cases
+- Status: code-review issues; attended checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Base: `origin/main` at `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
@@ -37,7 +37,11 @@
 - Adversarial reviewer: OpenAI GPT-5.6-sol; implementer provider was not recorded, so cross-provider independence cannot be confirmed and evidence is weaker.
 - ADR governance review confirmed that the policy corrections belong in existing Proposed ADR-0016 and require no new ADR.
 - Adversarial remediation commit `fb67648` addresses the policy findings by adding stable/general-availability eligibility, symmetric security qualification, deterministic release discovery/ordering, continuing incumbent requalification, precise ADR-0003/0004/0006/0013/0014 supersession, pointer-compatible skill parity, and separate distributable/dependency identity contracts.
-- Code review and goal verification have not yet run against the remediated content. Craft re-review and fresh clean-context remain blocked until adversarial passes.
+- Independent code review at `e3df509` returned `issues_found`; the exact report is committed at `planning/adr-0016-code-review-e3df509.md`.
+  - HIGH: candidate selection is undefined if maximal eligible sets fail qualification while a dominated older set could pass.
+  - HIGH: continuing incumbent requalification omits provenance-integrity changes, mandatory-baseline changes, and newly discovered non-security runtime/capability evidence.
+  - MEDIUM: mutable installation aliases can move to an unqualified release after a point-in-time clean-install check.
+- Goal verification did not run because code review blocked advancement. Adversarial re-review, Craft, and fresh clean-context remain pending.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: `.github/workflows/adr-governance.yml`, triggered for ADR-changing pull requests. No remote branch/PR or exact-SHA CI run exists; local evidence is weaker and must not be called CI-green.
@@ -52,4 +56,4 @@
 
 ## Next
 
-- Rerun code review and goal verification against the remediated branch and persist exact-SHA evidence, then rerun adversarial before Craft and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
+- With Jim's attended approval, define deterministic qualified-set fallback, requalify on every qualification-input change, and close mutable-alias drift; then rerun code review and goal verification before adversarial, Craft, and clean-context. CI green will later require Jim's explicit authorization for the exact PR action. Do not begin implementation.
