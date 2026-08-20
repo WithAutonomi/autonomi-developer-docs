@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-sdk
   source_ref: main
-  source_commit: 3264b514dac9ed361a7426d6d6d5ae6a8e7b6b15
-  verified_date: 2026-08-08
+  source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
+  verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
 
@@ -607,7 +607,7 @@ Prepares an in-memory data upload for external signing.
 
 The response varies by `payment_type`.
 
-The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for uploads with 64 or more chunks.
+The daemon starts uploads of 64 or more chunks on the Merkle path and smaller uploads on the wave-batch path. The initial selection is not final: when the already-stored preflight leaves fewer than 64 chunks to pay for, or too few Merkle-capable peers are reachable, the daemon prepares a wave-batch payment instead. Clients must branch on the returned `payment_type`, not on the submitted chunk count.
 
 ```json
 {
@@ -648,6 +648,23 @@ Merkle variant:
     }
   ],
   "merkle_payment_timestamp": 1744041600,
+  "merkle_batches": [
+    {
+      "depth": 6,
+      "pool_commitments": [
+        {
+          "pool_hash": "0x...",
+          "candidates": [
+            {
+              "rewards_address": "0x...",
+              "amount": "<atto_token_amount>"
+            }
+          ]
+        }
+      ],
+      "merkle_payment_timestamp": 1744041600
+    }
+  ],
   "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
@@ -659,7 +676,9 @@ Merkle variant:
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The example above shows one candidate for brevity.
 
-Both variants include `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many of those were already stored and so excluded from payment and from the PUT. The external signer pays for `total_chunks - already_stored_count` chunks, which is why a prepared upload can cost less than the raw file size implies.
+`merkle_batches` holds one entry per on-chain payment. A single Merkle tree covers up to 256 fresh chunks (roughly 1 GiB); a larger upload splits across several batches, and the external signer calls `payForMerkleTree2()` once per entry. The top-level `depth`, `pool_commitments`, and `merkle_payment_timestamp` are legacy single-batch fields, present only when `merkle_batches` has exactly one entry and mirroring that entry. They are omitted for a multi-batch upload, so read payment details from `merkle_batches`.
+
+Both variants include `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many of those were already stored and so excluded from payment and from the PUT. The difference between the two counts is why a prepared upload can cost less than the raw file size implies; use it for reconciliation only, and construct the payment from the returned `payments` or `merkle_batches` entries.
 
 **Example:**
 
@@ -706,10 +725,11 @@ Finalizes a prepared upload after the external signer has submitted the matching
 |------|------|----------|-------------|
 | `upload_id` | string | Yes | Value returned by a prepare endpoint |
 | `tx_hashes` | object | No | Wave-batch only: map of `quote_hash` to `tx_hash` |
-| `winner_pool_hash` | string | No | Merkle only: winner pool hash emitted by `MerklePaymentMade` |
+| `winner_pool_hashes` | array | No | Merkle: one winner pool hash per entry in the prepare response's `merkle_batches`, in the same order. An empty string or `null` in a slot marks a batch the signer did not pay; keep unpaid slots in place rather than compacting or reordering the list |
+| `winner_pool_hash` | string | No | Merkle, legacy single-batch: winner pool hash emitted by `MerklePaymentMade`. Accepted only when the upload has exactly one batch; do not combine it with `winner_pool_hashes` |
 | `store_data_map` | boolean | No | If `true`, also stores the DataMap on-network |
 
-Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batch"`. Provide `winner_pool_hash` when it returned `payment_type: "merkle"`.
+Provide `tx_hashes` when the prepare response returned `payment_type: "wave_batch"`. When it returned `payment_type: "merkle"`, provide `winner_pool_hashes` with one hash per `merkle_batches` entry; a single-batch upload may instead provide `winner_pool_hash`.
 
 **Response:**
 
@@ -738,16 +758,41 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
   -d '{"upload_id":"<hex_id>","winner_pool_hash":"0x...","store_data_map":true}'
 ```
 
+Multi-batch Merkle upload, one winner hash per `merkle_batches` entry:
+
+```bash
+curl -X POST http://localhost:8082/v1/upload/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","winner_pool_hashes":["0x...","0x..."],"store_data_map":true}'
+```
+
+When part of an upload stores but the rest misses quorum after retries, finalize returns `502` with the `PARTIAL_UPLOAD` code and machine-readable counts:
+
+```json
+{
+  "error": "Partial upload: 200/256 chunks stored, 56 failed after retries: ...",
+  "code": "PARTIAL_UPLOAD",
+  "chunks_stored": 200,
+  "chunks_failed": 56,
+  "total_chunks": 256
+}
+```
+
+The stored chunks persist. Re-prepare the same content and finalize again to pay for and store only the missing remainder.
+
+A partial upload is reported only when at least one Merkle batch was paid. When every `winner_pool_hashes` slot is empty, finalize returns `402` with the `PAYMENT_REQUIRED` code instead.
+
 ## Error codes
 
 | Code | Meaning | Resolution |
 |------|---------|------------|
 | `400` | Bad request | Check base64 encoding, address length, data map format, and local paths |
-| `402` | Payment required | Fund the configured wallet or reduce the upload size |
+| `402` | Payment required | Fund the configured wallet or reduce the upload size. On external-signer finalize: no Merkle batch was paid, so pay at least one batch |
 | `404` | Not found | Check the address or `upload_id` |
 | `413` | Payload too large | Split the upload or switch to file endpoints |
 | `500` | Internal server error | Check daemon logs and retry |
 | `502` | Network unreachable | Confirm the daemon can reach the Autonomi network |
+| `502` (`PARTIAL_UPLOAD`) | Some chunks stored, others failed quorum after retries | Re-prepare the same content and finalize again to store only the remainder; the response carries `chunks_stored`, `chunks_failed`, and `total_chunks` |
 | `503` | Service unavailable | Configure a wallet before calling wallet or write endpoints |
 
 ## Related pages
