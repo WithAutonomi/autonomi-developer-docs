@@ -4,7 +4,7 @@
   source_repo: ant-client
   source_ref: main
   source_commit: 50b4370bc08acf57c93f1c763063d3582ecf3aef
-  verified_date: 2026-08-19
+  verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
 
@@ -123,7 +123,7 @@ The native Rust library exposes both wave-batch and Merkle-batch external paymen
 
 For wave-batch uploads, `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, and `finalize_upload` prepare the upload, collect quotes, and later store the chunks after an external signer returns transaction hashes. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the same payment batch and receive its network address in the `FileUploadResult` after finalize.
 
-For Merkle batches, `prepare_merkle_batch_external` and `finalize_merkle_batch` expose the low-level single-batch helpers, while `finalize_upload_merkle` completes a prepared upload from one winning pool hash. An upload larger than a single Merkle tree (256 fresh chunks, roughly 1 GiB) spans several batches: `prepare_merkle_batches_external` returns the batches to pay, and `finalize_upload_merkle_multi` completes the upload from a `Vec` of winner hashes aligned to those batches. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, `finalize_upload_merkle_with_progress`, and `finalize_upload_merkle_multi_with_progress` are also available when you need UI feedback during long-running uploads.
+For Merkle batches, `prepare_merkle_batch_external` and `finalize_merkle_batch` expose the low-level single-batch helpers, while `finalize_upload_merkle` completes a prepared upload from one winning pool hash. An upload larger than a single Merkle tree (256 fresh chunks, roughly 1 GiB) spans several batches: `prepare_merkle_batches_external` returns the batches to pay, and `finalize_upload_merkle_multi` completes the upload from a `Vec` of per-batch winner-hash entries aligned to those batches — one entry per batch, in order, with `None` marking a batch the signer did not pay. At least one batch must be paid, or the call returns a payment error; the chunks of an unpaid batch surface through the partial-upload error once the paid batches store. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, `finalize_upload_merkle_with_progress`, and `finalize_upload_merkle_multi_with_progress` are also available when you need UI feedback during long-running uploads.
 
 ## Key types
 

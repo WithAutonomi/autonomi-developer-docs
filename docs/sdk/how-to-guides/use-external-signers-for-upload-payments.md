@@ -4,14 +4,14 @@
   source_repo: ant-sdk
   source_ref: main
   source_commit: 8378338ca04d3a78db8ad0c943daf182cfd27763
-  verified_date: 2026-08-19
+  verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
 <!-- verification:
   source_repo: ant-client
   source_ref: main
   source_commit: 50b4370bc08acf57c93f1c763063d3582ecf3aef
-  verified_date: 2026-08-19
+  verified_date: 2026-08-20
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -111,7 +111,7 @@ The in-memory data prepare endpoint accepts `"private"` (default) or `"public"` 
 
 The prepare endpoints return a `payment_type` discriminator. Use that value to decide which on-chain call to make and which finalize payload to send back.
 
-The daemon returns `wave_batch` for uploads under 64 chunks and `merkle` for uploads with 64 or more chunks.
+The daemon starts uploads of 64 or more chunks on the Merkle path and smaller uploads on the wave-batch path, but that initial selection is not final. A large upload can still come back as `wave_batch`: the already-stored preflight can leave fewer than 64 chunks to pay for, and too few reachable Merkle-capable peers also switches the preparation to wave-batch. Branch on the returned `payment_type`, not on the chunk count you submitted.
 
 Wave-batch prepare response:
 
@@ -184,7 +184,7 @@ Each `pool_commitments` entry contains exactly 16 candidate payments. The sample
 
 `merkle_batches` lists one entry per on-chain payment. A single Merkle tree covers up to 256 fresh chunks (roughly 1 GiB), so an upload larger than that splits across several batches, and the external signer submits one `payForMerkleTree2()` transaction per entry. The top-level `depth`, `pool_commitments`, and `merkle_payment_timestamp` are legacy single-batch fields: the daemon populates them only when `merkle_batches` has exactly one entry, mirroring that entry. A multi-batch response omits them, so read the payment details from `merkle_batches` and treat the singular fields as a convenience for the single-batch case.
 
-Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Pay for `total_chunks - already_stored_count` chunks, and reconcile against the full file size when a prepare comes back cheaper than expected.
+Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Use the two counts to reconcile cost — the difference explains why a prepare can come back cheaper than the raw file size implies. Construct the payment itself from the returned `payments` or `merkle_batches` entries, never from the chunk counts.
 
 For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request. `antd` bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its Autonomi Network address.
 
@@ -219,7 +219,9 @@ curl -X POST http://localhost:8082/v1/upload/finalize \
   -d '{"upload_id":"<hex_id>","winner_pool_hashes":["0x...","0x..."]}'
 ```
 
-When the prepared upload has exactly one batch, you can pass the single `winner_pool_hash` field instead. Do not combine the two fields in one request. If the signer skipped a batch, send an empty string in that slot; the chunks that batch would have paid for surface as a partial upload rather than a stored result.
+When the prepared upload has exactly one batch, you can pass the single `winner_pool_hash` field instead. Do not combine the two fields in one request.
+
+Keep one slot per prepared batch, in the prepare response's order — do not compact or reorder the list. If the signer skipped a batch, send an empty string (or `null`) in that slot; the chunks that batch would have paid for surface as a partial upload rather than a stored result. If no batch was paid at all, finalize rejects the request with a `402` payment error instead — a partial upload is reported only when at least one batch was paid.
 
 Single-batch uploads may still use the legacy field:
 
@@ -244,7 +246,7 @@ Expected response shape:
 
 ### 5. Use SDK helpers when available
 
-The language bindings for `antd` follow the same prepare/finalize split across both REST and gRPC transports. Merkle-capable bindings expose `payment_type` on prepare results and a `finalize_merkle_upload` helper for the Merkle path. For file and in-memory data uploads, gRPC `UploadService` exposes the full finalize surface, including `data_map`, `data_map_address`, and `store_data_map`. For single-chunk uploads, gRPC `ChunkService` exposes `PrepareChunk` and `FinalizeChunk`; `FinalizeChunk` returns the stored chunk address.
+The language bindings for `antd` follow the same prepare/finalize split across both REST and gRPC transports, but their Merkle support is narrower than the raw API. The `finalize_merkle_upload`-style helpers accept a single `winner_pool_hash`, which serves single-batch uploads at most, and not every binding surfaces the Merkle payment fields on its prepare result. For Merkle uploads, the dependable interfaces are direct REST calls and the generated gRPC request and response types, which carry `merkle_batches` and `winner_pool_hashes` in full. Among the convenience clients, the Go binding exposes multi-batch natively, with `MerkleBatches` on the prepare result and a `FinalizeMerkleUploadMulti` helper; in other languages, drive a multi-batch upload through the REST endpoints shown in the steps above. For file and in-memory data uploads, gRPC `UploadService` exposes the full finalize surface, including `data_map`, `data_map_address`, and `store_data_map`. For single-chunk uploads, gRPC `ChunkService` exposes `PrepareChunk` and `FinalizeChunk`; `FinalizeChunk` returns the stored chunk address.
 
 If you are building in Rust with ant-core instead of `antd`, the library exposes native external-payment helpers such as `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the payment batch for a public in-memory upload. For uploads that span more than one Merkle tree, `prepare_merkle_batches_external` returns the batches to pay and `finalize_upload_merkle_multi` completes the upload from a `Vec` of winner hashes aligned to those batches. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, `finalize_upload_merkle_with_progress`, and `finalize_upload_merkle_multi_with_progress` are also available when you need UI feedback during long-running uploads.
 
@@ -257,6 +259,8 @@ Finalize succeeds when `antd` accepts the `upload_id` plus either the `tx_hashes
 **404 Not Found**: The `upload_id` is missing, expired, or already finalized.
 
 **400 Bad Request**: Check whether the prepared upload expects `tx_hashes`, `winner_pool_hash`, or `winner_pool_hashes`, validate the hex formatting of those values, and confirm the number of winner hashes matches the number of `merkle_batches`.
+
+**402 Payment Required**: No Merkle batch was paid — every `winner_pool_hashes` slot was empty. Pay at least one batch before finalizing.
 
 **502 Partial Upload**: The payment landed and some chunks stored, but others missed quorum after retries (or belonged to a batch the signer never paid). The response body carries the `PARTIAL_UPLOAD` code with `chunks_stored`, `chunks_failed`, and `total_chunks`. The stored chunks persist, so re-prepare the same content and finalize again to pay for and store only the remainder.
 
