@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: self_encryption
   source_ref: master
-  source_commit: 0deb040084f94bea2ebb53bda20fa23464bbcfe0
-  verified_date: 2026-05-16
+  source_commit: 4021f663612c5b963bef935b277eb65416b7d958
+  verified_date: 2026-08-08
   verification_mode: current-merged-truth
 -->
 
