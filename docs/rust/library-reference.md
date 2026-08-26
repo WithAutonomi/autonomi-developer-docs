@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: a954ec83bd1988a3a8e12c2a748db0d959922461
-  verified_date: 2026-08-25
+  source_commit: 9475782ffc85b677aa1866f0f79fb555fca12c45
+  verified_date: 2026-08-26
   verification_mode: current-merged-truth
 -->
 
@@ -125,6 +125,8 @@ For wave-batch uploads, `data_prepare_upload`, `data_prepare_upload_with_visibil
 
 For Merkle batches, `prepare_merkle_batch_external` and `finalize_merkle_batch` expose the low-level single-batch helpers, while `finalize_upload_merkle` completes a prepared upload from one winning pool hash. An upload larger than a single Merkle tree (256 fresh chunks, roughly 1 GiB) spans several batches: `prepare_merkle_batches_external` returns the batches to pay, and `finalize_upload_merkle_multi` completes the upload from a `Vec` of per-batch winner-hash entries aligned to those batches — one entry per batch, in order, with `None` marking a batch the signer did not pay. At least one batch must be paid, or the call returns a payment error; the chunks of an unpaid batch surface through the partial-upload error once the paid batches store. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, `finalize_upload_merkle_with_progress`, and `finalize_upload_merkle_multi_with_progress` are also available when you need UI feedback during long-running uploads.
 
+When an external-signer upload pays successfully but some chunks miss quorum, the resumable finalize variants let you store the remainder against the same payment instead of paying again. `finalize_upload_resumable` (wave-batch) and `finalize_upload_merkle_multi_resumable` (Merkle) return a `FinalizeOutcome`: `Complete(FileUploadResult)` once every chunk is stored, or `Partial { result, resume }` when chunks remain. The `resume` value is an opaque `FinalizeResume` handle that owns the already-paid material — the wave path's paid chunks, or the Merkle path's on-disk chunk spill and signed proofs. Pass it to `finalize_resume` to re-drive storage for only the still-unstored chunks against the same on-chain payment, with no re-quoting, no second signature, and no double payment. `finalize_resume` is safe to call repeatedly until it returns `Complete`; bound that loop, because a persistent store failure comes back as `Partial` on every call rather than an error, so treat a handle that stops shrinking as stuck. The Merkle resumable finalize requires every sub-batch to be paid and rejects a partial payment up front; to finalize a partial payment, use `finalize_upload_merkle_multi`, which reports the unpaid chunks through `Error::PartialUpload`. Each resumable call has a `_with_progress` variant that emits `UploadEvent::ChunkStored` as each chunk lands.
+
 ## Key types
 
 | Type | Description |
@@ -138,6 +140,8 @@ For Merkle batches, `prepare_merkle_batch_external` and `finalize_merkle_batch` 
 | `ant_core::data::PreparedUpload` | Two-phase upload state used by external-signer flows |
 | `ant_core::data::ExternalPaymentInfo` | External payment details for prepared uploads |
 | `ant_core::data::PreparedMerkleBatch` | Prepared Merkle batch data for external signing |
+| `ant_core::data::FinalizeOutcome` | Result of a resumable external-signer finalize: `Complete(FileUploadResult)` or `Partial { result, resume }` |
+| `ant_core::data::FinalizeResume` | Opaque handle from a `Partial` finalize that owns the already-paid material for `finalize_resume` |
 | `ant_core::data::Visibility` | Upload visibility: `Private` (DataMap returned to caller) or `Public` (DataMap bundled into payment batch and stored on-network) |
 
 ## External signer example

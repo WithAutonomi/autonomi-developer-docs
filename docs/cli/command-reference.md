@@ -3,8 +3,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: a954ec83bd1988a3a8e12c2a748db0d959922461
-  verified_date: 2026-08-25
+  source_commit: 9475782ffc85b677aa1866f0f79fb555fca12c45
+  verified_date: 2026-08-26
   verification_mode: current-merged-truth
 -->
 
@@ -60,9 +60,11 @@ The root command accepts the global flags used across data and node operations. 
 | `--quote-concurrency <N>` | integer | No | Hidden. Caps the quote channel only. It does not affect store or download concurrency. |
 | `--store-concurrency <N>` | integer | No | Hidden. Controls upload chunk concurrency. `--chunk-concurrency` is accepted as an alias. |
 | `-v, --verbose...` | count | No | Increase log verbosity: `-v`, `-vv`, or `-vvv` |
-| `--evm-network <NET>` | string | No | EVM network for payments: `arbitrum-one`, `arbitrum-sepolia`, or `local` |
+| `--evm-network <NET>` | string | No | EVM network for payments: `arbitrum-one`, `arbitrum-sepolia`, or `local`. Defaults to `arbitrum-one`, except when a devnet manifest that carries an EVM block is loaded (see note below). |
 | `-h, --help` | boolean | No | Print help |
 | `-V, --version` | boolean | No | Print version |
+
+When you load a devnet manifest that carries an EVM block, set `--evm-network` explicitly: pass `local` to use the manifest's EVM configuration, or a preset (`arbitrum-one` or `arbitrum-sepolia`) to override it. In that case, omitting the flag is rejected so an on-chain payment never targets the wrong network by default. Selecting a preset alongside such a manifest prints a warning that the manifest's EVM configuration is ignored. A manifest without an EVM block, or a run with no manifest, still defaults to `arbitrum-one`.
 
 **Environment:**
 
