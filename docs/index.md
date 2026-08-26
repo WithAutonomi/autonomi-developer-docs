@@ -10,8 +10,8 @@
 <!-- verification:
   source_repo: ant-client
   source_ref: main
-  source_commit: a954ec83bd1988a3a8e12c2a748db0d959922461
-  verified_date: 2026-08-25
+  source_commit: 9475782ffc85b677aa1866f0f79fb555fca12c45
+  verified_date: 2026-08-26
   verification_mode: current-merged-truth
 -->
 <!-- verification:
@@ -24,8 +24,8 @@
 <!-- verification:
   source_repo: saorsa-transport
   source_ref: main
-  source_commit: ace6d07a227b1530f3d63e4e02e9c5606aa96887
-  verified_date: 2026-08-19
+  source_commit: 75a1e11e49872fa4ebe768d85f20ae3a8db9e91d
+  verified_date: 2026-08-26
   verification_mode: current-merged-truth
 -->
 
