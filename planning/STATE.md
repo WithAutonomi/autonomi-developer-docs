@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: revalidate concise ADR-0016 after adversarial nit
-- Status: adversarial passed READY-WITH-NITS; evidence wording corrected; exact-head revalidation pending
+- Task: reconcile concise ADR checkpoint before final gates
+- Status: ADR passed focused review; checkpoint contradiction found; attended checkpoint
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -80,6 +80,8 @@
 - Fresh adversarial review at `d18a63b`: `READY-WITH-NITS`, with no CRITICAL, HIGH, or MEDIUM findings. Report: `planning/adr-0016-adversarial-d18a63b.md`.
   - LOW: validation wording should preserve the deployed-network evidence path. Corrected in `dfe2161`.
   - LOW: PR body lagged final verification. Corrected after review.
+- Focused code review at `fc49173`: ADR content passed with no findings; one MEDIUM checkpoint-consistency issue remained. Report: `planning/adr-0016-code-review-fc49173.md`.
+  - The accumulated checkpoint mixed current READY-WITH-NITS status with historical blocker/pending language. It is replaced by a concise current checkpoint; detailed history remains in the review reports.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -94,4 +96,4 @@
 
 ## Next
 
-- Revalidate exact head after the one-line evidence correction, then run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.
+- With Jim's attended approval, rerun focused exact-head review of the concise checkpoint, then run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.

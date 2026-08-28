@@ -1,189 +1,109 @@
-# GSD Checkpoint — Proposed ADR-0016 review
+# GSD Checkpoint — Concise Proposed ADR-0016
 
-Date: 2026-08-20
+Date: 2026-08-28
 Project: Autonomi Developer Documentation
-Slice/question: Should released truth replace moving merged truth as the default public documentation source?
+Slice/question: Should public documentation describe only stable software the public can obtain?
 Prepared by: orchestrator
-Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and clean-context not run after adversarial blocker
+Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and clean-context pending
 
 ## Status
 
-Continue — adversarial review passed READY-WITH-NITS; one evidence-wording nit is corrected and exact-head revalidation is pending.
+Revise — ADR content passed focused review, but the accumulated checkpoint contradicted the current review status. This file replaces it with the current state; exact-head review is pending.
 
-Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit fresh review after scope reset
-Unreviewed backlog if deferred: Craft and clean-context remain unrun until the concise ADR passes adversarial review
+Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
+Review cadence: per-unit
+Unreviewed backlog: Craft and clean-context
 
 ## What happened
 
-Jim approved a scope reset for Proposed ADR-0016. The ADR now states one durable target invariant: public documentation describes stable software the public can obtain, using an explicit released baseline with exact provenance. Unreleased source may prepare future documentation but cannot support default public claims. Known defects must be represented honestly.
+Jim replaced the detailed proposal with a concise target decision: public documentation describes stable or general-availability software available through supported public routes. An explicit release baseline provides exact provenance; unreleased source cannot support default public claims; defects and unsupported tasks are represented honestly.
 
-Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside this ADR. The proposal now partially supersedes only ADR-0003, ADR-0004, and ADR-0006. A separate developer skill is explicitly out of scope.
+The ADR is 481 words including metadata and headings. Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside its scope. It partially supersedes only ADR-0003, ADR-0004, and ADR-0006.
 
-The branch also carries the dated v0.11.2 motivating audit as inspectable evidence. The audit explicitly distinguishes historical policy from current authority, records evidence gaps, and notes that Python and Rust source-install routes were identified but not clean-install or runtime verified.
-
-No implementation, rendered documentation, skill, manifest, automation, CI, test, or Accepted ADR changed. ADR-0016 remains Proposed.
+ADR-0016 remains Proposed. No implementation, rendered docs, skill, CI, test, or Accepted ADR changed.
 
 ## Evidence
 
 CI arbiter / green of record:
 
-- Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: draft PR #98 is open. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
+- Location: draft PR #98, https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
+- Exact reviewed head: `fc49173dc040425429a4cc298eb3811a23650b5a`
+- ADR Governance run `33204071304`, job `98960532646`: passed
+- GitBook and docs preview: passed
+- Prose/sweep checks: successful scope-gate no-ops, not substantive coverage
 
 Local fast gate / `.gsd/gate.sh`:
 
-- Installed? N/A — the repository has no `.gsd/gate.sh`.
-- Commands run: ADR governance, governance unit tests, and `git diff --check`.
-- Result: passed.
+- Installed? N/A — no `.gsd/gate.sh` exists.
+- ADR governance: passed, 1 ADR checked.
+- Governance tests: passed, 20 tests.
+- `git diff --check`: passed.
+- Word count: 481.
 
-Files changed/artifacts produced:
+Artifacts:
 
 - `adr/ADR-0016-released-truth-for-public-developer-docs.md`
 - `planning/released-antd-v0.11.2-audit.md`
 - `planning/STATE.md`
-- `planning/gsd-adr-0016-checkpoint.md`
-- `planning/adr-0016-code-review-e3df509.md`
-- `planning/adr-0016-code-review-2dd687b.md`
-- `planning/adr-0016-code-review-481ca8c.md`
-- `planning/adr-0016-verification-9bd4f6f.md`
-- `planning/adr-0016-adversarial-dfd14da.md`
-- `planning/adr-0016-code-review-b1e4846.md`
-- `planning/adr-0016-verification-39e2cdf.md`
-- `planning/adr-0016-adversarial-ef646b9.md`
-- `planning/adr-0016-code-review-752099a.md`
-- `planning/adr-0016-verification-85fde83.md`
-- `planning/adr-0016-verification-d09520e.md`
-- `planning/adr-0016-verification-58545cd.md`
-- `planning/adr-0016-adversarial-d18a63b.md`
+- This checkpoint
+- Exact-SHA reports matching `planning/adr-0016-*.md`
 
-Checks run:
+## Honesty Rules
 
-- `python3 -I scripts/adr-governance.py`
-- `python3 -I -m unittest discover -s scripts/tests -p 'test_adr_governance.py'`
-- `git diff --check origin/main...HEAD`
-- Independent code review through commit `5dbecd5`, before the later state/checkpoint-only commit.
-- Goal-backward verification through commit `5dbecd5` against the approved decision intent and Accepted ADR boundaries.
-- Final code review through `481ca8c` and goal verification through `9bd4f6f`, with branch-local reports.
+- No-harness-modification: Pass. No gate, CI, test, build, or environment change.
+- Baseline-diff for evidence: Pass. No failure was dismissed.
+- Evidence reproducible-from-branch: Pass. Review reports and audit are committed.
+- Local vs CI consistency: Pass for applicable ADR checks.
 
-Results:
+## Review Findings
 
-- ADR governance: passed, 1 ADR checked.
-- Governance tests: 20 passed.
-- Diff check: passed.
-- Code review through `5dbecd5`: passed, no findings; detailed reviewer output was session-local rather than a committed report.
-- Goal verification through `5dbecd5`: passed, 7/7 goals verified; detailed verifier output was session-local rather than a committed report.
-- Accepted ADRs: byte-identical to the base.
-- Adversarial-remediation local validation at `fb67648`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
-- Code review at exact commit `e3df50957d2691b8661c503bfd6f34cc960aece9`: `issues_found`; two HIGH and one MEDIUM finding. Full report: `planning/adr-0016-code-review-e3df509.md`.
-- Lifecycle-correction local validation at `9c2f1da`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
-- Code review at exact commit `2dd687bdd4a958694a53049014791ede0b67c0be`: `issues_found`; previous lifecycle HIGH findings resolved, with one new HIGH and one MEDIUM finding. Full report: `planning/adr-0016-code-review-2dd687b.md`.
-- Pointer-security local validation at `4873f36`: ADR governance passed, 20 governance tests passed, and `git diff --check` passed.
-- Code review at exact commit `481ca8cb653b32823851d38b2bcc36b4007ddf7a`: passed with no findings. Full report: `planning/adr-0016-code-review-481ca8c.md`.
-- Goal verification at exact commit `9bd4f6f0780d3a431a134214f9abaa3fddb45ea4`: passed, 10/10 decision-contract goals verified with no gaps. Full report: `planning/adr-0016-verification-9bd4f6f.md`.
-- Journey-local content amendment `fb00f10`: local ADR governance and 20 tests passed; exact-head ADR Governance and GitBook checks passed on draft PR #98.
-- Journey-local code review at `b1e4846`: passed with no findings; all global/journey truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
-- Journey-local goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
-- Concise redraft `afdaa07` replaced the detailed decision; tightening commit `f326e0c` reduced the complete ADR to 477 words. ADR governance, 20 tests, diff check, and exact-head CI passed.
-- Fresh concise-ADR code review at `752099a`: passed with no findings. Report: `planning/adr-0016-code-review-752099a.md`.
-- Concise-ADR goal verification at `85fde83`: 11/12 goals verified; ADR content passed, while stale state and PR wording failed the evidence-accuracy goal. Report: `planning/adr-0016-verification-85fde83.md`.
-- Reverification at `d09520e`: ADR content and earlier corrections passed; it found only the invalid recorded full `f326e0c` SHA and stale checkpoint review/next-step/CI wording. Those are corrected in this update.
-- Final reverification at `58545cd`: passed 12/12 with no gaps. Report: `planning/adr-0016-verification-58545cd.md`.
-- Adversarial review at `d18a63b`: READY-WITH-NITS with no blocking findings. Validation wording and stale PR-body nits were corrected. Report: `planning/adr-0016-adversarial-d18a63b.md`.
+Code review:
 
-## Honesty rules check
+- Concise ADR review at `752099a`: passed with no findings.
+- Focused evidence-wording review at `fc49173`: ADR passed; the old checkpoint had one MEDIUM consistency finding.
+- Disposition: replaced the old accumulated checkpoint with this concise current record.
 
-- No-harness-modification: Pass
-  - No test, harness, daemon, build, environment, gate, or CI change.
-- Baseline-diff for evidence: Pass
-  - No failure or skip was dismissed as environmental, flaky, or pre-existing.
-- Evidence reproducible-from-branch: Pass for local review evidence
-  - The motivating audit, representative commands, latest passing exact-SHA code-review report, 10/10 goal-verification report, and adversarial report are committed and require no uncommitted wrapper or environment variable.
-- Local vs CI consistency: no conflict observed; exact reverification head `d09520e` was green.
+Goal verification:
 
-## Ledger / forks
-
-Not applicable; attended run. No forks or split decisions were created.
-
-## Review findings
-
-Independent code review:
-
-- Reviewer/tool: codereviewer — OpenAI GPT-5.6-sol (`openai/gpt-5.6-sol`)
-- Reviewed commit: latest concise-ADR review `752099ac110182655ec114a724eb236c66d4427e`
-- Result: Passed with no findings after the scope reset
-- Findings:
-  - HIGH: define deterministic behavior when maximal eligible sets fail but a dominated older eligible set might qualify.
-  - HIGH: incumbent requalification must trigger whenever any qualification input changes, not only availability, security, or network evidence.
-  - MEDIUM: default install routes must pin immutable versions/digests or alias-target movement must trigger requalification.
-- Disposition: all three were remediated in `9c2f1da` and re-reviewed at `2dd687b`.
-- Re-review disposition at `2dd687b`: deterministic fallback and complete requalification passed; immutable defaults passed, but alias recommendation language remained inconsistent. A new HIGH pointer-security finding was added.
-- Disposition: pointer-security and alias-consistency findings were remediated in `4873f36` and re-reviewed at `481ca8c`.
-- Re-review disposition at `481ca8c`: both findings resolved; code-review gate passed.
-- Current report: `planning/adr-0016-code-review-752099a.md`; earlier reports are historical pre-reset evidence
-
-Clean-context test:
-
-- Reviewer/tool: panel Claude lane
-- Result: Not run for the corrected proposal
-- Findings: a prior attempt was deferred because authentication was unavailable (`models: unavailable (auth) · 0s`); no fresh attempt ran because adversarial review blocked advancement.
+- Final concise verification at `58545cd`: passed 12/12 with no gaps.
+- Later ADR change: one validation line aligned with an already-authorized evidence path; focused code review passed it.
 
 Adversarial review:
 
-- Reviewer/tool: adversarial — OpenAI GPT-5.6-sol; implementer provider unrecorded, so cross-provider independence is unconfirmed
-- Required? Yes — architecture and public documentation policy.
-- Result: Blockers
-- Findings:
-  - HIGH: candidate eligibility must explicitly require stable/general-availability status and symmetric candidate safety/security qualification. Remediated at `fb67648`; re-review pending.
-  - HIGH: deterministic newest-candidate discovery/ordering and continuing incumbent requalification are missing. Remediated at `fb67648`; re-review pending.
-  - HIGH: supersession conflicts with ADR-0006 and ADR-0014, with an ADR-0013 stamp-refresh impact. Remediated at `fb67648`; re-review pending.
-  - HIGH: applicable PR-triggered ADR Governance CI exists but has not run.
-  - MEDIUM: skill parity is ambiguous under the pointer-based skill model. Remediated at `fb67648`; re-review pending.
-  - MEDIUM: distributable release identity and transitive dependency identity are conflated. Remediated at `fb67648`; re-review pending.
-  - MEDIUM: review/verification evidence and exact reviewed SHA were overstated. Claims were narrowed and exact-SHA code-review/verification reports are now branch-local; adversarial re-review pending.
-- Re-review at `dfd14da`: `NOT-READY`.
-  - HIGH: qualification is ambiguous between one global coherent release set and journey-local support/withdrawal.
-  - LOW: checkpoint/base/CI wording was stale; corrected in this post-review record.
-- Report: `planning/adr-0016-adversarial-dfd14da.md`
-- Owner disposition: Jim chose journey-local support within one active coherent release set. Amendment `fb00f10` resolves the ambiguity; adversarial re-review pending.
-- Independent code-review disposition at `b1e4846`: ambiguity resolved with no new findings.
-- Re-review at `ef646b9`: `NOT-READY`.
-  - HIGH: a top-level SDK route can still combine incompatible bindings or transports.
-  - HIGH: ADR-0016 changes ADR-0011's unconditional SDK-primary stance but does not supersede it.
-  - MEDIUM: truth-table evidence lacks concrete route-continuity identities and clause derivations.
-  - LOW: state/checkpoint/PR evidence and the v0.11.2 present-tense sentence need correction.
-- Report: `planning/adr-0016-adversarial-ef646b9.md`
-- Scope-reset disposition: the journey, route, skill, and ADR-0011 decisions reviewed at `ef646b9` were removed from ADR-0016. Fresh review of the concise target decision is pending.
+- Review at `d18a63b`: READY-WITH-NITS; no CRITICAL, HIGH, or MEDIUM findings.
+- Deployed-network validation wording nit: corrected in `dfe2161` and passed focused review.
+- Stale PR-body nit: corrected.
 
 Craft Review:
 
-- Reviewer/tool: craft
-- Required? Yes — repository-governance and maintainer-conformance work.
-- Verdict: Not run
-- If Not run: adversarial NOT-READY blocked advancement; rerun after remediation.
-- CONFORMANCE findings and dispositions: none yet.
-- SIMPLICITY / NIT findings carried: none yet.
+- Required: Yes.
+- Result: Not run; next gate after exact-head checkpoint review.
 
-## Drift / scope concerns
+Clean-context review:
 
-The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation; ADR acceptance does not promote v0.11.2 or authorize documentation changes.
+- Required: Yes.
+- Result: Not run; follows Craft Review.
 
-## Open questions / decisions for Jim
+## Drift / Scope Concerns
 
-No owner decision is pending until exact-head revalidation, Craft, and clean-context complete. The redraft does not authorize merge or ADR acceptance.
+The included v0.11.2 audit is historical motivation. A fresh release audit is required before implementation. ADR acceptance does not promote a release or authorize documentation changes.
 
-PR / upstream action gate, if applicable:
+The branch is behind current `main`, but the PR merge ref is green. Any content-changing integration requires renewed review.
 
-- PR ready to raise? Yes — as a draft CI/review vehicle only; not acceptance-ready or merge-ready
-- Jim confirmed PR may be opened? Yes — exact draft PR action authorized in chat on 2026-08-20
-- Draft PR title/description prepared: Yes
-  - Title: `docs(adr): adopt released truth for public documentation`
-  - Description: proposes ADR-0016, carries its dated motivating audit and branch-local review evidence, states that no implementation is included, and requests ADR Governance CI plus review before the human acceptance decision.
+## Open Questions / Decisions for Jim
 
-## Recommended next step
+No architecture decision is pending. Attended mode requires approval to rerun after the checkpoint correction.
 
-Revalidate exact head after the one-line evidence correction, then run Craft and clean-context. Do not merge, accept ADR-0016, or begin implementation.
+PR / upstream action gate:
 
-## Handoff note
+- PR ready to raise? Already open as draft review/CI vehicle.
+- Merge ready? No.
+- Jim authorized merge? No.
 
-Jim replaced the detailed proposal with a concise target-architecture decision. Code review, CI, goal verification, and adversarial review are green. One adversarial wording nit was corrected in `dfe2161`; exact-head revalidation, Craft, and clean-context remain. No implementation is authorized.
+## Recommended Next Step
+
+Rerun focused exact-head review of this checkpoint. If it passes, run Craft and clean-context. Then return to Jim for the ADR acceptance decision. Do not merge or implement.
+
+## Handoff Note
+
+The concise ADR, code review, goal verification, adversarial review, and CI are green. The checkpoint-consistency finding is corrected but not yet re-reviewed. Craft and clean-context remain. ADR-0016 is Proposed and implementation is unauthorized.
