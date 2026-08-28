@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — Jim approved Milestone A panel activation for normal and ad-hoc controlled external reviews. Clean-context dispatch is pending.
+Blocked — Milestone A is active, but clean-context cannot run until the orchestrator may create the required disposable caller-owned root and brief.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
@@ -89,6 +89,10 @@ Clean-context review:
 - No substitute reviewer was used.
 - Evidence: `claude=official claude CLI Fable review family (Anthropic), BLOCKED: panel activation/dispatch authorization absent; no reviewer inference attempted`
 - Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
+- Activated retry at revision `50f4462`: blocked before inference because the caller-owned root/brief was missing and outer filesystem permission refused creation.
+- `models: provider=not-observed · model=not-resolved · duration=unknown`
+- `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
+- Report: `planning/adr-0016-clean-context-50f4462.md`.
 
 ## Drift / Scope Concerns
 
@@ -98,7 +102,7 @@ The branch is behind current `main`, but the PR merge ref is green. Any content-
 
 ## Open Questions / Decisions for Jim
 
-Resolved owner decision: `Milestone A panel activation approved for normal and ad-hoc controlled external reviews.` This does not authorize ADR acceptance, merge, or implementation.
+Milestone A activation is resolved. A narrower runtime permission remains: authorize one disposable caller-owned panel root and regular brief under the approved temporary path. This does not authorize ADR acceptance, merge, or implementation.
 
 PR / upstream action gate:
 
@@ -108,7 +112,7 @@ PR / upstream action gate:
 
 ## Recommended Next Step
 
-Run a fresh controlled Claude Fable clean-context review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
+After explicit disposable-root permission, create and attest the brief, then run a fresh controlled Claude Fable review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
 
 ## Handoff Note
 

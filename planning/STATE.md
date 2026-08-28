@@ -5,7 +5,7 @@
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
 - Task: run controlled Claude clean-context review
-- Status: Milestone A panel activation approved; clean-context dispatch pending
+- Status: Milestone A activated; clean-context blocked on caller-owned brief creation permission
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -87,6 +87,9 @@
 - Clean-context review at `dcf7c8c`: blocked before inference because the controlled Claude panel lacks the separate Milestone A activation verdict. No substitute was used. Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
 - Jim chose `Stop pending activation` on 2026-08-28. Clean-context is not waived, panel activation is not authorized by this ADR, and the acceptance checkpoint remains blocked.
 - Jim subsequently declared: `Milestone A panel activation approved for normal and ad-hoc controlled external reviews.` on 2026-08-28. This activates the controlled panel beyond PR #98; it does not authorize ADR acceptance, merge, or implementation.
+- Activated dispatch attempt for evidence revision `50f4462` was blocked before inference because the required caller-owned disposable root and `brief.md` could not be created under the orchestrator's outer filesystem permission. No model ran. Report: `planning/adr-0016-clean-context-50f4462.md`.
+  - `models: provider=not-observed · model=not-resolved · duration=unknown`
+  - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -101,4 +104,4 @@
 
 ## Next
 
-- Dispatch a fresh controlled Claude Fable clean-context review for the current PR evidence. If it passes, return to Jim for the ADR acceptance decision. Do not merge or implement.
+- Obtain Jim's explicit authorization to create one disposable caller-owned panel root and regular brief under `/var/folders/f_/j942sskj6nx67b6gk3rqgsqm0000gn/T/opencode/`, then make a fresh controlled Claude dispatch. Do not merge, accept, or implement.
