@@ -1,19 +1,19 @@
 # ADR-0016: Public documentation describes obtainable releases
 
 - **Status:** Proposed
-- **Acceptance:** Prospective; pending human review and acceptance by Jim Collinson
+- **Acceptance:** Prospective; pending Jim Collinson's human review and acceptance
 - **Date:** 2026-08-12
 - **Decision owners:** Jim Collinson
 - **Reviewers:** Jim Collinson
-- **Supersedes:** ADR-0003 (public source-selection default only); ADR-0004 and ADR-0006 (default-branch-driven public provenance advancement only)
+- **Supersedes:** ADR-0003 (public source selection only); ADR-0004 and ADR-0006 (public provenance advancement only)
 - **Superseded by:** none
-- **Related:** `planning/released-antd-v0.11.2-audit.md`; PR #98; follow-up specification and planning documents
+- **Related:** `planning/released-antd-v0.11.2-audit.md`; PR #98
 
 ## Context
 
 Public developer documentation is a promise about software developers can obtain and use.
 
-Code on a default branch may not have been released, may not be available through a supported installation route, and may be reverted before release. Documentation based on that code can describe a product that does not exist for the public.
+Default-branch code may be unreleased, unavailable through supported installation routes, or reverted. Documentation based on it can describe a product the public cannot obtain.
 
 A stable release is the stake in the ground against which public documentation is written and verified.
 
@@ -30,21 +30,21 @@ A stable release is the stake in the ground against which public documentation i
 
 ## Decision
 
-Public developer documentation will describe only stable or general-availability software that the public can obtain through supported distribution or installation routes.
+Public developer documentation will describe only stable or general-availability software available through supported public distribution or installation routes.
 
-The documentation will use an explicit release baseline. Where the product spans multiple components, that baseline will identify a coherent set of compatible released components, their exact shipped dependencies, and the compatible deployed Autonomi Network state where relevant.
+The documentation will use an explicit release baseline. For a multi-component product, it identifies compatible released components, exact shipped dependencies, and the compatible deployed Autonomi Network state where relevant.
 
 Every technical claim must be supported by the baseline release, its exact shipped dependencies, or verified behavior against the compatible deployed network.
 
-A documentation baseline advances only through reviewed promotion of a new public release. Code that has not been released may inform preparation for future documentation, but it cannot support claims in the default public documentation.
+A documentation baseline advances only through reviewed promotion of a public release. Unreleased code may inform future documentation but cannot support default public claims.
 
 Known defects are part of released truth. Affected capabilities must be described with their limitations and safe alternatives, or must not be presented as working.
 
-If no released software supports a claim or developer task, the documentation must state that limitation rather than infer support from unreleased source.
+If no released software supports a claim or task, the documentation must state that limitation rather than infer support from source.
 
 Pre-release documentation, if published, must be clearly separated from the default public documentation.
 
-This decision governs public documentation in this repository. It does not decide where a separate developer skill lives or how that skill is assembled.
+This decision governs public documentation in this repository. It does not govern a separate developer skill.
 
 Implementation details and sequencing belong in a reviewed specification and planning documents.
 
@@ -52,7 +52,7 @@ Implementation details and sequencing belong in a reviewed specification and pla
 
 ### Positive
 
-- Public documentation corresponds to software developers can obtain.
+- Public documentation corresponds to obtainable software.
 - Releases provide stable and reproducible verification boundaries.
 - Defects cannot be hidden by newer unreleased source.
 
@@ -75,4 +75,4 @@ Implementation details and sequencing belong in a reviewed specification and pla
 
 ## Notes for AI-assisted work
 
-AI may draft but not accept this ADR. Human acceptance is required. Changes to an Accepted decision require a superseding ADR.
+AI may draft but not accept this ADR. Acceptance requires human review. Later decision changes require a superseding ADR.
