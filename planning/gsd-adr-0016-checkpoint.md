@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Blocked — code review, verification, adversarial, Craft, and CI passed. Clean-context review could not invoke the controlled Claude panel because Milestone A activation is absent.
+Blocked — Jim chose to stop pending the separate Milestone A panel activation. Clean-context is not waived.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
@@ -98,11 +98,7 @@ The branch is behind current `main`, but the PR merge ref is green. Any content-
 
 ## Open Questions / Decisions for Jim
 
-Choose one:
-
-1. Authorize the separate Milestone A panel activation so the controlled Claude review can run.
-2. Explicitly waive clean-context for ADR-0016.
-3. Stop pending panel activation.
+Resolved owner decision: stop pending separate Milestone A panel activation. This ADR does not authorize panel activation or waive clean-context.
 
 PR / upstream action gate:
 
@@ -112,8 +108,8 @@ PR / upstream action gate:
 
 ## Recommended Next Step
 
-Resolve the clean-context activation decision. If review runs and passes, return to Jim for ADR acceptance. Do not merge or implement.
+Stop. After a separate Milestone A activation verdict, run controlled Claude clean-context review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
 
 ## Handoff Note
 
-The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context is blocked by panel activation policy. ADR-0016 remains Proposed and implementation is unauthorized.
+The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Jim chose to stop because clean-context is blocked by panel activation policy. ADR-0016 remains Proposed and implementation is unauthorized.
