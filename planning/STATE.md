@@ -16,10 +16,11 @@
 
 ## Decision Intent
 
-- Public rendered developer documentation and the published developer skill should describe released, publicly obtainable, compatible, capability-evidenced usable truth.
-- Known released defects and safe alternatives are part of that truth.
-- Moving default branches prepare the next release; they do not silently advance the public documentation.
-- `target-manifest` remains pre-release/preview truth; `current-merged-truth` retires from the default public surface.
+- Public documentation describes stable or general-availability software available through supported public routes.
+- An explicit release baseline provides exact provenance for released components, shipped dependencies, and relevant deployed-network behavior.
+- Unreleased source may prepare future documentation but cannot support default public claims.
+- Known defects and unsupported tasks are represented honestly; pre-release documentation remains separate.
+- A separate developer skill is outside this decision.
 
 ## Review State
 
@@ -71,6 +72,9 @@
 - Concise content commit `afdaa07` replaced the detailed proposal; `f326e0c` tightened it to 477 words including metadata and headings. It now supersedes only the public source-selection/provenance clauses in ADR-0003, ADR-0004, and ADR-0006 and explicitly leaves any separate developer skill out of scope.
 - Exact-head ADR Governance, 20 local governance tests, diff check, and draft-PR CI passed for `f326e0c`. The earlier route-continuity and ADR-0011 findings applied to removed decisions and require fresh review rather than mechanical remediation.
 - Fresh code review at `752099a`: passed with no findings. The 477-word ADR, template, American English, partial supersession, target-architecture scope, Accepted-ADR immutability, and exact-head CI all passed. Report: `planning/adr-0016-code-review-752099a.md`.
+- Goal verification at `85fde83`: ADR content passed all 11 applicable decision goals; the twelfth state/PR accuracy goal found two bookkeeping gaps. Report: `planning/adr-0016-verification-85fde83.md`.
+  - `STATE.md` still described removed skill/mode intent.
+  - PR #98 still called the completed fresh code review pending.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -85,4 +89,4 @@
 
 ## Next
 
-- Run fresh goal verification against the concise ADR, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- Correct the state and PR-body drift, rerun exact-head goal verification, and then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
