@@ -5,13 +5,13 @@
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
 - Task: verify concise ADR-0016 redraft
-- Status: concise code review passed; goal verification pending
+- Status: concise ADR content passed; checkpoint bookkeeping corrected; exact-head reverification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
 - Current draft-PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
-- Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; 477-word tightening `f326e0cde7f4dcdf1f687405556f49fd78227875`
+- Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; 477-word tightening `f326e0c3f65de0646495da02d6eb74b70dac966f`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -75,9 +75,10 @@
 - Goal verification at `85fde83`: ADR content passed all 11 applicable decision goals; the twelfth state/PR accuracy goal found two bookkeeping gaps. Report: `planning/adr-0016-verification-85fde83.md`.
   - `STATE.md` still described removed skill/mode intent.
   - PR #98 still called the completed fresh code review pending.
+- Reverification at `d09520e`: ADR content and the first bookkeeping corrections passed; two further checkpoint accuracy gaps and the invalid recorded `f326e0c` full SHA remained. These are corrected in the current state/checkpoint update.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
-- CI arbiter: draft PR #98. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
+- CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -89,4 +90,4 @@
 
 ## Next
 
-- Correct the state and PR-body drift, rerun exact-head goal verification, and then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- Rerun exact-head goal verification after the final checkpoint corrections, then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.

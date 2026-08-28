@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — the concise ADR passed all decision-content checks, but goal verification found stale state and PR wording.
+Revise — the concise ADR passed all decision-content checks; final checkpoint bookkeeping is corrected and reverification remains.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit fresh review after scope reset
@@ -29,7 +29,7 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 CI arbiter / green of record:
 
 - Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: draft PR #98 is open. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
+- Status: draft PR #98 is open. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -53,6 +53,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-adversarial-ef646b9.md`
 - `planning/adr-0016-code-review-752099a.md`
 - `planning/adr-0016-verification-85fde83.md`
+- `planning/adr-0016-verification-d09520e.md`
 
 Checks run:
 
@@ -84,6 +85,7 @@ Results:
 - Concise redraft `afdaa07` replaced the detailed decision; tightening commit `f326e0c` reduced the complete ADR to 477 words. ADR governance, 20 tests, diff check, and exact-head CI passed.
 - Fresh concise-ADR code review at `752099a`: passed with no findings. Report: `planning/adr-0016-code-review-752099a.md`.
 - Concise-ADR goal verification at `85fde83`: 11/12 goals verified; ADR content passed, while stale state and PR wording failed the evidence-accuracy goal. Report: `planning/adr-0016-verification-85fde83.md`.
+- Reverification at `d09520e`: ADR content and earlier corrections passed; it found only the invalid recorded full `f326e0c` SHA and stale checkpoint review/next-step/CI wording. Those are corrected in this update.
 
 ## Honesty rules check
 
@@ -93,7 +95,7 @@ Results:
   - No failure or skip was dismissed as environmental, flaky, or pre-existing.
 - Evidence reproducible-from-branch: Pass for local review evidence
   - The motivating audit, representative commands, latest passing exact-SHA code-review report, 10/10 goal-verification report, and adversarial report are committed and require no uncommitted wrapper or environment variable.
-- Local vs CI consistency: no conflict observed; exact reviewed head `dfd14da` was green.
+- Local vs CI consistency: no conflict observed; exact reverification head `d09520e` was green.
 
 ## Ledger / forks
 
@@ -104,8 +106,8 @@ Not applicable; attended run. No forks or split decisions were created.
 Independent code review:
 
 - Reviewer/tool: codereviewer — OpenAI GPT-5.6-sol (`openai/gpt-5.6-sol`)
-- Reviewed commit: latest passing review `481ca8cb653b32823851d38b2bcc36b4007ddf7a`; prior issue rounds `e3df509` and `2dd687b`
-- Result: Passed after two recorded remediation rounds
+- Reviewed commit: latest concise-ADR review `752099ac110182655ec114a724eb236c66d4427e`
+- Result: Passed with no findings after the scope reset
 - Findings:
   - HIGH: define deterministic behavior when maximal eligible sets fail but a dominated older eligible set might qualify.
   - HIGH: incumbent requalification must trigger whenever any qualification input changes, not only availability, security, or network evidence.
@@ -114,7 +116,7 @@ Independent code review:
 - Re-review disposition at `2dd687b`: deterministic fallback and complete requalification passed; immutable defaults passed, but alias recommendation language remained inconsistent. A new HIGH pointer-security finding was added.
 - Disposition: pointer-security and alias-consistency findings were remediated in `4873f36` and re-reviewed at `481ca8c`.
 - Re-review disposition at `481ca8c`: both findings resolved; code-review gate passed.
-- Reports: `planning/adr-0016-code-review-e3df509.md`, `planning/adr-0016-code-review-2dd687b.md`, and `planning/adr-0016-code-review-481ca8c.md`
+- Current report: `planning/adr-0016-code-review-752099a.md`; earlier reports are historical pre-reset evidence
 
 Clean-context test:
 
@@ -164,7 +166,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No architecture decision is pending. Attended verification requires a checkpoint before rerunning after the bookkeeping correction. The redraft does not authorize merge or ADR acceptance.
+No architecture decision is pending. Attended verification requires reverification after this final bookkeeping correction. The redraft does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -176,8 +178,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Correct the PR body, rerun exact-head goal verification, and then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Rerun exact-head goal verification, then adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-Jim replaced the detailed proposal with a 477-word target-architecture decision at `f326e0c`. Exact-head CI and code review are green. Goal verification found only state/PR bookkeeping drift; adversarial, Craft, and clean-context remain. No implementation is authorized.
+Jim replaced the detailed proposal with a 477-word target-architecture decision at `f326e0c`. ADR content, exact-head CI, and code review are green. Goal reverification found only bookkeeping drift, now corrected; adversarial, Craft, and clean-context remain. No implementation is authorized.
