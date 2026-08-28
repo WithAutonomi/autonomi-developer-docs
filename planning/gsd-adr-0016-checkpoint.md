@@ -8,15 +8,17 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — journey-local code review and goal verification passed, but adversarial re-review found route-continuity and ADR-0011 blockers.
+Continue — Jim approved a concise target-architecture redraft; the 477-word ADR and exact-head CI are green, with fresh review pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
-Review cadence: per-unit blocked at adversarial review
-Unreviewed backlog if deferred: Craft and clean-context remain unrun because adversarial did not pass
+Review cadence: per-unit fresh review after scope reset
+Unreviewed backlog if deferred: Craft and clean-context remain unrun until the concise ADR passes adversarial review
 
 ## What happened
 
-Proposed ADR-0016 makes released, publicly obtainable, compatible, capability-evidenced truth the default for public rendered developer documentation and the published developer skill. It preserves moving default branches as next-release watch inputs, retains `target-manifest` for isolated pre-release previews, and defines promotion and honest fallback evidence. Remediation commit `fb67648` adds stable/general-availability candidate rules, symmetric candidate/incumbent safety, deterministic release-set discovery and ordering, continuing incumbent requalification, pointer-compatible skill parity, separate distributable/dependency identities, and precise partial supersession of ADR-0003, ADR-0004, ADR-0006, ADR-0013, and ADR-0014.
+Jim approved a scope reset for Proposed ADR-0016. The ADR now states one durable target invariant: public documentation describes stable software the public can obtain, using an explicit released baseline with exact provenance. Unreleased source may prepare future documentation but cannot support default public claims. Known defects must be represented honestly.
+
+Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside this ADR. The proposal now partially supersedes only ADR-0003, ADR-0004, and ADR-0006. A separate developer skill is explicitly out of scope.
 
 The branch also carries the dated v0.11.2 motivating audit as inspectable evidence. The audit explicitly distinguishes historical policy from current authority, records evidence gaps, and notes that Python and Rust source-install routes were identified but not clean-install or runtime verified.
 
@@ -27,7 +29,7 @@ No implementation, rendered documentation, skill, manifest, automation, CI, test
 CI arbiter / green of record:
 
 - Location: `.github/workflows/adr-governance.yml`, triggered by pull requests that change `adr/**`.
-- Status: draft PR #98 is open. Exact reviewed head `ef646b9` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
+- Status: draft PR #98 is open. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as branch-scope no-ops, not substantive coverage.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -77,6 +79,7 @@ Results:
 - Journey-local content amendment `fb00f10`: local ADR governance and 20 tests passed; exact-head ADR Governance and GitBook checks passed on draft PR #98.
 - Journey-local code review at `b1e4846`: passed with no findings; all global/journey truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
 - Journey-local goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
+- Concise redraft `afdaa07` replaced the detailed decision; tightening commit `f326e0c` reduced the complete ADR to 477 words. ADR governance, 20 tests, diff check, and exact-head CI passed.
 
 ## Honesty rules check
 
@@ -140,6 +143,7 @@ Adversarial review:
   - MEDIUM: truth-table evidence lacks concrete route-continuity identities and clause derivations.
   - LOW: state/checkpoint/PR evidence and the v0.11.2 present-tense sentence need correction.
 - Report: `planning/adr-0016-adversarial-ef646b9.md`
+- Scope-reset disposition: the journey, route, skill, and ADR-0011 decisions reviewed at `ef646b9` were removed from ADR-0016. Fresh review of the concise target decision is pending.
 
 Craft Review:
 
@@ -156,7 +160,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-Approve or decline remediation of the route-continuity and ADR-0011 findings. Jim's prior choice does not authorize merge or ADR acceptance.
+No owner decision is pending until the concise ADR completes fresh review. The redraft does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -168,8 +172,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Add concrete complete-route continuity, precisely supersede ADR-0011's unconditional SDK-primary clause, scope the historical v0.11.2 sentence, and commit a concrete truth table. Then rerun code review, goal verification, exact-head CI, and adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Run fresh code review and goal verification against `f326e0c`, persist exact-SHA reports, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-Jim chose journey-local qualification, amendment `fb00f10` implemented it, code review passed at `b1e4846`, and goal verification passed at `39e2cdf`. Adversarial re-review at `ef646b9` found two remaining HIGH blockers. Craft and clean-context have not run. No implementation is authorized.
+Jim replaced the detailed journey-local proposal with a 477-word target-architecture decision at `f326e0c`. Exact-head CI is green, but all substantive reviews predate the scope reset. Fresh code review, verification, adversarial, Craft, and clean-context remain. No implementation is authorized.

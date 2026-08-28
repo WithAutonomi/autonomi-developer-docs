@@ -4,14 +4,14 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: remediate complete-route continuity and ADR-0011 supersession
-- Status: adversarial NOT-READY; attended checkpoint
+- Task: review concise ADR-0016 redraft
+- Status: approved 477-word redraft committed; exact-head CI green; code review pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Current draft-PR base: `origin/main` at `487866a249fcb5ad7d8dd7829c017ed63d421343`
-- Proposed ADR commits: initial `5716bbe539c352b7da880b3a0ad54dd3d475e546`; first remediation `735091d7ed55db90eb48129c879796dc6ebfe963`; second correction `57ec56cb90db89583603f4cf075c9f7d272a9b87`; adversarial remediation `fb67648a8ac0a874ea94a1e1c3e208490a052a8c`; lifecycle correction `9c2f1da15de685e54fdb0ef8eceeedfa2692f153`; pointer-security correction `4873f368feec5183b7a69c493c86d2beb6efe8b5`; journey-local amendment `fb00f10b5620ce502345fdbdb1689ac7c0014d98`
+- Current draft-PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
+- Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; 477-word tightening `f326e0cde7f4dcdf1f687405556f49fd78227875`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -67,9 +67,12 @@
   - MEDIUM: branch-local truth-table evidence must include concrete binding, transport, installation, runtime/configuration, and carried-state identities.
   - LOW: state/checkpoint/PR evidence was stale, and the historical v0.11.2 defect sentence needs past-tense scoping.
 - Craft and clean-context did not run because adversarial blocked advancement.
+- Jim then directed a scope reset: ADR-0016 should state only the durable rule that public documentation covers stable software the public can obtain. Skill ownership, journey models, route truth tables, comparison algorithms, and implementation mechanics moved out of the ADR.
+- Concise content commit `afdaa07` replaced the detailed proposal; `f326e0c` tightened it to 477 words including metadata and headings. It now supersedes only the public source-selection/provenance clauses in ADR-0003, ADR-0004, and ADR-0006 and explicitly leaves any separate developer skill out of scope.
+- Exact-head ADR Governance, 20 local governance tests, diff check, and draft-PR CI passed for `f326e0c`. The earlier route-continuity and ADR-0011 findings applied to removed decisions and require fresh review rather than mechanical remediation.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
-- CI arbiter: draft PR #98. Exact reviewed head `ef646b9` passed ADR Governance and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
+- CI arbiter: draft PR #98. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -81,4 +84,4 @@
 
 ## Next
 
-- With Jim's attended approval, add concrete complete-route continuity, precisely supersede ADR-0011's unconditional SDK-primary clause, scope the historical v0.11.2 sentence, and add inspectable concrete truth-table evidence; then rerun code review, verification, CI, and adversarial. Do not merge, accept the ADR, or begin implementation.
+- Run fresh code review and goal verification against concise ADR head `f326e0c`, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
