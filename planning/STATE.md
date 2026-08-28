@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: verify concise ADR-0016 redraft
-- Status: concise ADR content passed; checkpoint bookkeeping corrected; exact-head reverification pending
+- Task: adversarial review of concise ADR-0016
+- Status: concise code review and 12/12 goal verification passed; adversarial pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -76,6 +76,7 @@
   - `STATE.md` still described removed skill/mode intent.
   - PR #98 still called the completed fresh code review pending.
 - Reverification at `d09520e`: ADR content and the first bookkeeping corrections passed; two further checkpoint accuracy gaps and the invalid recorded `f326e0c` full SHA remained. These are corrected in the current state/checkpoint update.
+- Final exact-head reverification at `58545cd`: passed 12/12 with no gaps. Report: `planning/adr-0016-verification-58545cd.md`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -90,4 +91,4 @@
 
 ## Next
 
-- Rerun exact-head goal verification after the final checkpoint corrections, then rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- Run fresh adversarial review against the concise ADR and branch-local evidence. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.

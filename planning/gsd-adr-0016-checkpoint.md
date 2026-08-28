@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — the concise ADR passed all decision-content checks; final checkpoint bookkeeping is corrected and reverification remains.
+Continue — concise ADR code review and final 12/12 goal reverification passed; adversarial review is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit fresh review after scope reset
@@ -54,6 +54,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-code-review-752099a.md`
 - `planning/adr-0016-verification-85fde83.md`
 - `planning/adr-0016-verification-d09520e.md`
+- `planning/adr-0016-verification-58545cd.md`
 
 Checks run:
 
@@ -86,6 +87,7 @@ Results:
 - Fresh concise-ADR code review at `752099a`: passed with no findings. Report: `planning/adr-0016-code-review-752099a.md`.
 - Concise-ADR goal verification at `85fde83`: 11/12 goals verified; ADR content passed, while stale state and PR wording failed the evidence-accuracy goal. Report: `planning/adr-0016-verification-85fde83.md`.
 - Reverification at `d09520e`: ADR content and earlier corrections passed; it found only the invalid recorded full `f326e0c` SHA and stale checkpoint review/next-step/CI wording. Those are corrected in this update.
+- Final reverification at `58545cd`: passed 12/12 with no gaps. Report: `planning/adr-0016-verification-58545cd.md`.
 
 ## Honesty rules check
 
@@ -166,7 +168,7 @@ The v0.11.2 audit is historical evidence. `antd` v0.12.0 has since released and 
 
 ## Open questions / decisions for Jim
 
-No architecture decision is pending. Attended verification requires reverification after this final bookkeeping correction. The redraft does not authorize merge or ADR acceptance.
+No owner decision is pending until the gauntlet completes. The redraft does not authorize merge or ADR acceptance.
 
 PR / upstream action gate, if applicable:
 
@@ -178,8 +180,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Rerun exact-head goal verification, then adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Run fresh adversarial review against the concise ADR and branch-local evidence. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-Jim replaced the detailed proposal with a 477-word target-architecture decision at `f326e0c`. ADR content, exact-head CI, and code review are green. Goal reverification found only bookkeeping drift, now corrected; adversarial, Craft, and clean-context remain. No implementation is authorized.
+Jim replaced the detailed proposal with a 477-word target-architecture decision at `f326e0c`. Code review, exact-head CI, and final 12/12 goal verification are green. Adversarial, Craft, and clean-context remain. No implementation is authorized.
