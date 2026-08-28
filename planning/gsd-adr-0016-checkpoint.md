@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Continue — Jim approved a concise target-architecture redraft; the 477-word ADR and exact-head CI are green, with fresh review pending.
+Continue — the 477-word concise ADR passed fresh code review; goal verification is pending.
 
 Meaningful work-unit? Yes — this proposal changes the repository's durable public source-of-truth and drift semantics.
 Review cadence: per-unit fresh review after scope reset
@@ -51,6 +51,7 @@ Files changed/artifacts produced:
 - `planning/adr-0016-code-review-b1e4846.md`
 - `planning/adr-0016-verification-39e2cdf.md`
 - `planning/adr-0016-adversarial-ef646b9.md`
+- `planning/adr-0016-code-review-752099a.md`
 
 Checks run:
 
@@ -80,6 +81,7 @@ Results:
 - Journey-local code review at `b1e4846`: passed with no findings; all global/journey truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
 - Journey-local goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
 - Concise redraft `afdaa07` replaced the detailed decision; tightening commit `f326e0c` reduced the complete ADR to 477 words. ADR governance, 20 tests, diff check, and exact-head CI passed.
+- Fresh concise-ADR code review at `752099a`: passed with no findings. Report: `planning/adr-0016-code-review-752099a.md`.
 
 ## Honesty rules check
 
@@ -172,8 +174,8 @@ PR / upstream action gate, if applicable:
 
 ## Recommended next step
 
-Run fresh code review and goal verification against `f326e0c`, persist exact-SHA reports, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
+Run fresh goal verification against the concise ADR, persist the exact-SHA report, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept ADR-0016, or begin implementation.
 
 ## Handoff note
 
-Jim replaced the detailed journey-local proposal with a 477-word target-architecture decision at `f326e0c`. Exact-head CI is green, but all substantive reviews predate the scope reset. Fresh code review, verification, adversarial, Craft, and clean-context remain. No implementation is authorized.
+Jim replaced the detailed journey-local proposal with a 477-word target-architecture decision at `f326e0c`. Exact-head CI and fresh code review are green. Goal verification, adversarial, Craft, and clean-context remain. No implementation is authorized.

@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: review concise ADR-0016 redraft
-- Status: approved 477-word redraft committed; exact-head CI green; code review pending
+- Task: verify concise ADR-0016 redraft
+- Status: concise code review passed; goal verification pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -70,6 +70,7 @@
 - Jim then directed a scope reset: ADR-0016 should state only the durable rule that public documentation covers stable software the public can obtain. Skill ownership, journey models, route truth tables, comparison algorithms, and implementation mechanics moved out of the ADR.
 - Concise content commit `afdaa07` replaced the detailed proposal; `f326e0c` tightened it to 477 words including metadata and headings. It now supersedes only the public source-selection/provenance clauses in ADR-0003, ADR-0004, and ADR-0006 and explicitly leaves any separate developer skill out of scope.
 - Exact-head ADR Governance, 20 local governance tests, diff check, and draft-PR CI passed for `f326e0c`. The earlier route-continuity and ADR-0011 findings applied to removed decisions and require fresh review rather than mechanical remediation.
+- Fresh code review at `752099a`: passed with no findings. The 477-word ADR, template, American English, partial supersession, target-architecture scope, Accepted-ADR immutability, and exact-head CI all passed. Report: `planning/adr-0016-code-review-752099a.md`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact concise head `f326e0c` passed ADR Governance run `33188143434` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -84,4 +85,4 @@
 
 ## Next
 
-- Run fresh code review and goal verification against concise ADR head `f326e0c`, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- Run fresh goal verification against the concise ADR, persist exact-SHA evidence, and rerun adversarial. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
