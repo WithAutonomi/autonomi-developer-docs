@@ -4,14 +4,14 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: adversarial review of concise ADR-0016
-- Status: concise code review and 12/12 goal verification passed; adversarial pending
+- Task: revalidate concise ADR-0016 after adversarial nit
+- Status: adversarial passed READY-WITH-NITS; evidence wording corrected; exact-head revalidation pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
 - Current draft-PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
-- Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; 477-word tightening `f326e0c3f65de0646495da02d6eb74b70dac966f`
+- Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; tightening `f326e0c3f65de0646495da02d6eb74b70dac966f`; evidence-alignment correction `dfe2161`
 - Implementation: not started; ADR acceptance remains human-only
 
 ## Decision Intent
@@ -77,6 +77,9 @@
   - PR #98 still called the completed fresh code review pending.
 - Reverification at `d09520e`: ADR content and the first bookkeeping corrections passed; two further checkpoint accuracy gaps and the invalid recorded `f326e0c` full SHA remained. These are corrected in the current state/checkpoint update.
 - Final exact-head reverification at `58545cd`: passed 12/12 with no gaps. Report: `planning/adr-0016-verification-58545cd.md`.
+- Fresh adversarial review at `d18a63b`: `READY-WITH-NITS`, with no CRITICAL, HIGH, or MEDIUM findings. Report: `planning/adr-0016-adversarial-d18a63b.md`.
+  - LOW: validation wording should preserve the deployed-network evidence path. Corrected in `dfe2161`.
+  - LOW: PR body lagged final verification. Corrected after review.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -91,4 +94,4 @@
 
 ## Next
 
-- Run fresh adversarial review against the concise ADR and branch-local evidence. Craft and clean-context follow only after adversarial passes. Do not merge, accept the ADR, or begin implementation.
+- Revalidate exact head after the one-line evidence correction, then run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.
