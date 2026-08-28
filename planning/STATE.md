@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: resolve clean-context panel activation
-- Status: stopped pending separate Milestone A panel activation
+- Task: run controlled Claude clean-context review
+- Status: Milestone A panel activation approved; clean-context dispatch pending
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -86,6 +86,7 @@
 - Craft Review at `dcf7c8c`: passed with no CONFORMANCE, SIMPLICITY, or NIT findings. Report: `planning/adr-0016-craft-dcf7c8c.md`.
 - Clean-context review at `dcf7c8c`: blocked before inference because the controlled Claude panel lacks the separate Milestone A activation verdict. No substitute was used. Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
 - Jim chose `Stop pending activation` on 2026-08-28. Clean-context is not waived, panel activation is not authorized by this ADR, and the acceptance checkpoint remains blocked.
+- Jim subsequently declared: `Milestone A panel activation approved for normal and ad-hoc controlled external reviews.` on 2026-08-28. This activates the controlled panel beyond PR #98; it does not authorize ADR acceptance, merge, or implementation.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -100,4 +101,4 @@
 
 ## Next
 
-- Stop. Resume only after the separate panel work records a Milestone A activation verdict, then run controlled Claude clean-context review before the ADR acceptance checkpoint. Do not merge, accept the ADR, or begin implementation.
+- Dispatch a fresh controlled Claude Fable clean-context review for the current PR evidence. If it passes, return to Jim for the ADR acceptance decision. Do not merge or implement.
