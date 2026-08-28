@@ -67,7 +67,7 @@ Implementation details and sequencing belong in a reviewed specification and pla
 
 ## Validation
 
-- Every public technical claim resolves to exact released provenance.
+- Every public technical claim resolves to exact release, shipped-dependency, or verified deployed-network evidence.
 - Documented installation routes resolve to the intended public artifacts.
 - Unreleased source cannot advance the public documentation baseline.
 - Known broken or unverified capabilities are not presented as working.
