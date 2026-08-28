@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: reconcile concise ADR checkpoint before final gates
-- Status: ADR passed focused review; checkpoint contradiction found; attended checkpoint
+- Task: resolve clean-context panel activation
+- Status: code, verification, adversarial, Craft, and CI passed; clean-context blocked
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -82,6 +82,9 @@
   - LOW: PR body lagged final verification. Corrected after review.
 - Focused code review at `fc49173`: ADR content passed with no findings; one MEDIUM checkpoint-consistency issue remained. Report: `planning/adr-0016-code-review-fc49173.md`.
   - The accumulated checkpoint mixed current READY-WITH-NITS status with historical blocker/pending language. It is replaced by a concise current checkpoint; detailed history remains in the review reports.
+- Exact-head focused checkpoint review at `dcf7c8c`: passed with no findings.
+- Craft Review at `dcf7c8c`: passed with no CONFORMANCE, SIMPLICITY, or NIT findings. Report: `planning/adr-0016-craft-dcf7c8c.md`.
+- Clean-context review at `dcf7c8c`: blocked before inference because the controlled Claude panel lacks the separate Milestone A activation verdict. No substitute was used. Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -96,4 +99,4 @@
 
 ## Next
 
-- With Jim's attended approval, rerun focused exact-head review of the concise checkpoint, then run Craft and clean-context. Do not merge, accept the ADR, or begin implementation.
+- Jim must either authorize the separate Milestone A panel activation, explicitly waive clean-context for this ADR, or stop pending panel activation. Do not merge, accept the ADR, or begin implementation.

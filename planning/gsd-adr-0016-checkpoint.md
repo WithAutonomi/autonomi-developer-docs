@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Revise — ADR content passed focused review, but the accumulated checkpoint contradicted the current review status. This file replaces it with the current state; exact-head review is pending.
+Blocked — code review, verification, adversarial, Craft, and CI passed. Clean-context review could not invoke the controlled Claude panel because Milestone A activation is absent.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
-Unreviewed backlog: Craft and clean-context
+Unreviewed backlog: clean-context only
 
 ## What happened
 
@@ -62,6 +62,7 @@ Code review:
 - Concise ADR review at `752099a`: passed with no findings.
 - Focused evidence-wording review at `fc49173`: ADR passed; the old checkpoint had one MEDIUM consistency finding.
 - Disposition: replaced the old accumulated checkpoint with this concise current record.
+- Focused review of the replacement checkpoint at `dcf7c8c`: passed with no findings.
 
 Goal verification:
 
@@ -77,12 +78,17 @@ Adversarial review:
 Craft Review:
 
 - Required: Yes.
-- Result: Not run; next gate after exact-head checkpoint review.
+- Result: Pass at `dcf7c8c`; no CONFORMANCE, SIMPLICITY, or NIT findings.
+- Report: `planning/adr-0016-craft-dcf7c8c.md`.
 
 Clean-context review:
 
 - Required: Yes.
-- Result: Not run; follows Craft Review.
+- Result: Blocked before inference.
+- Reason: controlled Claude panel normal/ad-hoc use lacks Jim's separate Milestone A activation verdict.
+- No substitute reviewer was used.
+- Evidence: `claude=official claude CLI Fable review family (Anthropic), BLOCKED: panel activation/dispatch authorization absent; no reviewer inference attempted`
+- Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
 
 ## Drift / Scope Concerns
 
@@ -92,7 +98,11 @@ The branch is behind current `main`, but the PR merge ref is green. Any content-
 
 ## Open Questions / Decisions for Jim
 
-No architecture decision is pending. Attended mode requires approval to rerun after the checkpoint correction.
+Choose one:
+
+1. Authorize the separate Milestone A panel activation so the controlled Claude review can run.
+2. Explicitly waive clean-context for ADR-0016.
+3. Stop pending panel activation.
 
 PR / upstream action gate:
 
@@ -102,8 +112,8 @@ PR / upstream action gate:
 
 ## Recommended Next Step
 
-Rerun focused exact-head review of this checkpoint. If it passes, run Craft and clean-context. Then return to Jim for the ADR acceptance decision. Do not merge or implement.
+Resolve the clean-context activation decision. If review runs and passes, return to Jim for ADR acceptance. Do not merge or implement.
 
 ## Handoff Note
 
-The concise ADR, code review, goal verification, adversarial review, and CI are green. The checkpoint-consistency finding is corrected but not yet re-reviewed. Craft and clean-context remain. ADR-0016 is Proposed and implementation is unauthorized.
+The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context is blocked by panel activation policy. ADR-0016 remains Proposed and implementation is unauthorized.
