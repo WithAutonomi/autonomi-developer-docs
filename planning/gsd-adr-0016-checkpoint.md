@@ -57,7 +57,7 @@ Artifacts:
 
 - No-harness-modification: Pass. No gate, CI, test, build, or environment change.
 - Baseline-diff for evidence: Pass. No failure was dismissed.
-- Evidence reproducible-from-branch: Pass. Review reports and audit are committed.
+- Evidence reproducible-from-branch: Pending. This correction removes the known unreachable commands; fresh re-review remains pending.
 - Local vs CI consistency: Pending. Pre-remediation checks passed; the evidence-repair commit requires fresh exact-head CI.
 
 ## Review Findings
@@ -68,6 +68,7 @@ Code review:
 - Focused evidence-wording review at `fc49173`: ADR passed; the old checkpoint had one MEDIUM consistency finding.
 - Disposition: replaced the old accumulated checkpoint with this concise current record.
 - Focused review of the replacement checkpoint at `dcf7c8c`: passed with no findings.
+- Attended code review of `7b8b537`: HIGH evidence-reproducibility finding; two GitHub compare calls in the audit targeted local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93` and failed remotely. This correction removes the unreachable commands; fresh re-review and exact-head CI remain pending.
 
 Goal verification:
 

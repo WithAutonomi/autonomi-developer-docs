@@ -221,6 +221,8 @@ No PR, push, merge, publish, release, rendered-doc edit, source edit, CI edit, t
 
 Representative commands used for the audit follow. They require `gh`, `curl`, and public network access; none changes repository state.
 
+The original audit also used a local comparison against `2e11cdc908a04d31bc35a6d998211cdb7949ce93` while that commit was available locally. That comparison is no longer remotely reproducible and is not readiness evidence. This committed audit copy preserves the historical findings.
+
 ```bash
 gh release view v0.11.2 --repo WithAutonomi/ant-sdk \
   --json tagName,publishedAt,isDraft,isPrerelease,targetCommitish,assets,url
@@ -245,12 +247,6 @@ gh api repos/WithAutonomi/evmlib/git/ref/tags/v0.9.0
 
 curl --fail --silent --show-error \
   https://proxy.golang.org/github.com/withautonomi/ant-sdk/antd-go/@v/v0.11.2.info
-gh api \
-  "repos/WithAutonomi/autonomi-developer-docs/compare/af6d0e9da96dd9b7d31105accbeb9b6a181aaf37...2e11cdc908a04d31bc35a6d998211cdb7949ce93" \
-  --jq '.files[].filename'
-gh api \
-  "repos/WithAutonomi/autonomi-developer-docs/compare/af6d0e9da96dd9b7d31105accbeb9b6a181aaf37...2e11cdc908a04d31bc35a6d998211cdb7949ce93" \
-  --jq '{changed_files: (.files | length), additions: ([.files[].additions] | add), deletions: ([.files[].deletions] | add)}'
 ```
 
 Canonical source URLs are linked in each findings section. Moving-head queries used `gh api repos/<owner>/<repo>/commits/<default-branch>` on 2026-08-11.

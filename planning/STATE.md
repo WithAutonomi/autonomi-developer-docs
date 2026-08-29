@@ -94,6 +94,7 @@
 - Jim declared `waive and present` on 2026-08-28. This is a one-off explicit waiver of the ADR-0016 clean-context gate after the controlled panel failed before inference. It does not waive clean-context generally or change panel policy.
 - Clean-context controlling disposition: Jim's one-off waiver follows the blocked-before-inference controlled-panel sequence above; no same-model substitute ran.
 - CI arbiter: required checks on the current PR #98 head are the green of record. At pre-remediation head `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`, ADR Governance run `33245584910` job `99082354387`, prose run `33245584905` job `99082354434`, sweep run `33245584892` job `99082354463`, and reachability run `33245584906` job `99082354330` passed; both GitBook statuses also passed. This is historical pre-remediation evidence. New remediation commits require fresh exact-head CI.
+- Attended code review of `7b8b537` found a HIGH evidence-reproducibility issue: the audit's reproducible command block included two GitHub compare calls ending at local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93`, which is unreachable remotely. This correction removes those commands; fresh re-review and exact-head CI remain pending.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
