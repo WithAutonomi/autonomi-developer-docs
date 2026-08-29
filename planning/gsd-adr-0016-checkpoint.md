@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Blocked — Milestone A and exact root permission are approved, but the outer harness's final static external-directory deny prevents creating the required caller-owned root and brief.
+Stop for decision — all completed gates pass and Jim explicitly waived clean-context for ADR-0016. The Proposed ADR is ready for human acceptance or rejection.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
-Unreviewed backlog: clean-context only
+Unreviewed backlog: none; clean-context is explicitly Jim-waived for this ADR
 
 ## What happened
 
@@ -93,6 +93,7 @@ Clean-context review:
 - `models: provider=not-observed · model=not-resolved · duration=unknown`
 - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
 - Report: `planning/adr-0016-clean-context-50f4462.md`.
+- Final disposition: Not run; Jim explicitly declared `waive and present` on 2026-08-28 after the controlled panel failed before inference. This waiver applies only to ADR-0016.
 
 ## Drift / Scope Concerns
 
@@ -102,7 +103,7 @@ The branch is behind current `main`, but the PR merge ref is green. Any content-
 
 ## Open Questions / Decisions for Jim
 
-Milestone A activation and the narrow disposable-root authorization are resolved. The remaining blocker is static harness permission, not owner intent. This does not authorize ADR acceptance, merge, or implementation.
+Accept or reject Proposed ADR-0016. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
 
 PR / upstream action gate:
 
@@ -112,8 +113,8 @@ PR / upstream action gate:
 
 ## Recommended Next Step
 
-Stop. Correct the outer harness permission outside this project run, or have Jim manually create and attest the root/brief. Then run a fresh controlled Claude Fable review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
+Jim decides whether to accept Proposed ADR-0016. If accepted, a human-authorized status change and later merge decision remain separate. Do not implement yet.
 
 ## Handoff Note
 
-The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context remains blocked by static outer-harness filesystem permission despite explicit activation and root authorization. ADR-0016 remains Proposed and implementation is unauthorized.
+The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context is explicitly waived for this ADR. ADR-0016 remains Proposed until Jim decides; merge and implementation remain unauthorized.

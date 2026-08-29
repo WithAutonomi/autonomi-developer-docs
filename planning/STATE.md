@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: run controlled Claude clean-context review
-- Status: clean-context blocked by static outer-harness filesystem deny
+- Task: human acceptance decision for Proposed ADR-0016
+- Status: acceptance-ready; clean-context explicitly waived by Jim
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -91,6 +91,7 @@
   - `models: provider=not-observed · model=not-resolved · duration=unknown`
   - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
 - Jim explicitly authorized creation of disposable root `gsd-panel-a1ae9d0a-d513-47f5-8266-b006db956517` and a credential-free brief of at most 16 KiB for revision `0df9bfd`. The outer harness still denied the exact `mkdir` call because its final static external-directory deny overrides the authorization. This is now a mechanism-level blocker; no model ran.
+- Jim declared `waive and present` on 2026-08-28. This is a one-off explicit waiver of the ADR-0016 clean-context gate after the controlled panel failed before inference. It does not waive clean-context generally or change panel policy.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -105,4 +106,4 @@
 
 ## Next
 
-- Stop. The outer harness permission must be corrected outside this project run, or Jim must manually create and attest the disposable root/brief. Then make a fresh controlled Claude dispatch. Do not merge, accept, or implement.
+- Present Proposed ADR-0016 to Jim for explicit acceptance or rejection. Do not mark it Accepted, merge, or implement without the corresponding human decisions.
