@@ -8,7 +8,7 @@ Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and cle
 
 ## Status
 
-Blocked — Milestone A is active, but clean-context cannot run until the orchestrator may create the required disposable caller-owned root and brief.
+Blocked — Milestone A and exact root permission are approved, but the outer harness's final static external-directory deny prevents creating the required caller-owned root and brief.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
@@ -102,7 +102,7 @@ The branch is behind current `main`, but the PR merge ref is green. Any content-
 
 ## Open Questions / Decisions for Jim
 
-Milestone A activation is resolved. A narrower runtime permission remains: authorize one disposable caller-owned panel root and regular brief under the approved temporary path. This does not authorize ADR acceptance, merge, or implementation.
+Milestone A activation and the narrow disposable-root authorization are resolved. The remaining blocker is static harness permission, not owner intent. This does not authorize ADR acceptance, merge, or implementation.
 
 PR / upstream action gate:
 
@@ -112,8 +112,8 @@ PR / upstream action gate:
 
 ## Recommended Next Step
 
-After explicit disposable-root permission, create and attest the brief, then run a fresh controlled Claude Fable review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
+Stop. Correct the outer harness permission outside this project run, or have Jim manually create and attest the root/brief. Then run a fresh controlled Claude Fable review. If it passes, return to Jim for ADR acceptance. Do not merge or implement.
 
 ## Handoff Note
 
-The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Milestone A panel activation is now approved; clean-context remains to run. ADR-0016 remains Proposed and implementation is unauthorized.
+The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context remains blocked by static outer-harness filesystem permission despite explicit activation and root authorization. ADR-0016 remains Proposed and implementation is unauthorized.

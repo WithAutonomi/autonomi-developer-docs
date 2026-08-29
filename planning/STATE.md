@@ -5,7 +5,7 @@
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
 - Task: run controlled Claude clean-context review
-- Status: Milestone A activated; clean-context blocked on caller-owned brief creation permission
+- Status: clean-context blocked by static outer-harness filesystem deny
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
@@ -90,6 +90,7 @@
 - Activated dispatch attempt for evidence revision `50f4462` was blocked before inference because the required caller-owned disposable root and `brief.md` could not be created under the orchestrator's outer filesystem permission. No model ran. Report: `planning/adr-0016-clean-context-50f4462.md`.
   - `models: provider=not-observed · model=not-resolved · duration=unknown`
   - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
+- Jim explicitly authorized creation of disposable root `gsd-panel-a1ae9d0a-d513-47f5-8266-b006db956517` and a credential-free brief of at most 16 KiB for revision `0df9bfd`. The outer harness still denied the exact `mkdir` call because its final static external-directory deny overrides the authorization. This is now a mechanism-level blocker; no model ran.
 - Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
   - `models: unavailable (auth) · 0s`
 - CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
@@ -104,4 +105,4 @@
 
 ## Next
 
-- Obtain Jim's explicit authorization to create one disposable caller-owned panel root and regular brief under `/var/folders/f_/j942sskj6nx67b6gk3rqgsqm0000gn/T/opencode/`, then make a fresh controlled Claude dispatch. Do not merge, accept, or implement.
+- Stop. The outer harness permission must be corrected outside this project run, or Jim must manually create and attest the disposable root/brief. Then make a fresh controlled Claude dispatch. Do not merge, accept, or implement.
