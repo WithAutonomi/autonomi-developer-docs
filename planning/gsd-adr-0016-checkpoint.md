@@ -1,18 +1,18 @@
 # GSD Checkpoint — Concise Proposed ADR-0016
 
-Date: 2026-08-28
+Date: 2026-08-29
 Project: Autonomi Developer Documentation
 Slice/question: Should public documentation describe only stable software the public can obtain?
 Prepared by: orchestrator
-Agents/tools used: operative, codereviewer, verifier, adversarial; Craft and clean-context pending
+Agents/tools used: operative, codereviewer, verifier, adversarial, Craft (passed); clean-context Jim-waived for ADR-0016
 
 ## Status
 
-Stop for decision — all completed gates pass and Jim explicitly waived clean-context for ADR-0016. The Proposed ADR is ready for human acceptance or rejection.
+Revise — ADR substance passed, but its evidence remediation remains under review until fresh review and exact-head CI pass.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
 Review cadence: per-unit
-Unreviewed backlog: none; clean-context is explicitly Jim-waived for this ADR
+Unreviewed backlog: this evidence remediation requires fresh review and exact-head CI; clean-context is explicitly Jim-waived for ADR-0016
 
 ## What happened
 
@@ -26,17 +26,22 @@ ADR-0016 remains Proposed. No implementation, rendered docs, skill, CI, test, or
 
 CI arbiter / green of record:
 
-- Location: draft PR #98, https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
-- Exact reviewed head: `fc49173dc040425429a4cc298eb3811a23650b5a`
-- ADR Governance run `33204071304`, job `98960532646`: passed
-- GitBook and docs preview: passed
-- Prose/sweep checks: successful scope-gate no-ops, not substantive coverage
+- Location: PR #98, https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
+- Rule: required checks on the current PR head are the green of record.
+- Historical pre-remediation head: `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`.
+- ADR Governance run `33245584910`, job `99082354387`: passed.
+- Prose run `33245584905`, job `99082354434`: passed as a scope-gate no-op.
+- Sweep run `33245584892`, job `99082354463`: passed as a scope-gate no-op.
+- Reachability run `33245584906`, job `99082354330`: passed.
+- Both GitBook statuses: passed.
+- These checks are historical pre-remediation evidence. The evidence-repair commit requires fresh exact-head CI.
 
 Local fast gate / `.gsd/gate.sh`:
 
 - Installed? N/A — no `.gsd/gate.sh` exists.
 - ADR governance: passed, 1 ADR checked.
 - Governance tests: passed, 20 tests.
+- ant-sdk blob ref length check: passed, 31 refs checked and all are 40 characters.
 - `git diff --check`: passed.
 - Word count: 481.
 
@@ -53,7 +58,7 @@ Artifacts:
 - No-harness-modification: Pass. No gate, CI, test, build, or environment change.
 - Baseline-diff for evidence: Pass. No failure was dismissed.
 - Evidence reproducible-from-branch: Pass. Review reports and audit are committed.
-- Local vs CI consistency: Pass for applicable ADR checks.
+- Local vs CI consistency: Pending. Pre-remediation checks passed; the evidence-repair commit requires fresh exact-head CI.
 
 ## Review Findings
 
@@ -84,37 +89,34 @@ Craft Review:
 Clean-context review:
 
 - Required: Yes.
-- Result: Blocked before inference.
-- Reason: controlled Claude panel normal/ad-hoc use lacks Jim's separate Milestone A activation verdict.
-- No substitute reviewer was used.
-- Evidence: `claude=official claude CLI Fable review family (Anthropic), BLOCKED: panel activation/dispatch authorization absent; no reviewer inference attempted`
-- Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
-- Activated retry at revision `50f4462`: blocked before inference because the caller-owned root/brief was missing and outer filesystem permission refused creation.
-- `models: provider=not-observed · model=not-resolved · duration=unknown`
-- `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
-- Report: `planning/adr-0016-clean-context-50f4462.md`.
-- Final disposition: Not run; Jim explicitly declared `waive and present` on 2026-08-28 after the controlled panel failed before inference. This waiver applies only to ADR-0016.
+- Result: Not run — one-off Jim waiver after the controlled panel attempts were blocked before inference.
+- Initial attempt at `dcf7c8c`: blocked before inference because the separate Milestone A activation verdict was absent. Report: `planning/adr-0016-clean-context-dcf7c8c.md`.
+- Jim later activated normal and ad-hoc controlled external reviews; activation absence is no longer the current blocker.
+- Post-activation attempt at `50f4462`: blocked before inference because the caller-owned disposable root and `brief.md` were missing and the outer filesystem mechanism refused their creation. Report: `planning/adr-0016-clean-context-50f4462.md`.
+- Jim then authorized the credential-free brief and disposable root for revision `0df9bfd`; the outer harness's static external-directory denial still blocked creation before inference.
+- No model ran, and no same-model substitute review was used.
+- Final disposition: Not run; Jim explicitly declared `waive and present` on 2026-08-28 after the controlled panel attempts failed before inference. This one-off waiver applies only to ADR-0016.
 
 ## Drift / Scope Concerns
 
 The included v0.11.2 audit is historical motivation. A fresh release audit is required before implementation. ADR acceptance does not promote a release or authorize documentation changes.
 
-The branch is behind current `main`, but the PR merge ref is green. Any content-changing integration requires renewed review.
+Merge commit `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3` integrated current base `49e202c818bab1be780b81c28e5d0718cfb89b1c`. Any future content-changing integration requires renewed review.
 
 ## Open Questions / Decisions for Jim
 
-Accept or reject Proposed ADR-0016. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
+The acceptance decision waits for the evidence remediation's fresh review and exact-head CI. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
 
 PR / upstream action gate:
 
-- PR ready to raise? Already open as draft review/CI vehicle.
-- Merge ready? No.
+- PR status: already open and non-draft.
+- Merge ready? No; the evidence remediation requires fresh review and exact-head CI.
 - Jim authorized merge? No.
 
 ## Recommended Next Step
 
-Jim decides whether to accept Proposed ADR-0016. If accepted, a human-authorized status change and later merge decision remain separate. Do not implement yet.
+Rerun checks, review, and exact-head CI for this evidence repair, then present Proposed ADR-0016 for the acceptance decision. Acceptance, merge, and implementation remain separate unauthorized actions.
 
 ## Handoff Note
 
-The concise ADR, code review, goal verification, adversarial review, Craft Review, and CI are green. Clean-context is explicitly waived for this ADR. ADR-0016 remains Proposed until Jim decides; merge and implementation remain unauthorized.
+The concise ADR's substance passed code review, goal verification, adversarial review, and Craft Review. Clean-context is explicitly waived for ADR-0016. The evidence repair now requires fresh review and exact-head CI before the acceptance decision; ADR-0016 remains Proposed, and acceptance, merge, and implementation remain unauthorized.

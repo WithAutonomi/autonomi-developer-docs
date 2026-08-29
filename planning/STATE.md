@@ -4,13 +4,13 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: human acceptance decision for Proposed ADR-0016
-- Status: acceptance-ready; clean-context explicitly waived by Jim
+- Task: evidence-integrity remediation review for Proposed ADR-0016
+- Status: evidence remediation under review; fresh review and exact-head CI are required before the acceptance decision
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
-- Draft PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98
+- PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
-- Current draft-PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
+- Current PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
 - Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; tightening `f326e0c3f65de0646495da02d6eb74b70dac966f`; evidence-alignment correction `dfe2161`
 - Implementation: not started; ADR acceptance remains human-only
 
@@ -92,9 +92,8 @@
   - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
 - Jim explicitly authorized creation of disposable root `gsd-panel-a1ae9d0a-d513-47f5-8266-b006db956517` and a credential-free brief of at most 16 KiB for revision `0df9bfd`. The outer harness still denied the exact `mkdir` call because its final static external-directory deny overrides the authorization. This is now a mechanism-level blocker; no model ran.
 - Jim declared `waive and present` on 2026-08-28. This is a one-off explicit waiver of the ADR-0016 clean-context gate after the controlled panel failed before inference. It does not waive clean-context generally or change panel policy.
-- Clean-context gate: deferred because the Claude lane was unavailable due to expired OAuth. No substitute was used.
-  - `models: unavailable (auth) · 0s`
-- CI arbiter: draft PR #98. Exact reverification head `d09520e` passed ADR Governance run `33189218449` and both GitBook checks. Prose/sweep checks returned success as scope-gate no-ops, not substantive coverage.
+- Clean-context controlling disposition: Jim's one-off waiver follows the blocked-before-inference controlled-panel sequence above; no same-model substitute ran.
+- CI arbiter: required checks on the current PR #98 head are the green of record. At pre-remediation head `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`, ADR Governance run `33245584910` job `99082354387`, prose run `33245584905` job `99082354434`, sweep run `33245584892` job `99082354463`, and reachability run `33245584906` job `99082354330` passed; both GitBook statuses also passed. This is historical pre-remediation evidence. New remediation commits require fresh exact-head CI.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -102,8 +101,9 @@
 - Do not edit Accepted ADR-0003 or ADR-0004.
 - Do not mark ADR-0016 Accepted autonomously.
 - Do not implement manifest, tooling, policy, or rendered-documentation changes before the ADR decision gate.
-- Do not open a PR without Jim's explicit confirmation.
+- Do not merge PR #98 without Jim's explicit confirmation.
 
 ## Next
 
-- Present Proposed ADR-0016 to Jim for explicit acceptance or rejection. Do not mark it Accepted, merge, or implement without the corresponding human decisions.
+- Complete review and fresh exact-head CI for the evidence remediation.
+- If those gates pass, present Proposed ADR-0016 to Jim for explicit acceptance or rejection. ADR acceptance, merge, and implementation remain unauthorized.
