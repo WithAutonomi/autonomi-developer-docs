@@ -18,7 +18,7 @@ Unreviewed backlog: the acceptance-record update and final PR head; clean-contex
 
 Jim replaced the detailed proposal with a concise target decision: public documentation describes stable or general-availability software available through supported public routes. An explicit release baseline provides exact provenance; unreleased source cannot support default public claims; defects and unsupported tasks are represented honestly.
 
-The ADR is 510 words including metadata and headings. Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside its scope. It partially supersedes only ADR-0003, ADR-0004, and ADR-0006.
+The ADR is 497 words including metadata and headings. Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside its scope. It partially supersedes only ADR-0003, ADR-0004, and ADR-0006.
 
 Jim's explicit human decision, supplied in chat on 2026-08-31, is to accept ADR-0016 via PR #98 and authorize it to be accepted and merged. Writing `Accepted` implements Jim's decision; it is not autonomous AI acceptance.
 
@@ -46,7 +46,7 @@ Local fast gate / `.gsd/gate.sh`:
 - Governance tests: passed, 20 tests.
 - ant-sdk blob ref length check: passed, 31 refs checked and all are 40 characters.
 - `git diff --check`: passed.
-- Word count: 510.
+- Word count: 497.
 
 Artifacts:
 

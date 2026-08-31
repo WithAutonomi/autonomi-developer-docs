@@ -75,4 +75,4 @@ Implementation details and sequencing belong in a reviewed specification and pla
 
 ## Notes for AI-assisted work
 
-AI tools helped draft this ADR. Jim Collinson accepted it after human review of PR #98 on 2026-08-31. The introducing PR remains reviewable until merge; once this Accepted record lands on the default branch, future changes require a superseding ADR.
+AI tools helped draft this ADR. Jim Collinson accepted it through PR #98 on 2026-08-31. The PR remains reviewable until merge; later changes require a superseding ADR.
