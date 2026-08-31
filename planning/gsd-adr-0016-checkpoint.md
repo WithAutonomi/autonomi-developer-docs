@@ -1,4 +1,4 @@
-# GSD Checkpoint — Concise Proposed ADR-0016
+# GSD Checkpoint — Accepted ADR-0016
 
 Date: 2026-08-31
 Project: Autonomi Developer Documentation
@@ -8,19 +8,21 @@ Agents/tools used: operative, codereviewer, verifier, adversarial, Craft (passed
 
 ## Status
 
-Stop for decision — present only after required checks attached to the current PR head are green.
+Continue — Jim accepted ADR-0016 and authorized merge of PR #98 on 2026-08-31; complete final mechanical validation and final-head CI, then merge under that authorization.
 
-Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
-Review cadence: per-unit completed
-Unreviewed backlog: none once current-head required checks are green; clean-context is explicitly Jim-waived for ADR-0016
+Meaningful work-unit? Yes — the decision changes the durable public source-of-truth policy.
+Review cadence: prior per-unit reviews completed; independent acceptance-record review, verification, and gauntlet checks precede merge
+Unreviewed backlog: the acceptance-record update and final PR head; clean-context remains explicitly Jim-waived for ADR-0016
 
 ## What happened
 
 Jim replaced the detailed proposal with a concise target decision: public documentation describes stable or general-availability software available through supported public routes. An explicit release baseline provides exact provenance; unreleased source cannot support default public claims; defects and unsupported tasks are represented honestly.
 
-The ADR is 481 words including metadata and headings. Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside its scope. It partially supersedes only ADR-0003, ADR-0004, and ADR-0006.
+The ADR is 510 words including metadata and headings. Skill ownership, journey models, route truth tables, release comparison, manifest schemas, and implementation mechanics are outside its scope. It partially supersedes only ADR-0003, ADR-0004, and ADR-0006.
 
-ADR-0016 remains Proposed. No implementation, rendered docs, skill, CI, test, or Accepted ADR changed.
+Jim's explicit human decision, supplied in chat on 2026-08-31, is to accept ADR-0016 via PR #98 and authorize it to be accepted and merged. Writing `Accepted` implements Jim's decision; it is not autonomous AI acceptance.
+
+No implementation, rendered docs, skill, CI, test, harness, or other ADR changed. Implementation remains unauthorized without a separate approved spec, plan, and slice plus a fresh release audit. The introducing PR remains reviewable until merge; after ADR-0016 lands on the default branch, it is immutable and later changes require a superseding ADR.
 
 ## Evidence
 
@@ -35,7 +37,7 @@ CI arbiter / green of record:
 - Sweep SHA reachability run `33376786655`, job `99439965598`: successful scope-gate no-op (`not applicable`); main validation was skipped.
 - GitBook status `GitBook`: passed.
 - GitBook status `GitBook - docs.autonomi.com/developers/`: passed.
-- Current PR required checks are the green of record. The final checkpoint-only commit must receive the same green current-head checks before presentation.
+- Current PR required checks are the green of record. The final acceptance-record commit must receive green current-head checks before merge.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -44,7 +46,7 @@ Local fast gate / `.gsd/gate.sh`:
 - Governance tests: passed, 20 tests.
 - ant-sdk blob ref length check: passed, 31 refs checked and all are 40 characters.
 - `git diff --check`: passed.
-- Word count: 481.
+- Word count: 510.
 
 Artifacts:
 
@@ -59,7 +61,7 @@ Artifacts:
 - No-harness-modification: Pass. No gate, CI, test, build, or environment change.
 - Baseline-diff for evidence: Pass. No failure was dismissed.
 - Evidence reproducible-from-branch: Pass.
-- Local vs CI consistency: Pass for the reviewed remediation. Presentation is conditioned on final current-head green.
+- Local vs CI consistency: Pass for the reviewed remediation. Merge is conditioned on final current-head green.
 
 ## Review Findings
 
@@ -112,18 +114,18 @@ Merge commit `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3` integrated current base 
 
 ## Open Questions / Decisions for Jim
 
-The acceptance decision waits only for required checks attached to the final current PR head and PR-body reconciliation. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
+No further acceptance or merge decision is pending. Jim accepted ADR-0016 and authorized merge of PR #98 on 2026-08-31. Final validation and required checks on the final PR head remain mechanical pre-merge conditions. This authorization does not authorize implementation.
 
 PR / upstream action gate:
 
 - PR status: already open and non-draft.
-- Merge ready? No; merge remains unauthorized.
-- Jim authorized merge? No.
+- Merge ready? Conditional on final validation and required final-head CI being green.
+- Jim authorized merge? Yes — on 2026-08-31.
 
 ## Recommended Next Step
 
-After required checks attached to the current PR head are green and the PR body is reconciled, Jim accepts or rejects Proposed ADR-0016. Do not accept, merge, or implement it.
+Run local validation, independent acceptance-record review, verification, and gauntlet checks, then obtain green required checks on the final PR head and merge PR #98 under Jim's authorization. Do not begin implementation.
 
 ## Handoff Note
 
-The concise ADR and evidence remediation passed final code review, goal verification, adversarial review, and Craft Review. Clean-context is explicitly Jim-waived for ADR-0016. Presentation is conditioned on green required checks attached to the final current PR head and PR-body reconciliation. ADR-0016 remains Proposed; acceptance, merge, implementation, and publication remain unauthorized.
+The concise ADR and evidence remediation passed final code review, goal verification, adversarial review, and Craft Review. Clean-context remains explicitly Jim-waived for ADR-0016. Jim accepted ADR-0016 and authorized merge of PR #98 on 2026-08-31. Complete acceptance-record review and verification, final-head CI, and merge; do not begin implementation. Once merged, ADR-0016 is immutable and later changes require a superseding ADR.

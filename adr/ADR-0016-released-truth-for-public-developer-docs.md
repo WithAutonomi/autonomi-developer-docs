@@ -1,7 +1,7 @@
 # ADR-0016: Public documentation describes obtainable releases
 
-- **Status:** Proposed
-- **Acceptance:** Prospective; pending Jim Collinson's human review and acceptance
+- **Status:** Accepted
+- **Acceptance:** Prospective — accepted by Jim Collinson as decision owner after review of PR #98 on 2026-08-31.
 - **Date:** 2026-08-12
 - **Decision owners:** Jim Collinson
 - **Reviewers:** Jim Collinson
@@ -75,4 +75,4 @@ Implementation details and sequencing belong in a reviewed specification and pla
 
 ## Notes for AI-assisted work
 
-AI may draft but not accept this ADR. Acceptance requires human review. Later decision changes require a superseding ADR.
+AI tools helped draft this ADR. Jim Collinson accepted it after human review of PR #98 on 2026-08-31. The introducing PR remains reviewable until merge; once this Accepted record lands on the default branch, future changes require a superseding ADR.

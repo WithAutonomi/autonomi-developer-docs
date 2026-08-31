@@ -4,15 +4,16 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: human acceptance decision for Proposed ADR-0016 after final current-PR-head checks
-- Status: acceptance-ready when required checks attached to the current PR head are green; clean-context is explicitly waived for this ADR
+- Task: record Jim Collinson's 2026-08-31 acceptance of ADR-0016 and authorization to merge PR #98
+- Status: ADR-0016 was accepted by Jim on 2026-08-31; PR #98 merge is explicitly authorized after final validation and required current-head CI are green
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
 - Branch point: `af6d0e9da96dd9b7d31105accbeb9b6a181aaf37`
 - Current PR base: `origin/main` at `49e202c818bab1be780b81c28e5d0718cfb89b1c`
 - Current concise ADR content: redraft `afdaa07ec909475f69fff16229952559b1e415ee`; tightening `f326e0c3f65de0646495da02d6eb74b70dac966f`; evidence-alignment correction `dfe2161`
-- Implementation: not started; ADR acceptance remains human-only
+- Implementation: not started or authorized; it requires a separate approved spec, plan, and slice plus a fresh release audit
+- Human decision supplied in chat on 2026-08-31: Jim is happy to accept ADR-0016 via PR #98 and authorizes it to be accepted and merged. Writing `Accepted` records and implements Jim's decision; it is not autonomous AI acceptance.
 
 ## Decision Intent
 
@@ -108,17 +109,18 @@
 - CI associated with reviewed remediation head `109101669908e7c7d86b3dc586a9b5b17933d2d6` is green. ADR Governance run `33376786646`, job `99439965340`, was associated with that PR head and executed on clean synthetic PR merge ref `90806293682a5da7a3eeed72dfebd42f8f170f6e`; checkout, all 20 regression tests, and governance checks ran. Prose run `33376786657` / job `99439965599`, sweep run `33376786692` / job `99439965589`, and sweep SHA reachability run `33376786655` / job `99439965598` were successful `not applicable` scope-gate no-ops with main validation skipped. Both GitBook statuses passed.
 - Adversarial review of the remediation range: `READY-WITH-NITS`, with no CRITICAL, HIGH, or MEDIUM findings. LOW: living records lagged completed review and CI; the PR body claimed the ADR was ready but repeatedly used stale `draft` language while live PR #98 was open and non-draft. NIT: `exact-head CI` wording needed to disclose execution on a clean synthetic merge ref. This record update resolves the living-status and CI-wording findings; the orchestrator will remove the stale `draft` wording from the PR body after final CI. Model-diversity evidence is weaker because the reviewer used OpenAI GPT-5.6-sol, the same model as the earlier pass, and the implementer provider is unrecorded. Report: `planning/adr-0016-evidence-remediation-adversarial-1091016.md`.
 - Fresh-context Craft Review of the remediation range: PASS with no CONFORMANCE, SIMPLICITY, or NIT findings. It used the same OpenAI GPT-5.6-sol model/provider as the earlier pass; the implementer provider is unrecorded, so independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-craft-1091016.md`.
-- Review backlog: none once required checks attached to the current PR head are green. Clean-context remains Jim-waived for ADR-0016; no substitute review ran.
+- Review backlog: prior proposal review is complete. Independent review, verification, and gauntlet checks for the acceptance record plus required checks on the final PR head remain before merge. Clean-context remains Jim-waived for ADR-0016; no substitute review ran.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
 
 - Do not edit Accepted ADR-0003 or ADR-0004.
-- Do not mark ADR-0016 Accepted autonomously.
-- Do not implement manifest, tooling, policy, or rendered-documentation changes before the ADR decision gate.
-- Do not merge PR #98 without Jim's explicit confirmation.
+- The `Accepted` status implements Jim's explicit 2026-08-31 decision; it is not autonomous AI acceptance.
+- Do not implement manifest, tooling, policy, or rendered-documentation changes without a separate approved spec, plan, and slice plus a fresh release audit.
+- Jim authorized merge of PR #98 on 2026-08-31, conditional on final validation and required current-head CI being green.
 
 ## Next
 
-- Confirm required checks attached to the current PR head are green, then reconcile the PR body.
-- Present Proposed ADR-0016 to Jim for explicit acceptance or rejection. Acceptance, merge, and implementation remain unauthorized.
+- Run local validation and independent acceptance-record review, verification, and gauntlet checks.
+- Confirm required checks attached to the final PR head are green, then merge PR #98 under Jim's authorization.
+- Do not begin implementation. After merge, ADR-0016 is immutable; later changes require a superseding ADR.
