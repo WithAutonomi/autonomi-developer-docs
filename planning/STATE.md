@@ -91,10 +91,18 @@
   - `models: provider=not-observed · model=not-resolved · duration=unknown`
   - `claude=blocked-before-inference (caller-owned brief missing) · provider=not-observed · model=not-resolved`
 - Jim explicitly authorized creation of disposable root `gsd-panel-a1ae9d0a-d513-47f5-8266-b006db956517` and a credential-free brief of at most 16 KiB for revision `0df9bfd`. The outer harness still denied the exact `mkdir` call because its final static external-directory deny overrides the authorization. This is now a mechanism-level blocker; no model ran.
-- Jim declared `waive and present` on 2026-08-28. This is a one-off explicit waiver of the ADR-0016 clean-context gate after the controlled panel failed before inference. It does not waive clean-context generally or change panel policy.
+- Jim's `waive and present` declaration was recorded in commit `f3f3bdc735d5357ea4a03741163a800510a8b61c` on 2026-08-29. This is a one-off explicit waiver of the ADR-0016 clean-context gate after the controlled panel failed before inference. It does not waive clean-context generally or change panel policy.
 - Clean-context controlling disposition: Jim's one-off waiver follows the blocked-before-inference controlled-panel sequence above; no same-model substitute ran.
-- CI arbiter: required checks on the current PR #98 head are the green of record. At pre-remediation head `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`, ADR Governance run `33245584910` job `99082354387`, prose run `33245584905` job `99082354434`, sweep run `33245584892` job `99082354463`, and reachability run `33245584906` job `99082354330` passed; both GitBook statuses also passed. This is historical pre-remediation evidence. New remediation commits require fresh exact-head CI.
+- CI arbiter: required checks on the current PR #98 head are the green of record. At pre-remediation head `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`:
+  - ADR Governance run `33245584910`, job `99082354387`, passed substantively; checkout, regression tests, and governance checks ran successfully.
+  - Prose run `33245584905`, job `99082354434`, was a successful scope-gate no-op (`not applicable`); checkout, setup, and the main prose validation were skipped.
+  - Sweep run `33245584892`, job `99082354463`, was a successful scope-gate no-op (`not applicable`); checkout, setup, and the main metadata-envelope validation were skipped.
+  - Sweep SHA reachability run `33245584906`, job `99082354330`, was a successful scope-gate no-op (`not applicable`); checkout, setup, and the main reachability validation were skipped.
+  - GitBook status `GitBook`: passed.
+  - GitBook status `GitBook - docs.autonomi.com/developers/`: passed.
+- These results are historical pre-remediation evidence. New remediation commits require fresh exact-head CI.
 - Attended code review of `7b8b537` found a HIGH evidence-reproducibility issue: the audit's reproducible command block included two GitHub compare calls ending at local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93`, which is unreachable remotely. This correction removes those commands; fresh re-review and exact-head CI remain pending.
+- Re-review of `6e9f056` found a MEDIUM CI-scope record issue and a LOW clean-context waiver-date record issue. This correction records the three scope-gated jobs as successful no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; fresh review and exact-head CI remain pending.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints

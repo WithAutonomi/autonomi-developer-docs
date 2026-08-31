@@ -29,11 +29,12 @@ CI arbiter / green of record:
 - Location: PR #98, https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
 - Rule: required checks on the current PR head are the green of record.
 - Historical pre-remediation head: `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`.
-- ADR Governance run `33245584910`, job `99082354387`: passed.
-- Prose run `33245584905`, job `99082354434`: passed as a scope-gate no-op.
-- Sweep run `33245584892`, job `99082354463`: passed as a scope-gate no-op.
-- Reachability run `33245584906`, job `99082354330`: passed.
-- Both GitBook statuses: passed.
+- ADR Governance run `33245584910`, job `99082354387`: passed substantively; checkout, regression tests, and governance checks ran successfully.
+- Prose run `33245584905`, job `99082354434`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main prose validation were skipped.
+- Sweep run `33245584892`, job `99082354463`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main metadata-envelope validation were skipped.
+- Sweep SHA reachability run `33245584906`, job `99082354330`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main reachability validation were skipped.
+- GitBook status `GitBook`: passed.
+- GitBook status `GitBook - docs.autonomi.com/developers/`: passed.
 - These checks are historical pre-remediation evidence. The evidence-repair commit requires fresh exact-head CI.
 
 Local fast gate / `.gsd/gate.sh`:
@@ -69,6 +70,7 @@ Code review:
 - Disposition: replaced the old accumulated checkpoint with this concise current record.
 - Focused review of the replacement checkpoint at `dcf7c8c`: passed with no findings.
 - Attended code review of `7b8b537`: HIGH evidence-reproducibility finding; two GitHub compare calls in the audit targeted local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93` and failed remotely. This correction removes the unreachable commands; fresh re-review and exact-head CI remain pending.
+- Re-review of `6e9f056`: MEDIUM CI-scope record issue and LOW clean-context waiver-date record issue. This correction records prose, sweep, and sweep SHA reachability as successful scope-gate no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; fresh review and exact-head CI remain pending.
 
 Goal verification:
 
@@ -96,7 +98,7 @@ Clean-context review:
 - Post-activation attempt at `50f4462`: blocked before inference because the caller-owned disposable root and `brief.md` were missing and the outer filesystem mechanism refused their creation. Report: `planning/adr-0016-clean-context-50f4462.md`.
 - Jim then authorized the credential-free brief and disposable root for revision `0df9bfd`; the outer harness's static external-directory denial still blocked creation before inference.
 - No model ran, and no same-model substitute review was used.
-- Final disposition: Not run; Jim explicitly declared `waive and present` on 2026-08-28 after the controlled panel attempts failed before inference. This one-off waiver applies only to ADR-0016.
+- Final disposition: Not run; Jim's `waive and present` declaration was recorded in commit `f3f3bdc735d5357ea4a03741163a800510a8b61c` on 2026-08-29 after the controlled panel attempts failed before inference. This one-off waiver applies only to ADR-0016.
 
 ## Drift / Scope Concerns
 
