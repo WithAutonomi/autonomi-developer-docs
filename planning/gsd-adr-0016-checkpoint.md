@@ -84,7 +84,7 @@ Adversarial review:
 - Review at `d18a63b`: READY-WITH-NITS; no CRITICAL, HIGH, or MEDIUM findings.
 - Deployed-network validation wording nit: corrected in `dfe2161` and passed focused review.
 - Stale PR-body nit: corrected.
-- Final remediation review: `READY-WITH-NITS`; no CRITICAL, HIGH, or MEDIUM findings. LOW: living state/checkpoint status lagged the ready, non-draft PR. NIT: `exact-head CI` wording needed to distinguish PR-head association from synthetic-merge-ref execution. This record update resolves the living-status and CI-wording findings; the orchestrator will reconcile the PR body after final CI. The reviewer used OpenAI GPT-5.6-sol, the same model as the earlier pass; the implementer provider is unrecorded, so model-independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-adversarial-1091016.md`.
+- Final remediation review: `READY-WITH-NITS`; no CRITICAL, HIGH, or MEDIUM findings. LOW: living records lagged completed review and CI; the PR body claimed the ADR was ready but repeatedly used stale `draft` language while live PR #98 was open and non-draft. NIT: `exact-head CI` wording needed to distinguish PR-head association from synthetic-merge-ref execution. This record update resolves the living-status and CI-wording findings; the orchestrator will remove the stale `draft` wording from the PR body after final CI. The reviewer used OpenAI GPT-5.6-sol, the same model as the earlier pass; the implementer provider is unrecorded, so model-independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-adversarial-1091016.md`.
 
 Craft Review:
 

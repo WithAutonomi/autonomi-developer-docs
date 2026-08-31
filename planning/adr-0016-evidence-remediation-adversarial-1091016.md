@@ -16,9 +16,9 @@ No CRITICAL, HIGH, or MEDIUM findings.
 
 ### LOW — Living status lagged readiness
 
-`planning/STATE.md` and `planning/gsd-adr-0016-checkpoint.md` still described review and CI as pending while the PR body described the proposal as ready and non-draft.
+`planning/STATE.md` and `planning/gsd-adr-0016-checkpoint.md` still described review and CI as pending. The PR body claimed the ADR was ready but repeatedly used stale `draft` language, while live PR #98 was open and non-draft.
 
-Disposition: this final branch-local record update makes presentation conditional on required checks attached to the current PR head being green. The orchestrator will reconcile the PR body after final CI.
+Disposition: the final branch-local record update resolves the living-status and CI-wording findings. The orchestrator will remove the stale `draft` wording from the PR body after final CI.
 
 ### NIT — CI execution ref needed explicit wording
 
