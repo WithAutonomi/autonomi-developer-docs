@@ -1,6 +1,6 @@
 # GSD Checkpoint — Concise Proposed ADR-0016
 
-Date: 2026-08-29
+Date: 2026-08-31
 Project: Autonomi Developer Documentation
 Slice/question: Should public documentation describe only stable software the public can obtain?
 Prepared by: orchestrator
@@ -8,11 +8,11 @@ Agents/tools used: operative, codereviewer, verifier, adversarial, Craft (passed
 
 ## Status
 
-Revise — ADR substance passed, but its evidence remediation remains under review until fresh review and exact-head CI pass.
+Stop for decision — present only after required checks attached to the current PR head are green.
 
 Meaningful work-unit? Yes — the proposal changes the durable public source-of-truth policy.
-Review cadence: per-unit
-Unreviewed backlog: this evidence remediation requires fresh review and exact-head CI; clean-context is explicitly Jim-waived for ADR-0016
+Review cadence: per-unit completed
+Unreviewed backlog: none once current-head required checks are green; clean-context is explicitly Jim-waived for ADR-0016
 
 ## What happened
 
@@ -28,14 +28,14 @@ CI arbiter / green of record:
 
 - Location: PR #98, https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
 - Rule: required checks on the current PR head are the green of record.
-- Historical pre-remediation head: `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`.
-- ADR Governance run `33245584910`, job `99082354387`: passed substantively; checkout, regression tests, and governance checks ran successfully.
-- Prose run `33245584905`, job `99082354434`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main prose validation were skipped.
-- Sweep run `33245584892`, job `99082354463`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main metadata-envelope validation were skipped.
-- Sweep SHA reachability run `33245584906`, job `99082354330`: successful scope-gate no-op (`not applicable`); checkout, setup, and the main reachability validation were skipped.
+- Reviewed remediation head: `109101669908e7c7d86b3dc586a9b5b17933d2d6`; reviewed base: `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`.
+- ADR Governance run `33376786646`, job `99439965340`: associated with the reviewed PR head and executed on clean synthetic PR merge ref `90806293682a5da7a3eeed72dfebd42f8f170f6e`; checkout, all 20 regression tests, and governance checks ran successfully.
+- Prose run `33376786657`, job `99439965599`: successful scope-gate no-op (`not applicable`); main validation was skipped.
+- Sweep run `33376786692`, job `99439965589`: successful scope-gate no-op (`not applicable`); main validation was skipped.
+- Sweep SHA reachability run `33376786655`, job `99439965598`: successful scope-gate no-op (`not applicable`); main validation was skipped.
 - GitBook status `GitBook`: passed.
 - GitBook status `GitBook - docs.autonomi.com/developers/`: passed.
-- These checks are historical pre-remediation evidence. The evidence-repair commit requires fresh exact-head CI.
+- Current PR required checks are the green of record. The final checkpoint-only commit must receive the same green current-head checks before presentation.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -58,8 +58,8 @@ Artifacts:
 
 - No-harness-modification: Pass. No gate, CI, test, build, or environment change.
 - Baseline-diff for evidence: Pass. No failure was dismissed.
-- Evidence reproducible-from-branch: Pending. This correction removes the known unreachable commands; fresh re-review remains pending.
-- Local vs CI consistency: Pending. Pre-remediation checks passed; the evidence-repair commit requires fresh exact-head CI.
+- Evidence reproducible-from-branch: Pass.
+- Local vs CI consistency: Pass for the reviewed remediation. Presentation is conditioned on final current-head green.
 
 ## Review Findings
 
@@ -69,25 +69,29 @@ Code review:
 - Focused evidence-wording review at `fc49173`: ADR passed; the old checkpoint had one MEDIUM consistency finding.
 - Disposition: replaced the old accumulated checkpoint with this concise current record.
 - Focused review of the replacement checkpoint at `dcf7c8c`: passed with no findings.
-- Attended code review of `7b8b537`: HIGH evidence-reproducibility finding; two GitHub compare calls in the audit targeted local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93` and failed remotely. This correction removes the unreachable commands; fresh re-review and exact-head CI remain pending.
-- Re-review of `6e9f056`: MEDIUM CI-scope record issue and LOW clean-context waiver-date record issue. This correction records prose, sweep, and sweep SHA reachability as successful scope-gate no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; fresh review and exact-head CI remain pending.
+- Attended code review of `7b8b537`: HIGH evidence-reproducibility finding; two GitHub compare calls in the audit targeted local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93` and failed remotely. Commit `6e9f056` removed those commands; re-review and current-head CI were pending at that point and are completed below.
+- Re-review of `6e9f056`: MEDIUM CI-scope record issue and LOW clean-context waiver-date record issue. Commit `1091016` records prose, sweep, and sweep SHA reachability as successful scope-gate no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; final review and CI evidence follow below.
+- Final review of remediation head `109101669908e7c7d86b3dc586a9b5b17933d2d6` against base `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`: passed with no findings. Report: `planning/adr-0016-evidence-remediation-code-review-1091016.md`.
 
 Goal verification:
 
 - Final concise verification at `58545cd`: passed 12/12 with no gaps.
 - Later ADR change: one validation line aligned with an already-authorized evidence path; focused code review passed it.
+- Final remediation verification: passed 10/10 goals. It confirmed exact 40-character ant-sdk refs, reachable representative URLs, unlinked local-only docs commits, removal of unreachable compare commands, accurate PR/base/merge and CI-scope records, coherent Craft/waiver records, no readiness overclaim, an unchanged ADR tree, and only three in-scope planning-file changes. Report: `planning/adr-0016-evidence-remediation-verification-1091016.md`.
 
 Adversarial review:
 
 - Review at `d18a63b`: READY-WITH-NITS; no CRITICAL, HIGH, or MEDIUM findings.
 - Deployed-network validation wording nit: corrected in `dfe2161` and passed focused review.
 - Stale PR-body nit: corrected.
+- Final remediation review: `READY-WITH-NITS`; no CRITICAL, HIGH, or MEDIUM findings. LOW: living state/checkpoint status lagged the ready, non-draft PR. NIT: `exact-head CI` wording needed to distinguish PR-head association from synthetic-merge-ref execution. This record update resolves the living-status and CI-wording findings; the orchestrator will reconcile the PR body after final CI. The reviewer used OpenAI GPT-5.6-sol, the same model as the earlier pass; the implementer provider is unrecorded, so model-independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-adversarial-1091016.md`.
 
 Craft Review:
 
 - Required: Yes.
 - Result: Pass at `dcf7c8c`; no CONFORMANCE, SIMPLICITY, or NIT findings.
 - Report: `planning/adr-0016-craft-dcf7c8c.md`.
+- Final remediation result: PASS in fresh context; no CONFORMANCE, SIMPLICITY, or NIT findings. The reviewer used the same OpenAI GPT-5.6-sol model/provider as the earlier pass; the implementer provider is unrecorded, so independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-craft-1091016.md`.
 
 Clean-context review:
 
@@ -108,18 +112,18 @@ Merge commit `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3` integrated current base 
 
 ## Open Questions / Decisions for Jim
 
-The acceptance decision waits for the evidence remediation's fresh review and exact-head CI. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
+The acceptance decision waits only for required checks attached to the final current PR head and PR-body reconciliation. The clean-context waiver does not itself accept the ADR or authorize merge or implementation.
 
 PR / upstream action gate:
 
 - PR status: already open and non-draft.
-- Merge ready? No; the evidence remediation requires fresh review and exact-head CI.
+- Merge ready? No; merge remains unauthorized.
 - Jim authorized merge? No.
 
 ## Recommended Next Step
 
-Rerun checks, review, and exact-head CI for this evidence repair, then present Proposed ADR-0016 for the acceptance decision. Acceptance, merge, and implementation remain separate unauthorized actions.
+After required checks attached to the current PR head are green and the PR body is reconciled, Jim accepts or rejects Proposed ADR-0016. Do not accept, merge, or implement it.
 
 ## Handoff Note
 
-The concise ADR's substance passed code review, goal verification, adversarial review, and Craft Review. Clean-context is explicitly waived for ADR-0016. The evidence repair now requires fresh review and exact-head CI before the acceptance decision; ADR-0016 remains Proposed, and acceptance, merge, and implementation remain unauthorized.
+The concise ADR and evidence remediation passed final code review, goal verification, adversarial review, and Craft Review. Clean-context is explicitly Jim-waived for ADR-0016. Presentation is conditioned on green required checks attached to the final current PR head and PR-body reconciliation. ADR-0016 remains Proposed; acceptance, merge, implementation, and publication remain unauthorized.

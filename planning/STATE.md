@@ -4,8 +4,8 @@
 
 - Phase: released-truth source-of-truth decision
 - Plan: supersede ADR-0003 before documentation remediation
-- Task: evidence-integrity remediation review for Proposed ADR-0016
-- Status: evidence remediation under review; fresh review and exact-head CI are required before the acceptance decision
+- Task: human acceptance decision for Proposed ADR-0016 after final current-PR-head checks
+- Status: acceptance-ready when required checks attached to the current PR head are green; clean-context is explicitly waived for this ADR
 - Mode: attended
 - Branch: `adr/released-and-usable-truth`
 - PR: https://github.com/WithAutonomi/autonomi-developer-docs/pull/98 (open, non-draft)
@@ -58,7 +58,7 @@
   - LOW: state/checkpoint must distinguish the historical branch point from the current PR base and describe scope-gated CI checks honestly.
 - Craft and clean-context did not run because adversarial blocked advancement.
 - Jim chose option 2 on 2026-08-20: one active coherent release set with journey-local support status, no mixed versions or per-journey old-release fallback, and global no-supported-baseline only when no eligible set supplies complete routes for every mandatory core outcome.
-- Journey-local amendment `fb00f10` formalizes that decision, including same-interface complete routes, global set selection/fallback, atomic optional-journey regression disclosure, journey-keyed manifest/docs/skill parity, and the minimum end-to-end store-and-retrieve outcome. Local ADR governance and 20 tests passed; exact-head draft-PR CI and GitBook checks are green.
+- Journey-local amendment `fb00f10` formalizes that decision, including same-interface complete routes, global set selection/fallback, atomic optional-journey regression disclosure, journey-keyed manifest/docs/skill parity, and the minimum end-to-end store-and-retrieve outcome. Local ADR governance and 20 tests passed; PR CI and GitBook checks were green for that revision.
 - Exact-head adversarial re-review remained pending after the journey-local amendment.
 - Exact-head code review at `b1e4846`: passed with no findings and all qualification truth-table scenarios passed. Report: `planning/adr-0016-code-review-b1e4846.md`.
 - Exact-head goal verification at `39e2cdf`: passed, 10/10 goals and all required truth-table scenarios verified with no gaps. Report: `planning/adr-0016-verification-39e2cdf.md`.
@@ -70,7 +70,7 @@
 - Craft and clean-context did not run because adversarial blocked advancement.
 - Jim then directed a scope reset: ADR-0016 should state only the durable rule that public documentation covers stable software the public can obtain. Skill ownership, journey models, route truth tables, comparison algorithms, and implementation mechanics moved out of the ADR.
 - Concise content commit `afdaa07` replaced the detailed proposal; `f326e0c` tightened it to 477 words including metadata and headings. It now supersedes only the public source-selection/provenance clauses in ADR-0003, ADR-0004, and ADR-0006 and explicitly leaves any separate developer skill out of scope.
-- Exact-head ADR Governance, 20 local governance tests, diff check, and draft-PR CI passed for `f326e0c`. The earlier route-continuity and ADR-0011 findings applied to removed decisions and require fresh review rather than mechanical remediation.
+- ADR Governance, 20 local governance tests, diff check, and PR CI passed for `f326e0c`. The earlier route-continuity and ADR-0011 findings applied to removed decisions and require fresh review rather than mechanical remediation.
 - Fresh code review at `752099a`: passed with no findings. The 477-word ADR, template, American English, partial supersession, target-architecture scope, Accepted-ADR immutability, and exact-head CI all passed. Report: `planning/adr-0016-code-review-752099a.md`.
 - Goal verification at `85fde83`: ADR content passed all 11 applicable decision goals; the twelfth state/PR accuracy goal found two bookkeeping gaps. Report: `planning/adr-0016-verification-85fde83.md`.
   - `STATE.md` still described removed skill/mode intent.
@@ -100,9 +100,15 @@
   - Sweep SHA reachability run `33245584906`, job `99082354330`, was a successful scope-gate no-op (`not applicable`); checkout, setup, and the main reachability validation were skipped.
   - GitBook status `GitBook`: passed.
   - GitBook status `GitBook - docs.autonomi.com/developers/`: passed.
-- These results are historical pre-remediation evidence. New remediation commits require fresh exact-head CI.
-- Attended code review of `7b8b537` found a HIGH evidence-reproducibility issue: the audit's reproducible command block included two GitHub compare calls ending at local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93`, which is unreachable remotely. This correction removes those commands; fresh re-review and exact-head CI remain pending.
-- Re-review of `6e9f056` found a MEDIUM CI-scope record issue and a LOW clean-context waiver-date record issue. This correction records the three scope-gated jobs as successful no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; fresh review and exact-head CI remain pending.
+- These results are historical pre-remediation evidence. Subsequent remediation commits therefore required fresh current-head CI.
+- Attended code review of `7b8b537` found a HIGH evidence-reproducibility issue: the audit's reproducible command block included two GitHub compare calls ending at local-only commit `2e11cdc908a04d31bc35a6d998211cdb7949ce93`, which is unreachable remotely. Commit `6e9f056` removed those commands; re-review and current-head CI were pending at that point and are completed below.
+- Re-review of `6e9f056` found a MEDIUM CI-scope record issue and a LOW clean-context waiver-date record issue. Commit `1091016` records the three scope-gated jobs as successful no-ops with substantive validation skipped and dates the waiver from commit `f3f3bdc`; final review and CI evidence follow below.
+- Final code review of remediation head `109101669908e7c7d86b3dc586a9b5b17933d2d6` against base `42b5bfef3bde33ff785fa28cb03fb0e3038d05c3`: passed with no findings. Report: `planning/adr-0016-evidence-remediation-code-review-1091016.md`.
+- Independent verification of the same range: passed 10/10 goals. It confirmed all 31 ant-sdk refs use exact 40-character SHAs, representative URLs return HTTP 200, local-only docs commits remain unavailable and unlinked, no unreachable compare command remains, PR/base/merge and CI-scope records are accurate, Craft and waiver records are coherent, no readiness is overclaimed, the ADR tree is unchanged, and only the three in-scope planning files changed. ADR governance passed with 1 ADR checked, all 20 governance tests passed, and the diff check passed. Report: `planning/adr-0016-evidence-remediation-verification-1091016.md`.
+- CI associated with reviewed remediation head `109101669908e7c7d86b3dc586a9b5b17933d2d6` is green. ADR Governance run `33376786646`, job `99439965340`, was associated with that PR head and executed on clean synthetic PR merge ref `90806293682a5da7a3eeed72dfebd42f8f170f6e`; checkout, all 20 regression tests, and governance checks ran. Prose run `33376786657` / job `99439965599`, sweep run `33376786692` / job `99439965589`, and sweep SHA reachability run `33376786655` / job `99439965598` were successful `not applicable` scope-gate no-ops with main validation skipped. Both GitBook statuses passed.
+- Adversarial review of the remediation range: `READY-WITH-NITS`, with no CRITICAL, HIGH, or MEDIUM findings. LOW: living state/checkpoint status lagged the PR's ready/non-draft status. NIT: `exact-head CI` wording needed to disclose execution on a clean synthetic merge ref. This record update resolves the living-status and CI-wording findings; the PR body will be reconciled after final CI. Model-diversity evidence is weaker because the reviewer used OpenAI GPT-5.6-sol, the same model as the earlier pass, and the implementer provider is unrecorded. Report: `planning/adr-0016-evidence-remediation-adversarial-1091016.md`.
+- Fresh-context Craft Review of the remediation range: PASS with no CONFORMANCE, SIMPLICITY, or NIT findings. It used the same OpenAI GPT-5.6-sol model/provider as the earlier pass; the implementer provider is unrecorded, so independence evidence is weaker. Report: `planning/adr-0016-evidence-remediation-craft-1091016.md`.
+- Review backlog: none once required checks attached to the current PR head are green. Clean-context remains Jim-waived for ADR-0016; no substitute review ran.
 - Freshness risk: the imported v0.11.2 audit is explicitly historical; `antd` v0.12.0 has since released and issue #233 has closed. A fresh candidate-release audit is required before implementation, regardless of ADR acceptance.
 
 ## Constraints
@@ -114,5 +120,5 @@
 
 ## Next
 
-- Complete review and fresh exact-head CI for the evidence remediation.
-- If those gates pass, present Proposed ADR-0016 to Jim for explicit acceptance or rejection. ADR acceptance, merge, and implementation remain unauthorized.
+- Confirm required checks attached to the current PR head are green, then reconcile the PR body.
+- Present Proposed ADR-0016 to Jim for explicit acceptance or rejection. Acceptance, merge, and implementation remain unauthorized.
