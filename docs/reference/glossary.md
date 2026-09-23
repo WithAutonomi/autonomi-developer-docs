@@ -68,23 +68,23 @@ Canonical terms used throughout this docs set.
 
 ## A
 
-**ant-client** — Direct Rust and CLI interface to the network via `ant-core` and the `ant` binary.
+**ant-client** — Direct Rust and CLI interface to the Autonomi Network via `ant-core` and the `ant` binary.
 
-**ant-core** — Headless Rust library used by `ant` for direct network operations and local devnet helpers.
+**ant-core** — Headless Rust library powering `antd`, the Direct Rust interface, and the `ant` CLI.
 
 **ant-keygen** — ML-DSA-65 release-signing utility.
 
 **ant-protocol** — Shared wire protocol crate used by `ant-core` and `ant-node` for chunk messages, payment proofs, and devnet manifests.
 
-**ant-sdk** — Daemon-based developer interface built around `antd`, REST/gRPC APIs, and language SDKs.
+**ant-sdk** — Software development kit for building on Autonomi, including libraries that connect directly, client libraries for `antd`, and tools such as `antd`.
 
-**antd** — Local daemon that exposes REST on `http://localhost:8082` and gRPC on `localhost:50051` by default.
+**antd** — Separate background service that handles Autonomi Network access for your application, exposing REST on `http://localhost:8082` and gRPC on `localhost:50051` by default.
 
-**Autonomi Network Token (ANT)** — Token used for storage payments.
+**Autonomi Network Token (ANT)** — ERC-20 token on Arbitrum used for storage payments.
 
-**Arbitrum** — EVM network family used by payment tooling and CLI network selection.
+**Arbitrum** — Layer 2 Ethereum network used by Autonomi payment tooling.
 
-**Autonomi** — The network these repos target for decentralized storage and retrieval.
+**Autonomi** — Decentralized data storage network for storing and retrieving content.
 
 **Autonomi Network** — The peer-to-peer network reached through `antd`, `ant-core`, `ant`, and `ant-node`.
 
@@ -96,13 +96,15 @@ Canonical terms used throughout this docs set.
 
 **ChaCha20-Poly1305** — Authenticated encryption primitive used in self-encryption.
 
-**chunk** — Low-level stored unit of encrypted content.
+**chunk** — Immutable, content-addressed storage unit of up to 4 MB; data and file operations store encrypted chunks, while raw chunk operations store caller-supplied bytes.
 
 **close group** — The set of nodes closest to a target address in XOR space.
 
 **content addressing** — Deriving an address from content rather than from a mutable location.
 
 ## D
+
+**daemon** — A program that runs as a background service, separate from the application that calls it.
 
 **DataMap** — Retrieval metadata that ties uploaded content back to its encrypted chunks.
 
@@ -116,19 +118,21 @@ Canonical terms used throughout this docs set.
 
 ## K
 
-**Kademlia DHT** — The distributed-hash-table model used for routing and lookup.
+**Kademlia DHT** — Peer-routing system that locates nodes by XOR distance.
 
 ## L
 
-**local trust scoring** — Local trust and response-rate style scoring rather than a network-wide shared reputation feed.
+**library** — Reusable code that your application imports or links and runs as part of its own process.
+
+**local trust scoring** — Per-node reputation based on direct peer observations combined through an exponential moving average.
 
 ## M
 
 **Merkle batch payment** — Batch-payment mode used for larger chunk sets.
 
-**ML-DSA-65** — Post-quantum signature algorithm highlighted by the current transport and signing repos.
+**ML-DSA-65** — NIST FIPS 204 digital signature algorithm used for transport authentication and release-signing tools.
 
-**ML-KEM-768** — Post-quantum key-encapsulation algorithm highlighted by the current transport docs.
+**ML-KEM-768** — NIST FIPS 203 key encapsulation mechanism used during transport session establishment.
 
 ## N
 
@@ -138,13 +142,15 @@ Canonical terms used throughout this docs set.
 
 **pay-once** — Storage payment model where you pay when you upload and do not pay ongoing storage fees.
 
-**post-quantum cryptography** — Cryptographic approach used here for transport key exchange, transport identity, and release signing. Content self-encryption remains a separate BLAKE3 plus ChaCha20-Poly1305 layer.
+**post-quantum cryptography** — Cryptographic algorithms designed to resist quantum attacks. Autonomi uses them for transport key exchange, transport identity, and release signing; content self-encryption remains a separate BLAKE3 plus ChaCha20-Poly1305 layer.
 
 ## Q
 
 **QUIC** — UDP-based transport protocol used for peer connections, NAT traversal coordination, and relay-assisted fallback.
 
 ## S
+
+**SDK (software development kit)** — A collection of libraries, tools, and documentation for building applications, not a single running program.
 
 **self-encryption** — Client-side content processing that returns a `DataMap` plus encrypted chunks.
 

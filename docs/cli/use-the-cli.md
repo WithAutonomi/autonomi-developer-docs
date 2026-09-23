@@ -8,113 +8,123 @@
   verification_mode: current-merged-truth
 -->
 
-Install `ant`, confirm it works, retrieve public data from the network, and then move into uploads or local devnet testing when you need them. Choose the CLI when you want shell-first workflows without needing to run the local daemon, [`antd`](../sdk/start-the-local-daemon.md), first.
+The Autonomi command-line interface (CLI) lets you download and upload files, check your wallet, and manage nodes that contribute storage to the Autonomi Network. Use it from your terminal, include it in scripts and pipelines, or [let your AI agent use it for you](../mcp/use-mcp-with-ai-tools.md).
 
-The CLI can be a good fit when you want:
+The command is `ant`. Start with a free download; you do not need a wallet or tokens.
 
-- direct shell access to file, chunk, wallet, or node-management workflows
-- shell-first automation or operational workflows
-- direct control over bootstrap peers, local devnet manifests, and EVM network selection
+## Install the CLI
 
-## Prerequisites
-
-- `curl` or PowerShell to run the installer, or a Rust toolchain if you prefer to build from source
-- `SECRET_KEY` for the upload step and for wallet commands. You do not need it for the first download step.
-- A local file to upload later in the guide, unless you use the sample `greeting.txt` command in the upload step.
-
-If you want SDK ergonomics in another language, see [Build with the SDKs](../sdk/install.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md). If you want daemon-free programmatic Rust access, see [Build Directly in Rust](../rust/build-directly-in-rust.md).
-
-## Steps
-
-{% stepper %}
-{% step %}
-### Install the CLI
+Choose your operating system. The installer adds `ant` and its connection settings.
 
 {% tabs %}
 {% tab title="Linux and macOS" %}
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash
+ant --version
 ```
+
 {% endtab %}
 {% tab title="Windows" %}
+Run in PowerShell:
+
 ```powershell
 irm https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.ps1 | iex
+ant --version
 ```
-{% endtab %}
-{% tab title="Build from source" %}
-```bash
-git clone https://github.com/WithAutonomi/ant-client.git
-cd ant-client
-cargo build --release --bin ant
-```
+
+The installer adds `ant` to your user PATH, the command search path. If an already-open terminal cannot find it, open a new terminal.
 {% endtab %}
 {% endtabs %}
 
-The installer also writes `bootstrap_peers.toml` into the standard `ant` config directory, so public-network reads usually work without extra `--bootstrap` flags.
+Run `ant --help` to explore the commands. For manual downloads and signature verification, use the [CLI release instructions](https://github.com/WithAutonomi/ant-client/releases/latest); the installer scripts do not verify archive signatures.
 
-If you build `ant` from source instead, provide your own bootstrap config or pass `--bootstrap` yourself for data commands.
-{% endstep %}
-{% step %}
-### Confirm the CLI works
+## Download your first file
 
-```bash
-ant --help
-
-# or, if you built from source and have not installed it on PATH:
-./target/release/ant --help
-```
-
-For the `ant` CLI, root flags such as `--bootstrap`, `--devnet-manifest`, `--allow-loopback`, and `--evm-network` come before the subcommand.
-
-The CLI needs a bootstrap source for data operations. The installer usually provides one through `bootstrap_peers.toml`. Use `--bootstrap` to override it, or use `--devnet-manifest` together with `--allow-loopback` for a local devnet.
-{% endstep %}
-{% step %}
-### Retrieve a public file from the network
-
-This example downloads a public JPEG of Lucky the dog.
+Download a public image of Lucky the dog. Run this in a directory where `lucky.jpg` does not already exist, because the command can replace an existing file:
 
 ```bash
 ant file download 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a -o lucky.jpg
 ```
 
-`-o lucky.jpg` chooses the local filename for the downloaded copy. The address identifies the content on the network, not the original filename.
-{% endstep %}
-{% step %}
-### Store a file on the default network
+When the command prints `Download complete!`, open `lucky.jpg` to see the image. No wallet or payment is needed.
 
-Set `SECRET_KEY`, create a small local file, and then upload it on the default network.
+The long address identifies the public file; `-o lucky.jpg` chooses the filename on your computer. To download another public file, replace the address and choose a new output filename.
 
-```bash
-printf "hello autonomi\n" > greeting.txt
-export SECRET_KEY="0x<hex_private_key>"
-ant file upload greeting.txt --public
+## Upload a file when you are ready
+
+Uploading is optional and **costs money**. The cost and upload commands are the same on Windows, macOS, and Linux; only the wallet setup differs.
+
+### 1. Choose a file and check the cost
+
+Choose an existing file you want to share. The examples use `photo.jpg`; replace it with your filename or a quoted path such as `"My Photos/holiday.jpg"`.
+
+```sh
+ant file cost photo.jpg
 ```
 
-Expected output includes a public address you can share with other readers, plus the stored chunk count, file size, and total cost.
-{% endstep %}
-{% step %}
-### Optional: Use a local devnet for isolated testing
+The estimate does not spend funds and is not a maximum charge. A public upload also stores access information for the file, which adds to the cost; transaction fees can vary.
 
-If you already have a devnet manifest, pass it before the subcommand:
+### 2. Configure wallet access
+
+Use a low-value wallet funded with Autonomi Network Token (ANT) for storage and ETH for transaction fees on Arbitrum One. The CLI reads its private key from `SECRET_KEY`, an environment variable in your terminal. Enter the key at the hidden prompt, not in the command or an AI conversation.
+
+{% tabs %}
+{% tab title="macOS / Linux" %}
+Run in Bash or zsh:
 
 ```bash
-SECRET_KEY="0x<hex_private_key>" ant \
-  --devnet-manifest /tmp/devnet.json \
-  --allow-loopback \
-  --evm-network local \
-  file upload lucky.jpg --public
+unset SECRET_KEY
+printf 'Wallet private key: '
+read -r -s SECRET_KEY
+printf '\n'
+export SECRET_KEY
 ```
 
-Use this mode when you want local nodes and a local EVM chain instead of the public network. For the full setup, see [Set Up a Local Network](../guides/set-up-a-local-network.md).
-{% endstep %}
-{% endstepper %}
+When you finish using the wallet, run `unset SECRET_KEY` in this terminal.
+{% endtab %}
+{% tab title="Windows" %}
+Run in PowerShell:
 
-## What happened
+```powershell
+Remove-Item Env:SECRET_KEY -ErrorAction SilentlyContinue
+$env:SECRET_KEY = [System.Net.NetworkCredential]::new(
+    '', (Read-Host 'Wallet private key' -AsSecureString)
+).Password
+```
 
-You installed `ant`, used the configured bootstrap source to reach the Autonomi Network, and downloaded public content directly from the terminal. When you added `SECRET_KEY`, the same CLI handled self-encryption, upload payment, and DataMap management for file writes.
+When you finish using the wallet, run `Remove-Item Env:SECRET_KEY` in this terminal.
+{% endtab %}
+{% endtabs %}
+
+Keep using the same terminal for the upload. Commands launched from it can access the key until you clear it or close the terminal.
+
+To confirm which wallet you selected, see [CLI wallet checks](../guides/prepare-a-wallet-for-uploads.md#5-inspect-a-direct-cli-wallet). The CLI reports its address and ANT balance, not its ETH balance.
+
+### 3. Upload the file
+
+**Before uploading:** `--public` lets anyone with the returned address read the file. Do not use it for secrets. The upload can also grant the payment contract unlimited permission to spend ANT when its existing allowance is insufficient. The command does not ask for a separate payment confirmation.
+
+```sh
+ant file upload photo.jpg --public
+```
+
+This uses Arbitrum One for payment when no local-development manifest or network override is supplied. Clear the key using the command in your wallet-setup tab when you finish.
+
+On success, the CLI prints a public address and upload details. Keep the address: you can use it with `ant file download` to retrieve the file. If the upload fails, inspect the error and any payments before retrying; a failure does not mean nothing was charged.
+
+For private storage, omit `--public`. The CLI saves a local DataMap file and prints its path. Protect and back up that file: it lets you retrieve the data. See [private-file retrieval](command-reference.md#download-a-file) for the download command.
+
+## Common errors
+
+**Command not found**: Use the installer's printed destination in your command search path, or reopen your terminal after Windows installation.
+
+**No bootstrap peers**: The installer supplies a `bootstrap_peers.toml` connection file but preserves an existing copy. For manual installation, follow the configuration instructions supplied with your [CLI release](https://github.com/WithAutonomi/ant-client/releases/latest).
 
 ## Next steps
 
-- [CLI Command Reference](command-reference.md)
-- [Set Up a Local Network](../guides/set-up-a-local-network.md)
-- [Build Directly in Rust](../rust/build-directly-in-rust.md)
+- [CLI Command Reference](command-reference.md): explore file, wallet, and node commands.
+- [Build with AI Tools](../mcp/use-mcp-with-ai-tools.md): let an agent help you use Autonomi.
+- [Set Up a Local Network](../guides/set-up-a-local-network.md): test in an isolated environment using that guide's component versions.
+- [Build with the SDKs](../sdk/install.md): use a language library in your application.
+- [Build Directly in Rust](../rust/build-directly-in-rust.md): integrate using the Rust library.
+- [Build the CLI from source](https://github.com/WithAutonomi/ant-client#development).

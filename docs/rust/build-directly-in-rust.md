@@ -1,4 +1,4 @@
-# Build Directly in Rust
+# Build with Direct Rust
 
 <!-- verification:
   source_repo: ant-client
@@ -8,31 +8,35 @@
   verification_mode: current-merged-truth
 -->
 
-Build directly in Rust when you want your application to talk to the Autonomi Network without using `antd`. This approach gives your application direct access to networking, uploads, and downloads from your Rust code. The library that provides that interface is `ant-core`.
+Choose Direct Rust when you want your application to talk to the Autonomi Network without using `antd`. This interface gives your application direct access to networking, uploads, and downloads through `ant-core`.
+
+This guide uses `ant-core 0.8.0` for local development. Keep that version for this example: `ant-core 0.8.1` uses a different node dependency. See the [Rust Library Reference](library-reference.md) for the direct-network dependency.
 
 ## Prerequisites
 
 - Rust toolchain
-- A local checkout of `ant-client`
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) with `anvil` available on `PATH`
 - A new or existing Rust application
 
-If you want a daemon-backed local gateway instead, see [Build with the SDKs](../sdk/install.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md). If you want shell access instead of writing Rust code, see [Use the CLI](../cli/use-the-cli.md).
+To connect through a local background service instead, see [Use a Local Daemon](../sdk/use-antd.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md). For shell access instead of writing Rust code, see [Use the CLI](../cli/use-the-cli.md).
 
 ## Steps
 
 ### 1. Create a Rust app and add ant-core
 
 ```bash
-git clone https://github.com/WithAutonomi/ant-client.git
 cargo new autonomi-rust-app
 cd autonomi-rust-app
+anvil --version
 ```
+
+The final command must print an Anvil version before you continue. `LocalDevnet` starts an Anvil process for local Ethereum Virtual Machine (EVM) payments.
 
 Update `Cargo.toml`:
 
 ```toml
 [dependencies]
-ant-core = { path = "../ant-client/ant-core", features = ["devnet"] }
+ant-core = { version = "=0.8.0", features = ["devnet"] }
 bytes = "1"
 tokio = { version = "1", features = ["full"] }
 ```
@@ -47,7 +51,7 @@ use bytes::Bytes;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut devnet = LocalDevnet::start_minimal().await?;
+    let mut devnet = LocalDevnet::start_small().await?;
     let client = devnet.create_funded_client().await?;
 
     let original = Bytes::from("Hello from Rust!");
@@ -68,11 +72,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 cargo run
 ```
 
-This example starts a local Autonomi development network, creates a funded Rust client with local payment approval already in place, uploads a payload, downloads it again, and shuts the devnet down.
+On success, the final output includes `Stored <number> chunks`. The exact number depends on self-encryption, but it is greater than zero.
+
+This example starts a local development network for Autonomi, creates a funded Rust client with local payment approval already in place, uploads a payload, downloads it again, and shuts the devnet down.
 
 ## What happened
 
-Your Rust application talked to the network through `ant-core`, without `antd` or a CLI wrapper. `ant-core` started a local devnet, created a funded client, handled self-encryption and payment, and gave you direct access to the upload and download results in Rust.
+Your Rust application used Direct Rust through `ant-core`, without `antd` or a CLI wrapper. `ant-core` started a local devnet, created a client funded by the local Anvil chain, handled self-encryption and local payment, and gave you direct access to the upload and download results in Rust.
 
 ## Next steps
 

@@ -8,15 +8,22 @@
   verification_mode: current-merged-truth
 -->
 
-The Go SDK is the Go client for the `antd` daemon.
+Use the Go SDK to store and retrieve data through a local daemon, a background service called antd. The client supports REST and gRPC and is available as a public Go module.
 
 ## Install
 
+Use Go 1.25 or later and pin the module to `v0.12.1`.
+
 ```bash
-go get github.com/WithAutonomi/ant-sdk/antd-go
+mkdir antd-go-example
+cd antd-go-example
+go mod init example.com/antd-quickstart
+go get github.com/WithAutonomi/ant-sdk/antd-go@v0.12.1
 ```
 
-## Connect to the daemon
+## Connect to antd
+
+Follow [Start the Local Daemon](../../start-the-local-daemon.md) to run antd before connecting.
 
 ```go
 package main
@@ -24,6 +31,7 @@ package main
 import (
     "context"
     "fmt"
+    "log"
 
     antd "github.com/WithAutonomi/ant-sdk/antd-go"
 )
@@ -34,7 +42,7 @@ func main() {
 
     health, err := client.Health(ctx)
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
     fmt.Println(health.OK)
 
@@ -44,11 +52,18 @@ func main() {
 }
 ```
 
-The SDK also includes a `GrpcClient` for the daemon's gRPC endpoint.
+Expected output:
+
+```text
+true
+http://127.0.0.1:<port>
+```
+
+The SDK also includes a `GrpcClient` for the **antd** gRPC endpoint.
 
 ## Store and retrieve data
 
-For upload examples in this section, start `antd` in a write-enabled mode first. On the default network, that means wallet plus EVM payment configuration. On a local devnet, `ant dev start` provisions that for you.
+For upload examples in this section, start **antd** in a write-enabled mode first. The public Autonomi Network requires [wallet and Ethereum Virtual Machine (EVM) payment configuration](../../../guides/prepare-a-wallet-for-uploads.md). A local development network created with [`ant dev start`](../../../guides/set-up-a-local-network.md) includes that configuration.
 
 ```go
 package main
@@ -73,14 +88,24 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    fmt.Println(result.Address)
+    fmt.Printf("Stored at: %s\n", result.Address)
 
     data, err := client.DataGetPublic(ctx, result.Address)
     if err != nil {
         log.Fatal(err)
     }
-    fmt.Println(string(data))
+    if string(data) != "Hello from Go!" {
+        log.Fatal("downloaded data did not match the upload")
+    }
+    fmt.Printf("Retrieved: %s\n", data)
 }
+```
+
+Expected output:
+
+```text
+Stored at: <64-character hexadecimal address>
+Retrieved: Hello from Go!
 ```
 
 ## Type mappings
@@ -102,9 +127,11 @@ func main() {
 | `PrepareChunkResult` | `antd.PrepareChunkResult` |
 | Raw data | `[]byte` |
 
-`PrepareChunkResult` is returned by `PrepareChunkUpload`. When `AlreadyStored` is `true`, only `Address` and `AlreadyStored` are populated and there is no payment to make or finalize call to issue. Otherwise, `UploadID`, `Payments`, and `TotalAmount` describe the external-signer payment required before calling `FinalizeChunkUpload`. Requires antd 0.7.0 or later.
+`PrepareChunkResult` is returned by `PrepareChunkUpload`. When `AlreadyStored` is `true`, only `Address` and `AlreadyStored` are populated and there is no payment to make or finalize call to issue. Otherwise, `UploadID`, `Payments`, and `TotalAmount` describe the external-signer payment required before calling `FinalizeChunkUpload`.
 
 ## Error handling
+
+`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client module is pinned independently to `v0.12.1`.
 
 ```go
 package main
@@ -119,11 +146,12 @@ import (
 
 func main() {
     client := antd.NewClient(antd.DefaultBaseURL)
-    _, err := client.DataGetPublic(context.Background(), "nonexistent_address")
+    missingAddress := "0000000000000000000000000000000000000000000000000000000000000000"
+    _, err := client.DataGetPublic(context.Background(), missingAddress)
     if err != nil {
-        var notFound *antd.NotFoundError
-        if errors.As(err, &notFound) {
-            fmt.Println("Data not found")
+        var internal *antd.InternalError
+        if errors.As(err, &internal) {
+            fmt.Println("Missing data returned an internal error")
             return
         }
         fmt.Println(err)
@@ -131,6 +159,12 @@ func main() {
 }
 ```
 
+Output when the valid address is not stored:
+
+```text
+Missing data returned an internal error
+```
+
 ## Full API reference
 
-For all available daemon endpoints, see the [REST API](../rest-api.md).
+For all available **antd** endpoints, see the [REST API](../rest-api.md).

@@ -15,79 +15,37 @@
   verification_mode: current-merged-truth
 -->
 
-In this guide, you use `antd`, the local daemon used by the SDKs, to estimate costs, check balances, approve token spend, and choose a payment mode before you upload data.
+Use the `antd v0.13.0` REST API to inspect a wallet, request a sampled upload estimate, and understand the approval and payment-mode choices before an upload.
 
-If you want to work from the command line instead, see [Use the CLI](../cli/use-the-cli.md). If you want direct Rust access, see [Build Directly in Rust](../rust/build-directly-in-rust.md).
-
-Featured examples on this page use cURL, Python, Node.js / TypeScript, and Rust. Other SDK languages are available in the [Language Bindings](../sdk/reference/language-bindings/overview.md) section.
+The examples use cURL to keep payment requests independent of binding-specific behavior. If you use a daemon-backed [SDK binding](../sdk/reference/language-bindings/overview.md), follow its installation instructions and test it against your target environment.
 
 ## Prerequisites
 
-- `antd` running on `http://localhost:8082` (see [Start the Local Daemon](../sdk/start-the-local-daemon.md))
-- A configured wallet for write operations, or a local devnet started with `ant dev start`
+- The `antd v0.13.0` binary running on `http://127.0.0.1:8082`
+- `curl` and Python 3 for the response checks below
+- For wallet endpoints: `AUTONOMI_WALLET_KEY` configured when starting `antd`
+- For public EVM environments: a funded wallet and the built-in `arbitrum-one` or `arbitrum-sepolia` preset
+
+Cost estimation does not require a wallet or spend funds. Approval and upload operations make on-chain transactions and spend gas; uploads also spend ANT. Run them only in a controlled environment.
 
 ## Steps
 
 ### 1. Check the configured wallet
 
-{% tabs %}
-{% tab title="cURL" %}
 ```bash
-curl http://localhost:8082/v1/wallet/address
-curl http://localhost:8082/v1/wallet/balance
+#!/usr/bin/env bash
+set -euo pipefail
+
+curl --fail --show-error http://127.0.0.1:8082/v1/wallet/address
+curl --fail --show-error http://127.0.0.1:8082/v1/wallet/balance
 ```
-{% endtab %}
-{% tab title="Python" %}
-```python
-from antd import AntdClient
 
-client = AntdClient()
-address = client.wallet_address()
-balance = client.wallet_balance()
+Expected response shapes:
 
-print(address.address)
-print(balance.balance)
-print(balance.gas_balance)
+```json
+{"address":"0x0123456789abcdef0123456789abcdef01234567"}
+{"balance":"1000000000000000000","gas_balance":"1000000000000000"}
 ```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { createClient } from "antd";
-
-async function main() {
-  const client = createClient();
-  const address = await client.walletAddress();
-  const balance = await client.walletBalance();
-
-  console.log(address.address);
-  console.log(balance.balance);
-  console.log(balance.gasBalance);
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-```
-{% endtab %}
-{% tab title="Rust" %}
-```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new(DEFAULT_BASE_URL);
-    let address = client.wallet_address().await?;
-    let balance = client.wallet_balance().await?;
-
-    println!("{}", address.address);
-    println!("{}", balance.balance);
-    println!("{}", balance.gas_balance);
-    Ok(())
-}
-```
-{% endtab %}
-{% endtabs %}
 
 The wallet balance response returns token balance as atto tokens and gas balance as wei.
 
@@ -96,205 +54,124 @@ On public EVM networks, both values matter:
 - ANT covers storage payment
 - gas covers the transaction itself
 
-### 2. Approve token spend
+### 2. Estimate storage cost without spending funds
 
-Fresh wallets may need an approval transaction before uploads can spend tokens through the payment contracts.
+The response contains a storage-cost estimate, file size, data-chunk count, heuristic gas estimate, and selected payment mode.
 
-This approval grants the payment contracts an unlimited token allowance.
-
-{% tabs %}
-{% tab title="cURL" %}
 ```bash
-curl -X POST http://localhost:8082/v1/wallet/approve \
-  -H "Content-Type: application/json" \
-  -d '{}'
+#!/usr/bin/env bash
+set -euo pipefail
+
+DATA_B64=$(printf 'Hello, Autonomi!' | base64 | tr -d '\n')
+
+RESPONSE=$(curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data "{\"data\":\"${DATA_B64}\",\"payment_mode\":\"auto\"}" \
+  http://127.0.0.1:8082/v1/data/cost)
+
+python3 -c '
+import json
+import sys
+
+response = json.loads(sys.argv[1])
+required = {"cost", "file_size", "chunk_count", "estimated_gas_cost_wei", "payment_mode"}
+missing = required.difference(response)
+if missing:
+    raise SystemExit(f"Missing fields: {sorted(missing)}")
+print(json.dumps(response, indent=2))
+' "$RESPONSE"
 ```
-{% endtab %}
-{% tab title="Python" %}
-```python
-from antd import AntdClient
 
-client = AntdClient()
-approved = client.wallet_approve()
+Expected output is a JSON object containing all five checked fields. Numeric payment values are decimal strings.
 
-print(approved)
-```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { createClient } from "antd";
+The estimate is not a quote for the complete public operation:
 
-async function main() {
-  const client = createClient();
-  const approved = await client.walletApprove();
-  console.log(approved);
-}
+- storage pricing is extrapolated from at most five sampled chunk addresses
+- `estimated_gas_cost_wei` is an advisory heuristic, not a live gas-oracle result
+- `/v1/data/cost` counts the encrypted data chunks but not the additional paid `DataMap` storage performed by `POST /v1/data/public`
+- the final payment can differ because stored-chunk availability and prices can change
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-```
-{% endtab %}
-{% tab title="Rust" %}
-```rust
-use antd_client::{Client, DEFAULT_BASE_URL};
+Do not use this response as a maximum charge or an exact balance requirement.
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new(DEFAULT_BASE_URL);
-    let approved = client.wallet_approve().await?;
+### 3. Estimate a public file
 
-    println!("{}", approved);
-    Ok(())
-}
-```
-{% endtab %}
-{% endtabs %}
+For a file on the same machine as `antd`, `/v1/files/cost` accepts `is_public`. `antd v0.13.0` approximates one additional `DataMap` chunk in this estimate.
 
-### 3. Estimate storage cost
-
-The daemon exposes cost-estimation endpoints and returns a structured estimate that includes cost, file size, chunk count, estimated gas, and the payment mode that would be used.
-
-Use this step before uploads when you want to show a user the likely storage cost or validate that the wallet has enough balance.
-
-{% tabs %}
-{% tab title="cURL" %}
 ```bash
-DATA_B64=$(printf 'Hello, Autonomi!' | base64)
+#!/usr/bin/env bash
+set -euo pipefail
 
-curl -X POST http://localhost:8082/v1/data/cost \
-  -H "Content-Type: application/json" \
-  -d "{\"data\":\"$DATA_B64\"}"
+FILE_PATH=$(pwd)/upload-candidate.bin
+printf 'Autonomi cost estimate\n' > "$FILE_PATH"
+REQUEST=$(python3 -c '
+import json
+import sys
+
+print(json.dumps({"path": sys.argv[1], "is_public": True, "payment_mode": "auto"}))
+' "$FILE_PATH")
+
+curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data "$REQUEST" \
+  http://127.0.0.1:8082/v1/files/cost
 ```
-{% endtab %}
-{% tab title="Python" %}
-```python
-from antd import AntdClient
 
-client = AntdClient()
-cost = client.data_cost(b"Hello, Autonomi!")
+Expected output contains the same five fields as the data-cost response. This remains a sampled estimate rather than the final amount paid.
 
-print(cost)
+### 4. Pre-approve token spend only when you intend to upload
+
+`antd` exposes an endpoint for approving token spend before an upload. It sends an on-chain transaction, spends gas, and grants the configured payment vault an unlimited token allowance. Review the wallet address, EVM preset, token address, and vault address before running it.
+
+This pre-approval is optional. Direct-wallet payments check the allowance and automatically grant the same unlimited allowance when it is too low. Use the endpoint only when you want approval to be a separate, deliberate transaction:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data '{}' \
+  http://127.0.0.1:8082/v1/wallet/approve
 ```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { createClient } from "antd";
 
-async function main() {
-  const client = createClient();
-  const cost = await client.dataCost(Buffer.from("Hello, Autonomi!"));
-  console.log(cost);
-}
+The success response is:
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+```json
+{"approved":true}
 ```
-{% endtab %}
-{% tab title="Rust" %}
-```rust
-use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new(DEFAULT_BASE_URL);
-    let cost = client
-        .data_cost(b"Hello, Autonomi!", PaymentMode::Auto)
-        .await?;
+Do not interpret this response as proof that a later storage payment or upload will succeed.
 
-    println!("{}", cost.cost);
-    Ok(())
-}
-```
-{% endtab %}
-{% endtabs %}
+### 5. Choose a payment mode
 
-### 4. Choose a payment mode when uploading
-
-The daemon accepts three payment modes: `auto`, `merkle`, and `single`.
+`antd` accepts three payment modes: `auto`, `merkle`, and `single`.
 
 - `auto` is the default
 - `merkle` forces Merkle batch payments
 - `single` forces per-chunk payments
 
-For larger uploads, `merkle` reduces gas by using a batch payment flow.
+`merkle` batches payments to reduce transaction count for multi-chunk uploads. Forced Merkle payment requires at least two chunks. The mode reported by an estimate or upload response is the mode selected for that operation.
 
-### 5. Understand local versus public-network testing
+### 6. Validate paid uploads separately
 
-On a local devnet, the test wallet is provisioned for you. On Arbitrum Sepolia or Arbitrum One, you must bring your own funded wallet.
-
-That makes the local devnet the easiest place to verify upload payment logic before you move to a public EVM network.
-
-{% tabs %}
-{% tab title="cURL" %}
-```bash
-DATA_B64=$(printf 'Hello, Autonomi!' | base64)
-
-curl -X POST http://localhost:8082/v1/data/public \
-  -H "Content-Type: application/json" \
-  -d "{\"data\":\"$DATA_B64\",\"payment_mode\":\"merkle\"}"
-```
-{% endtab %}
-{% tab title="Python" %}
-```python
-from antd import AntdClient, PaymentMode
-
-client = AntdClient()
-result = client.data_put_public(b"Hello, Autonomi!", payment_mode=PaymentMode.MERKLE)
-
-print(result.address)
-```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { createClient } from "antd";
-
-async function main() {
-  const client = createClient();
-  const result = await client.dataPutPublic(Buffer.from("Hello, Autonomi!"), {
-    paymentMode: "merkle",
-  });
-  console.log(result.address);
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-```
-{% endtab %}
-{% tab title="Rust" %}
-```rust
-use antd_client::{Client, DEFAULT_BASE_URL, PaymentMode};
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new(DEFAULT_BASE_URL);
-    let result = client
-        .data_put_public(b"Hello, Autonomi!", PaymentMode::Merkle)
-        .await?;
-
-    println!("{}", result.address);
-    Ok(())
-}
-```
-{% endtab %}
-{% endtabs %}
+Before enabling paid uploads, run a controlled test. Record the on-chain transactions, amount spent, selected payment mode, and returned address, then retrieve the data and compare its bytes with the original.
 
 ## Verify it worked
 
-Check the wallet balance before and after a paid upload, then fetch the stored data by address. The upload response also tells you which payment mode the daemon actually used.
+For the no-spend portion of this guide, confirm that the cost response contains all required fields. The cost endpoint does not submit a payment; do not use an unchanged wallet balance as the only check because unrelated on-chain activity can also change it.
 
 ## Common errors
 
-**402 Payment Required**: Fund the wallet or use a local devnet.
+**402 Payment Required**: The payment operation failed. Check the selected EVM preset, token balance, gas balance, allowance, and returned error before retrying. A failed storage attempt can still have spent funds.
 
-**503 Service Unavailable**: The daemon does not have wallet configuration.
+**503 Service Unavailable**: A wallet endpoint or direct-wallet write was called without `AUTONOMI_WALLET_KEY`.
 
-**400 Bad Request**: Check the base64 payload and `payment_mode` value.
+**400 Bad Request**: Check the base64 payload and use `auto`, `merkle`, or `single` for `payment_mode`.
+
+**Binding import resolves to the wrong package**: Do not install `antd` from npm; that name belongs to Ant Design. Rust `antd-client` is absent from crates.io. Follow the [language-specific installation instructions](../sdk/reference/language-bindings/overview.md) instead of assuming a package name or version, or use cURL.
 
 ## Next steps
 

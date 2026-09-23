@@ -24,15 +24,17 @@ Use the published `ant-node` crate from crates.io:
 
 ```toml
 [dependencies]
-ant-node = "0.11.0"
+ant-node = "=0.18.1"
 tokio = { version = "1", features = ["full"] }
 ```
 
 The crate enables its `logging` feature by default. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
 
+Test startup, events, and shutdown in an isolated environment before embedding the node in your application.
+
 ### 2. Build a node with the API
 
-For local or development embedding, start from the development preset:
+For local or development embedding, start from the development preset. This lifecycle example disables storage, so it does not need a rewards address or accept paid chunk writes.
 
 ```rust
 use ant_node::{NodeBuilder, NodeConfig};
@@ -41,27 +43,49 @@ use ant_node::{NodeBuilder, NodeConfig};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut config = NodeConfig::development();
     config.root_dir = "./embedded-node".into();
+    config.storage.enabled = false;
 
     let mut node = NodeBuilder::new(config).build().await?;
+    println!("Embedded node starting; press Ctrl+C to stop");
     node.run().await?;
     Ok(())
 }
 ```
 
+Expected output includes `Embedded node starting; press Ctrl+C to stop`. The process continues until it receives a shutdown signal.
+
 ### 3. Subscribe to node events
 
-`RunningNode` exposes event subscriptions.
+`RunningNode` exposes event subscriptions. This complete example keeps the event task alive while the node runs:
 
 ```rust
-let mut node = NodeBuilder::new(NodeConfig::development()).build().await?;
-let mut events = node.subscribe_events();
+use ant_node::{NodeBuilder, NodeConfig, NodeEvent};
 
-tokio::spawn(async move {
-    while let Ok(event) = events.recv().await {
-        println!("{event:?}");
-    }
-});
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut config = NodeConfig::development();
+    config.root_dir = "./embedded-node-events".into();
+    config.storage.enabled = false;
+
+    let mut node = NodeBuilder::new(config).build().await?;
+    let mut events = node.subscribe_events();
+    let event_task = tokio::spawn(async move {
+        while let Ok(event) = events.recv().await {
+            let is_shutting_down = matches!(&event, NodeEvent::ShuttingDown);
+            println!("{event:?}");
+            if is_shutting_down {
+                break;
+            }
+        }
+    });
+
+    node.run().await?;
+    event_task.await?;
+    Ok(())
+}
 ```
+
+Expected output includes `Started` after the node begins running and `ShuttingDown` when it receives a shutdown signal.
 
 ### 4. Configure production settings explicitly
 
@@ -81,7 +105,9 @@ tokio::spawn(async move {
 - `max_message_size`
 - `log_level`
 
-`payment.evm_network` can target `ArbitrumOne`, `ArbitrumSepolia`, or a private EVM with `Custom { rpc_url, payment_token_address, payment_vault_address }`.
+`payment.evm_network` can target `ArbitrumOne`, `ArbitrumSepolia`, or a private Ethereum Virtual Machine (EVM) with `Custom { rpc_url, payment_token_address, payment_vault_address }`.
+
+Storage is enabled by default in both production and development configurations. Before building a storing node, set `payment.rewards_address` to a valid EVM address and configure `payment.evm_network` for the deployment the node joins. Set `storage.enabled = false` only for a non-storing embedded node such as the lifecycle examples above.
 
 Treat that list as a practical overview rather than a complete contract. For the full config surface, see the [ant-node API](https://github.com/WithAutonomi/ant-node).
 
@@ -92,6 +118,8 @@ The node is running when `node.run().await?` starts successfully, the runtime bi
 ## Common errors
 
 **Missing rewards configuration in production mode**: The builder rejects production nodes without `payment.rewards_address`.
+
+**Missing rewards configuration with storage enabled in development mode**: Development mode relaxes network restrictions, but storage initialization still needs `payment.rewards_address`. Configure it or disable storage for a non-storing node.
 
 **Multiple identities under the default root**: Use an explicit `root_dir` if you do not want identity auto-discovery under the default node directory.
 

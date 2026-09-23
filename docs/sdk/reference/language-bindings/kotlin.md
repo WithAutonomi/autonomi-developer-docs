@@ -8,48 +8,28 @@
   verification_mode: current-merged-truth
 -->
 
-The Kotlin SDK targets the `antd` daemon over REST or gRPC.
+The Kotlin SDK source targets a local daemon, a background service called antd, over REST and gRPC. The `v0.12.1` release has no published Kotlin client package or supported application installation workflow.
 
 ## Install
 
-```kotlin
-dependencies {
-    implementation("com.autonomi:antd-kotlin:0.1.0")
-}
+The source requires JDK 17 or later. Do not add `com.autonomi:antd-kotlin:0.1.0`: that artifact is not available from Maven Central.
+
+You cannot install this binding as a supported application dependency in ant-sdk v0.12.1. You can inspect or build the exact release source without treating it as an installable package:
+
+```bash
+git clone --branch v0.12.1 --depth 1 https://github.com/WithAutonomi/ant-sdk.git
+test "$(git -C ant-sdk rev-parse HEAD)" = "f9cd5c5fc08133847909e47e04af186593ccbaee"
+cd ant-sdk/antd-kotlin
+./gradlew :lib:build
 ```
 
-Until the package is published, use the project as a local dependency or composite build.
+## Connect to antd
 
-## Connect to the daemon
-
-```kotlin
-import com.autonomi.sdk.*
-import kotlinx.coroutines.runBlocking
-
-fun main() = runBlocking {
-    val client = AntdClient.createRest("http://localhost:8082")
-    val status = client.health()
-    println(status.network)
-    client.close()
-}
-```
+No supported consumer setup is available for a runnable connection example in this release.
 
 ## Store and retrieve data
 
-```kotlin
-import com.autonomi.sdk.*
-import kotlinx.coroutines.runBlocking
-
-fun main() = runBlocking {
-    val client = AntdClient.createRest()
-    val result = client.dataPutPublic("Hello, Autonomi!".toByteArray())
-    println(result.address)
-
-    val data = client.dataGetPublic(result.address)
-    println(String(data))
-    client.close()
-}
-```
+No supported consumer setup is available for a runnable upload and download example in this release. Use the public [Go SDK](go.md), another release-source workflow listed in the [language bindings overview](overview.md), or the [REST API](../rest-api.md).
 
 ## Type mappings
 
@@ -61,18 +41,8 @@ fun main() = runBlocking {
 
 ## Error handling
 
-```kotlin
-try {
-    val data = client.dataGetPublic("nonexistent")
-} catch (e: NotFoundException) {
-    println("Not found")
-} catch (e: PaymentException) {
-    println("Payment required")
-} catch (e: AntdException) {
-    println(e.message)
-}
-```
+Kotlin error examples also depend on an installable consumer package, which is unavailable in the pinned `v0.12.1` source release. `antd` returns status 400 for malformed addresses. `antd v0.13.0` has a known error-mapping defect: retrieving a valid DataMap address that is not stored returns status 500 over REST or `INTERNAL` over gRPC instead of a not-found response.
 
 ## Full API reference
 
-For all available daemon endpoints, see the [REST API](../rest-api.md).
+For all available `antd` endpoints, see the [REST API](../rest-api.md).

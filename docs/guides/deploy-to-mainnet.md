@@ -15,95 +15,269 @@
   verification_mode: current-merged-truth
 -->
 
-Move from local testing to a mainnet-facing configuration for either `antd` or `ant`.
+Configure a mainnet-facing `antd` or direct CLI process without replacing the built-in Arbitrum One payment preset.
 
-This guide covers both the daemon-backed SDK deployment workflow and the direct CLI deployment workflow because mainnet decisions usually touch both.
+This guide covers read-only startup, wallet inspection, cost preflight, and optional pre-approval. Keep paid writes inside a controlled release test that records the amount spent and confirms retrieval of the uploaded bytes.
 
 ## Prerequisites
 
-- Your application already tested locally
-- Production wallet access
-- Bootstrap peer information or daemon network defaults appropriate for your deployment
+- The `antd v0.13.0` binary or `ant-cli v0.3.6`
+- `curl`, Python 3, and a base64 command-line utility
+- A process supervisor that keeps `antd` bound to loopback or another protected interface
+- For wallet-backed `antd`: a low-value production wallet funded with ANT and gas
+- For the direct CLI: the `ant-cli v0.3.6` installer bootstrap configuration or real bootstrap peers from an approved source
+
+The `antd` examples below use REST directly. If you use a [language client](../sdk/reference/language-bindings/overview.md), follow its setup instructions and check compatibility with `antd v0.13.0`.
+
+For the local daemon commands, set its executable path from the directory where you installed it:
+
+```bash
+export ANTD_BIN="$(pwd)/antd"
+"$ANTD_BIN" --version
+```
+
+Expect `antd 0.13.0 (build 6fe2b51105cd)`. Set the same absolute path as `ANTD_BIN` in your process supervisor's environment. The scripts below use it rather than selecting a possibly different executable from `PATH`.
 
 ## Steps
 
-### 1. Lock down wallet handling
+### 1. Use the built-in Arbitrum One preset
 
-For daemon-based deployments, provide wallet and EVM settings through the environment:
+Remove individual EVM overrides and select the built-in preset:
 
 ```bash
-export AUTONOMI_WALLET_KEY="<hex_private_key>"
-export EVM_RPC_URL="https://your-rpc-endpoint"
-export EVM_PAYMENT_TOKEN_ADDRESS="0x..."
-export EVM_PAYMENT_VAULT_ADDRESS="0x..."
+#!/usr/bin/env bash
+set -euo pipefail
+
+export EVM_NETWORK=arbitrum-one
+unset EVM_RPC_URL EVM_PAYMENT_TOKEN_ADDRESS EVM_PAYMENT_VAULT_ADDRESS EVM_DATA_PAYMENTS_ADDRESS
+
+printf 'Using EVM preset: %s\n' "$EVM_NETWORK"
 ```
 
-For direct-network CLI deployments, provide:
+Expected output:
 
-```bash
-export SECRET_KEY="0x<hex_private_key>"
+```text
+Using EVM preset: arbitrum-one
 ```
 
-### 2. Start the production daemon shape
+Do not set any individual `EVM_*` override for public writes with `antd v0.13.0`. Any one of those variables creates a custom EVM network. Mainnet storage nodes can reject that payment encoding after the wallet has spent ANT. `antd v0.13.0` has no safe documented public-write interface using a custom RPC URL.
 
-Run `antd` without `--network local`:
+### 2. Start a read-only mainnet-facing daemon
+
+Keep the REST and gRPC listeners on loopback. `antd` has no built-in authentication.
 
 ```bash
-antd --rest-addr 127.0.0.1:8082 --grpc-addr 127.0.0.1:50051 --log-level info
+#!/usr/bin/env bash
+set -euo pipefail
+
+unset AUTONOMI_WALLET_KEY EVM_RPC_URL EVM_PAYMENT_TOKEN_ADDRESS EVM_PAYMENT_VAULT_ADDRESS EVM_DATA_PAYMENTS_ADDRESS
+export EVM_NETWORK=arbitrum-one
+
+: "${ANTD_BIN:?Set ANTD_BIN to the absolute path of the installed antd executable}"
+exec "$ANTD_BIN" \
+  --rest-addr 127.0.0.1:8082 \
+  --grpc-addr 127.0.0.1:50051 \
+  --log-level info
 ```
 
-### 3. Verify daemon health and wallet state
+Expected startup output identifies REST port `8082`, gRPC port `50051`, and network mode `default`. `antd v0.13.0` loads public bootstrap peers from installed configuration or compiled-in defaults when no explicit peers are supplied.
+
+This process can serve reads without a wallet. Run it under your process supervisor rather than exposing its unauthenticated ports directly.
+
+### 3. Verify the complete health response
 
 ```bash
-curl http://127.0.0.1:8082/health
-curl http://127.0.0.1:8082/v1/wallet/address
-curl http://127.0.0.1:8082/v1/wallet/balance
+#!/usr/bin/env bash
+set -euo pipefail
+
+HEALTH=$(curl --fail --show-error http://127.0.0.1:8082/health)
+
+python3 -c '
+import json
+import sys
+
+health = json.loads(sys.argv[1])
+required = {
+    "status",
+    "network",
+    "version",
+    "evm_network",
+    "uptime_seconds",
+    "build_commit",
+    "payment_token_address",
+    "payment_vault_address",
+    "write_ready",
+    "connected_peers",
+    "routing_table_size",
+    "rebootstrap_threshold",
+    "last_store_ok_secs_ago",
+}
+missing = required.difference(health)
+if missing:
+    raise SystemExit(f"Missing fields: {sorted(missing)}")
+if (
+    health["status"] != "ok"
+    or health["network"] != "default"
+    or health["version"] != "0.13.0"
+):
+    raise SystemExit(f"Unexpected health response: {health}")
+if health["evm_network"] != "arbitrum-one":
+    evm_network = health["evm_network"]
+    raise SystemExit(f"Unexpected EVM preset: {evm_network}")
+if not health["payment_token_address"] or not health["payment_vault_address"]:
+    raise SystemExit("Mainnet payment contract addresses are missing")
+print("Mainnet-facing antd health check passed")
+' "$HEALTH"
 ```
 
-### 4. Estimate and perform a small write through antd
+Expected output:
 
-```bash
-DATA_B64=$(printf 'mainnet deployment test' | base64)
-
-curl -X POST http://127.0.0.1:8082/v1/data/cost \
-  -H "Content-Type: application/json" \
-  -d "{\"data\":\"$DATA_B64\"}"
-
-curl -X POST http://127.0.0.1:8082/v1/data/public \
-  -H "Content-Type: application/json" \
-  -d "{\"data\":\"$DATA_B64\"}"
+```text
+Mainnet-facing antd health check passed
 ```
 
-### 5. Verify the CLI separately if you use it
+This proves that the local process selected the intended configuration. `status: ok` means the process is alive, not that storage is available. Inspect `write_ready`, `connected_peers`, `routing_table_size`, and `rebootstrap_threshold` before attempting uploads. `last_store_ok_secs_ago` is `null` until this process observes a successful store. Even `write_ready: true` does not prove that payment, storage, or retrieval works against the deployed Autonomi Network.
 
-The `ant` CLI expects bootstrap peers and an EVM network setting for mainnet-style writes:
+### 4. Add a wallet only if the service must upload
+
+Stop the read-only process through your process supervisor. Set the wallet key through its secret store, then start a replacement process with the same built-in preset:
 
 ```bash
-SECRET_KEY=0x... ant --bootstrap 1.2.3.4:12000 --evm-network arbitrum-one file upload photo.jpg
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${AUTONOMI_WALLET_KEY:?Set AUTONOMI_WALLET_KEY through the process supervisor secret store}"
+export AUTONOMI_WALLET_KEY
+
+export EVM_NETWORK=arbitrum-one
+unset EVM_RPC_URL EVM_PAYMENT_TOKEN_ADDRESS EVM_PAYMENT_VAULT_ADDRESS EVM_DATA_PAYMENTS_ADDRESS
+
+: "${ANTD_BIN:?Set ANTD_BIN to the absolute path of the installed antd executable}"
+exec "$ANTD_BIN" \
+  --rest-addr 127.0.0.1:8082 \
+  --grpc-addr 127.0.0.1:50051 \
+  --log-level info
 ```
 
-If you use the private mode, the CLI saves a local `.datamap` file and uses that for later download.
+Expected startup output identifies REST port `8082`, gRPC port `50051`, and network mode `default`.
 
-### 6. Keep monitoring simple and current
-
-Use the daemon health endpoint and wallet endpoints directly:
+In another terminal, inspect the wallet:
 
 ```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+curl --fail --show-error http://127.0.0.1:8082/v1/wallet/address
+curl --fail --show-error http://127.0.0.1:8082/v1/wallet/balance
+```
+
+The balance response contains ANT in `balance` and gas in `gas_balance`. Both are decimal strings in their smallest units.
+
+### 5. Decide whether to pre-approve token spend
+
+`POST /v1/wallet/approve` lets you approve token spend before an upload. It spends gas and grants the configured payment vault an unlimited ANT allowance. Direct-wallet payments also check the allowance and automatically grant the same unlimited allowance when it is too low.
+
+Use pre-approval only when you want approval to be a separate, deliberate transaction. Do not automate it until you have independently checked the wallet address, `arbitrum-one` preset, payment token address, and payment vault address returned by `/health`.
+
+The command is:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data '{}' \
+  http://127.0.0.1:8082/v1/wallet/approve
+```
+
+The success response is `{"approved":true}`. It does not prove that a later payment, upload, or retrieval will succeed.
+
+### 6. Run a no-spend cost preflight
+
+Cost estimation queries storage prices but does not make a payment:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+DATA_B64=$(printf 'mainnet deployment preflight' | base64 | tr -d '\n')
+
+curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data "{\"data\":\"${DATA_B64}\",\"payment_mode\":\"auto\"}" \
+  http://127.0.0.1:8082/v1/data/cost
+```
+
+Expected output contains `cost`, `file_size`, `chunk_count`, `estimated_gas_cost_wei`, and `payment_mode`.
+
+The storage estimate samples at most five chunk addresses, the gas figure is heuristic, and this data endpoint omits the additional paid `DataMap` storage required by a public upload. Do not treat it as an exact or maximum charge.
+
+### 7. Check the direct CLI separately
+
+The `ant-cli v0.3.6` installer supplies a bootstrap configuration. Do not override it with example IP addresses. A source-built CLI needs real bootstrap peers from an approved source.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${SECRET_KEY:?Set SECRET_KEY without writing it into this script}"
+export SECRET_KEY
+
+ant --evm-network arbitrum-one wallet address
+ant --evm-network arbitrum-one wallet balance
+```
+
+Expected output is the wallet address followed by its ANT balance. The CLI does not report gas balance or expose approval as a separate command. Its upload path can approve an unlimited allowance automatically, so these checks do not establish the total gas needed for a first upload.
+
+### 8. Gate the production write with a release test
+
+Run the paid upload through a controlled release test before adding it to a production deployment. The test must record:
+
+- the exact client and shipped dependency versions
+- the selected built-in EVM preset and contract addresses
+- token approval result
+- estimated and actual ANT and gas spend
+- returned 64-character public address
+- successful retrieval and byte comparison
+- any partial-upload error and funds already spent
+
+### 9. Monitor the local service
+
+Use the `antd` health and wallet endpoints directly:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
 curl -sf http://127.0.0.1:8082/health
-curl -sf http://127.0.0.1:8082/v1/wallet/balance
+
+if curl -sf http://127.0.0.1:8082/v1/wallet/address >/dev/null; then
+  curl -sf http://127.0.0.1:8082/v1/wallet/balance
+else
+  printf 'antd is running without a configured wallet\n'
+fi
 ```
+
+Expected output is the health JSON followed by either wallet balance JSON or `antd is running without a configured wallet`.
 
 ## Verify it worked
 
-Mainnet deployment is working when the daemon reports healthy status, wallet endpoints return valid data, and a small write/read cycle succeeds with production configuration.
+The setup portion is complete when `/health` reports `status: ok`, `network: default`, and `evm_network: arbitrum-one`, and when the listeners remain protected from untrusted access.
+
+Before production uploads, confirm the wallet address and balances, the built-in EVM preset and contract addresses, token approval, actual payment, successful storage, and retrieval of identical bytes through the controlled release test above. Record every item in its checklist, including any partial-upload error and funds already spent.
 
 ## Common errors
 
-**503 on write endpoints**: The daemon is running but wallet configuration is missing.
+**503 on wallet or direct-write endpoints**: `antd` is running without `AUTONOMI_WALLET_KEY`. This is expected for read-only and external-signer processes.
 
-**Direct CLI upload fails immediately**: Check `SECRET_KEY`, `--bootstrap`, and `--evm-network`.
+**Direct CLI wallet check succeeds but upload fails**: The CLI does not report gas balance or expose approval as a separate command. A first upload can spend gas on automatic approval as well as payment, so do not infer upload readiness from address and ANT balance output.
 
-**Unexpected local-network behavior in production**: Remove `--network local`, `--allow-loopback`, and devnet manifest flags from production commands.
+**Median quote payment verification failed**: Stop retrying. Check whether ANT was already spent, remove every individual `EVM_*` override, and return to the built-in `arbitrum-one` preset.
+
+**Unexpected local behavior**: Remove `--network local`, `--allow-loopback`, and devnet manifest flags from production commands.
 
 ## Next steps
 

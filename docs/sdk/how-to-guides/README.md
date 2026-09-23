@@ -8,18 +8,15 @@
   verification_mode: current-merged-truth
 -->
 
-Use these guides when you are already working through `antd` and you want to accomplish a specific SDK task.
-
-These pages cover the daemon-backed SDK workflow after the basic setup pages in the SDK section.
+Choose the task you want to complete using [antd](../use-antd.md), the local background service. If you are choosing a library for a new application, begin with [Build with the SDKs](../install.md).
 
 ## What is here
 
-- [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md)
-- [Use the Daemon as a Local Service](use-the-daemon-as-a-local-service.md)
-- [Use External Signers for Upload Payments](use-external-signers-for-upload-payments.md)
+- [Store and Retrieve Data with the SDKs](store-and-retrieve-data.md): work with public and private data through the local daemon.
+- [Use the Daemon as a Local Service](use-the-daemon-as-a-local-service.md): keep the background service running with a service manager.
+- [Use External Signers for Upload Payments](use-external-signers-for-upload-payments.md): keep the signing key outside the local daemon.
 
 ## Next steps
 
-- [Build with the SDKs](../install.md)
 - [Start the Local Daemon](../start-the-local-daemon.md)
 - [SDK Reference](../reference/README.md)

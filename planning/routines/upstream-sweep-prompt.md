@@ -11,7 +11,7 @@ Perform the daily upstream-drift sweep per `planning/routines/upstream-sweep.md`
 This prompt requires **Opus 4.8 or higher**. The audit/write/verify loop in step 4 assumes the model can:
 
 - inspect upstream diffs and source at pinned SHAs,
-- compare those source changes against affected docs pages and `skills/start/SKILL.md`,
+- compare those source changes against affected docs pages,
 - write actual prose into a draft PR (not suggestions in the PR body),
 - run practical verification on the prepared branch (linters, syntax checks, re-runs of the scanner) before opening the PR.
 
@@ -104,7 +104,7 @@ git -C "$TMP" fetch --depth 1 origin "<head_sha>"
 git -C "$TMP" checkout --detach "<head_sha>"
 ```
 
-The `git -C "$TMP"` form runs each command inside the upstream checkout without changing the current directory of the routine. Every other step in this prompt (`gh` calls, scanner re-runs, file edits in `docs/` and `skills/`, `git add` / `git commit` on the prepared docs branch) assumes the cwd is still the docs repo, so do not `cd` into `$TMP` here. If a follow-up command genuinely needs the upstream tree as cwd, scope it to a subshell: `( cd "$TMP" && <command> )`.
+The `git -C "$TMP"` form runs each command inside the upstream checkout without changing the current directory of the routine. Every other step in this prompt (`gh` calls, scanner re-runs, file edits in `docs/`, `git add` / `git commit` on the prepared docs branch) assumes the cwd is still the docs repo, so do not `cd` into `$TMP` here. If a follow-up command genuinely needs the upstream tree as cwd, scope it to a subshell: `( cd "$TMP" && <command> )`.
 
 If either `git fetch` fails (reachable-SHA fetches disabled by the repo, SHA garbage-collected, network failure), fall back to the GitHub compare API:
 
@@ -130,7 +130,7 @@ Or read `compare.json` `commits[]` and `files[]` when running via the compare-AP
 
 #### 4.3 Inspect upstream source artifacts at `head_sha`
 
-Focus on the artifacts the affected docs page or skill cites. Use `repo-registry.yml`'s `topics:` and `component-registry.yml`'s component map to pick artifacts deterministically.
+Focus on the artifacts the affected docs page cites. Use `repo-registry.yml`'s `topics:` and `component-registry.yml`'s component map to pick artifacts deterministically.
 
 Common artifacts to read:
 
@@ -140,9 +140,9 @@ Common artifacts to read:
 - public Rust modules cited by the Direct Rust pages,
 - README and docs in the upstream repo when the page references them.
 
-#### 4.4 Compare against the affected docs pages and `SKILL.md`
+#### 4.4 Compare against the affected docs pages
 
-For `scope: "docs"` records, read the page at the recorded `location` path. For `scope: "skill_version_json"` and `scope: "skill_md"` records, read `skills/start/SKILL.md`.
+The scanner emits `scope: "docs"` records. Read the page at the recorded `location` path.
 
 Identify any rendered claim, code sample, command, endpoint, type, field, or live-reference URL that no longer matches the pinned source.
 
@@ -152,7 +152,7 @@ Pick exactly one:
 
 - **metadata-only** — internal refactor, test-only changes, dependency bumps, code style. No developer-facing impact. Stamp refresh suffices.
 - **prose** — a documented surface changed (new flow, renamed command, removed step, changed payload shape, new error variant that surfaces to users, a moved live-reference URL). Prose changes are required.
-- **ambiguous** — evidence is unclear, the page or skill cites something the routine cannot reliably re-derive, or the audit hits a known edge case (deleted file the page referenced, removed surface still mentioned in prose). Defer to a manual-review issue rather than guess.
+- **ambiguous** — evidence is unclear, the page cites something the routine cannot reliably re-derive, or the audit hits a known edge case (deleted file the page referenced, removed surface still mentioned in prose). Defer to a manual-review issue rather than guess.
 
 #### 4.6 Apply the page batching rule (after all records are classified)
 
@@ -172,19 +172,7 @@ When the page is in the prose batch, write the actual prose edits into the draft
 
 Before writing each sentence, re-read the **Voice and tone**, **Style guide**, and **Prohibited words and phrases** sections of `CLAUDE.md` and apply them as written. The audit gives you a diff between two SHAs; the page describes the **state of the surface at `head_sha`**, not a changelog of what moved between SHAs. Translate every observation about what changed into a statement of how the surface works now. Do not write "this endpoint now returns X" — write "this endpoint returns X." Do not reference prior version behaviour, prior parameter shapes, or prior implementation details unless the page is an explicit version-comparison page. The terminology lockfile, page templates, and refusal rules in `CLAUDE.md` apply equally to every line of prose written here.
 
-#### 4.8 Skill-aware prose
-
-If the audit finds skill impact, include both the human-facing docs change and the `SKILL.md` change in the same prose PR. If the `SKILL.md` body changes, also include the linked patch release set in the same PR:
-
-- `skills/start/version.json: version` bumped to a new patch version (`MAJOR.MINOR.(PATCH+1)`),
-- `skills/start/version.json: published_date` updated,
-- `skills/start/SKILL.md` frontmatter `version:` matching the new `version.json: version`,
-- `skills/start/SKILL.md` frontmatter `verified_date:` updated,
-- `skills/start/CHANGELOG.md` adding one new entry whose header matches the new `version`.
-
-If the `SKILL.md` body does not change, none of those release fields may change. `prose-guard` enforces both directions.
-
-#### 4.9 Deferred-record self-check (case 5 only)
+#### 4.8 Deferred-record self-check (case 5 only)
 
 When the page batching rule emits a prose PR with proven-independent ambiguous records held back, confirm — for **every** deferred record on every prose-PR page — that the entire `<!-- verification: ... -->` block on the prose-PR branch is **byte-identical to base**. Every byte from the opening `<!-- verification:` to the closing `-->` is checked: `source_repo:`, `source_ref:`, `source_commit:`, `verified_date:`, `verification_mode:`, comments, and any other line. Checking only `source_commit:` and `verified_date:` is too narrow; the audit/write step can edit `source_ref:`, change `verification_mode:`, or rewrite a comment inside the block without realising it crossed the deferred-record boundary.
 
@@ -192,13 +180,12 @@ Confirm the prose PR body contains a `Deferred ambiguous records:` section that 
 
 The guards cannot enforce this — they have no way to know which records were classified ambiguous — so this self-check is the only thing that catches an accidental edit. **Fail closed on mismatch: do not open the prose PR. Open a manual-review issue describing the slip and continue with the rest of the run.**
 
-#### 4.10 Practical verification before opening the PR
+#### 4.9 Practical verification before opening the PR
 
 Run the checks below on the prepared branch where the toolchain is available. If a check cannot be run (tool missing, environment limit), state that explicitly in the PR body. Never silently skip.
 
 - repo lint/format checks (`markdownlint`, link checkers — gracefully skip if not configured),
 - re-run `python3 scripts/sweep_poll.py` on the prepared branch and confirm `status: "ok"` with no malformed-block errors,
-- parse `SKILL.md` frontmatter and `version.json` to confirm the linked-release rule holds when the body changed,
 - for changed code samples: language-appropriate syntax check (`python -m py_compile` for Python, `python -m json.tool` for JSON, `node --check` for JavaScript, OpenAPI re-parse as YAML, cURL command shape sanity), each gracefully skipped when the toolchain is unavailable,
 - for endpoint/type claims: targeted re-grep against the pinned upstream checkout to confirm the cited endpoint or type still exists.
 
@@ -230,18 +217,15 @@ Do **not** include a PR backlink in any issue body at this stage — the PR URL 
 - Branch: `claude/sweep-<YYYY-MM-DD>` from `main`.
 - Diff envelope (verbatim from `planning/routines/upstream-sweep.md` `## Sweep PR envelope`):
   - update `source_commit:` and `verified_date:` lines inside `<!-- verification: -->` blocks of the affected docs pages,
-  - update entries in the `verified_commits` map of `skills/start/version.json` for the corresponding repos (key set unchanged),
-  - update entries in the `verified_commits` map of `skills/start/SKILL.md` frontmatter and refresh the `verified_date:` line (key set unchanged),
   - add one new `planning/sweeps/<YYYY-MM-DD>.md` summary file.
-- Forbidden: any change to `version`, `published_date`, `skills/start/CHANGELOG.md`, the YAML-frontmatter `version:` line, any rendered prose in `docs/`, any file under `scripts/`, `.github/`, `repo-registry.yml`, or `component-registry.yml`, and any byte inside a `verification_mode: target-manifest` block (sweep PRs must never edit target-manifest pins).
+- Forbidden: any rendered prose change in `docs/`, any file under `scripts/`, `.github/`, `repo-registry.yml`, `component-registry.yml`, or any other path outside the envelope, and any byte inside a `verification_mode: target-manifest` block (sweep PRs must never edit target-manifest pins).
 - PR body: see `## PR body format` below.
 
 **Prose PR** (cases 1 and 5):
 
 - Branch: `claude/prose-<YYYY-MM-DD>-<slug>` from `main`. Open as **draft**.
 - Includes the prose edits plus the corresponding `source_commit:` / `verified_date:` refreshes for those same pages.
-- For case 5, every deferred record's `<!-- verification: ... -->` block is byte-identical to base (deferred-record self-check from step 4.9).
-- If the audit found skill impact, include the `SKILL.md` body edit and the linked patch release set per step 4.8.
+- For case 5, every deferred record's `<!-- verification: ... -->` block is byte-identical to base (deferred-record self-check from step 4.8).
 - The two PRs never touch the same page.
 - **Stay strictly within the prose envelope**: no `.gitignore`, no `scripts/`, no `.github/`, no `repo-registry.yml`, no `component-registry.yml`, no other root-level housekeeping files. If the audit observes a useful infrastructure cleanup (a missing gitignore entry, a stale workflow, a registry tidy-up), do **not** include it in the prose PR. Mention it in a "Suggested follow-ups" section of the PR body so a human can open a separate PR for it. `prose-guard` rejects any change outside the envelope.
 - PR body: see `## PR body format` below; include a "Why prose changed" section, and (for case 5) a "Deferred ambiguous records" section with the issue numbers captured in 5.1.
@@ -264,7 +248,7 @@ Both sweep and prose PR bodies must include:
 - **Upstream**: repo name and SHA range checked, e.g. `ant-sdk: 1cbfb3e → d7652ec`.
 - **Source artifacts inspected**: short list, e.g. `antd/openapi.yaml`, `docs/sdk/reference/rest-api.md` upstream.
 - **Developer-facing change**: one or two sentences describing what changed for users of the documented surface, or "internal refactor; no developer-facing impact".
-- **Files changed in this PR**: bulleted list of docs pages and skill files.
+- **Files changed in this PR**: bulleted list of docs pages and any run summary.
 - **Why prose changed** (prose PR only): one or two sentences per page explaining the rendered-text edit and which upstream artifact it tracks.
 - **Verification run**: bulleted list of which practical checks ran and their result, or "skipped — <reason>" per check.
 - **Uncertainties**: one or two sentences calling out any judgment calls or partial evidence the human reviewer should re-check, or "none".
@@ -274,7 +258,7 @@ The body is intentionally concise — no full audit transcript — but every cla
 ## Behaviour rules
 
 - Use only `gh` for GitHub operations. Do not invoke the GitHub MCP server.
-- Bump the skill's `version`, `published_date`, frontmatter `version:`, and `CHANGELOG.md` only when the prose PR's `SKILL.md` body change requires the linked patch release per step 4.8. On `claude/sweep-*` PRs these fields never move.
+- Enforce the positive path allowlists for both PR types, including both old and new paths of renames and copies. A run summary must be newly added at `planning/sweeps/<branch-date>.md`, never an edit to an existing summary.
 - Do not modify `target-manifest` verification blocks. They are pinned for launch hardening.
 - **Whole-run fail-closed** (scanner error, mid-step error in step 5): open a fresh issue, attempt to attach `upstream-sweep-failure`, fall back to no label if attach fails (label missing or token lacks label-write permission), include the underlying label-attach error in the body. Do not open partial PRs. Do not auto-close failure issues on a later success — a human triages each one.
 - **Per-record fail-closed** (e.g., both SHA fetch and compare API failing for one record in step 4.1, or any page-batching case 3/4/5 in step 4.6): open an issue with the `## Manual-review issue format` body, attempt to attach `upstream-sweep-manual-review`, fall back to no label if attach fails. The rest of the run continues. The distinction matters: whole-run failures abort the routine for triage; per-record deferrals are routine output.

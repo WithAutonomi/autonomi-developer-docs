@@ -22,7 +22,7 @@
   verification_mode: current-merged-truth
 -->
 
-The post-quantum cryptography described here centers on `saorsa-pqc`, transport documentation built around ML-KEM-768 and ML-DSA-65, and `ant-keygen` release-signing with ML-DSA-65.
+Post-quantum cryptography uses algorithms designed to resist attacks from quantum computers; Autonomi uses them for transport key exchange, transport authentication, and release signing.
 
 ## Why it matters
 
@@ -32,7 +32,7 @@ If you are reasoning about security, transport identity, or release authenticity
 
 ### saorsa-pqc
 
-`saorsa-pqc` is a broader PQC library that includes:
+`saorsa-pqc 0.5.1` is a broader post-quantum cryptography library that includes:
 
 - ML-KEM key encapsulation variants
 - ML-DSA signature variants
@@ -43,7 +43,7 @@ So the library itself is broader than any single Autonomi-facing transport choic
 
 ### saorsa-transport
 
-`saorsa-transport` describes its transport layer as pure post-quantum and highlights this pair for transport use:
+`saorsa-transport 0.36.3` uses this pair for transport:
 
 - ML-KEM-768 for key exchange
 - ML-DSA-65 for signatures
@@ -54,6 +54,8 @@ The transport layer has no classical fallback.
 
 `ant-keygen` is the release-signing CLI that uses ML-DSA-65. It generates release-signing keypairs, signs files, verifies signatures, and supports a signing context for domain separation.
 
+Before installing a release, follow its signature-verification instructions and check the [known signing limitations](../reference/source-repositories.md#source-identity-limitations).
+
 ### Key separation and signing contexts
 
 `saorsa-pqc` provides HKDF-SHA3-256 and HKDF-SHA3-512 as key-derivation primitives.
@@ -62,27 +64,39 @@ That means the crypto library can derive new key material from shared secrets or
 
 ## Practical example
 
+`ant-keygen 0.1.0` relies on the process umask when it creates a secret key. This demonstration sets `umask 077` so newly created key files are accessible only to the process owner, uses an isolated temporary directory, and removes the throwaway key when it exits. Production release keys need protected, durable storage and a separate access policy.
+
 ```bash
-ant-keygen generate ./keys
+set -euo pipefail
+
+umask 077
+WORK_DIR="$(mktemp -d)"
+trap 'rm -rf "$WORK_DIR"' EXIT
+
+printf 'release artifact\n' > "$WORK_DIR/artifact.tar.gz"
+ant-keygen generate "$WORK_DIR/keys"
 
 ant-keygen sign \
-  --key ./keys/release-signing-key.secret \
-  --input ./artifact.tar.gz \
-  --output ./artifact.sig
+  --key "$WORK_DIR/keys/release-signing-key.secret" \
+  --input "$WORK_DIR/artifact.tar.gz" \
+  --output "$WORK_DIR/artifact.sig"
 
 ant-keygen verify \
-  --key ./keys/release-signing-key.pub \
-  --input ./artifact.tar.gz \
-  --signature ./artifact.sig
+  --key "$WORK_DIR/keys/release-signing-key.pub" \
+  --input "$WORK_DIR/artifact.tar.gz" \
+  --signature "$WORK_DIR/artifact.sig"
+
+# Expected final line: Signature is VALID
 ```
 
-## Upstream sources
+## Packages and tools
 
-- [saorsa-pqc](https://github.com/saorsa-labs/saorsa-pqc)
-- [saorsa-transport](https://github.com/saorsa-labs/saorsa-transport)
-- [ant-keygen](https://github.com/WithAutonomi/ant-keygen)
+- [`saorsa-pqc 0.5.1`](https://crates.io/crates/saorsa-pqc/0.5.1) ships with `antd 0.13.0`, `ant-cli 0.3.6`, and `ant-node 0.18.1`
+- [`saorsa-transport 0.36.3`](https://crates.io/crates/saorsa-transport/0.36.3) ships with `antd 0.13.0`, `ant-cli 0.3.6`, and `ant-node 0.18.1`
+- [`ant-keygen v0.1.0`](https://github.com/WithAutonomi/ant-keygen/releases/tag/v0.1.0)
 
 ## Related pages
 
-- [Self-Encryption](self-encryption.md)
+- [Self-encryption](self-encryption.md)
 - [Core Concepts Overview](overview.md)
+- [Source Repositories](../reference/source-repositories.md)

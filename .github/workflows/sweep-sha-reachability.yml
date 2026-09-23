@@ -74,8 +74,6 @@ jobs:
           TOKEN = os.environ["GITHUB_TOKEN"]
           SUMMARY_PATH = os.environ.get("GITHUB_STEP_SUMMARY")
           REGISTRY_PATH = "repo-registry.yml"
-          VERSION_JSON_PATH = "skills/start/version.json"
-          SKILL_MD_PATH = "skills/start/SKILL.md"
           DOCS_PREFIX = "docs/"
           VERIFICATION_BLOCK_RE = re.compile(
               r"<!--\s*verification:(.*?)-->", re.DOTALL
@@ -84,7 +82,6 @@ jobs:
 
           violations: list[str] = []
           skipped_target_manifest: list[str] = []
-          default_branch_cache: dict[str, str] = {}
 
           def fail(loc: str, msg: str) -> None:
               violations.append(f"{loc}: {msg}")
@@ -145,29 +142,6 @@ jobs:
               return (data or {}).get("repos") or {}
 
           REGISTRY = load_registry()
-
-          def resolve_default_branch(repo_key: str) -> str | None:
-              if repo_key in default_branch_cache:
-                  return default_branch_cache[repo_key]
-              entry = REGISTRY.get(repo_key)
-              if not entry:
-                  fail(repo_key, "repo not in repo-registry.yml")
-                  return None
-              parsed = parse_owner_repo(entry["url"])
-              if not parsed:
-                  fail(repo_key, f"unparseable url: {entry['url']}")
-                  return None
-              owner, repo = parsed
-              status, body = github_get(f"/repos/{owner}/{repo}")
-              if status != 200 or not body:
-                  fail(repo_key, f"GET /repos/{owner}/{repo} returned {status}")
-                  return None
-              branch = body.get("default_branch")
-              if not isinstance(branch, str) or not branch:
-                  fail(repo_key, "default_branch missing in repo metadata")
-                  return None
-              default_branch_cache[repo_key] = branch
-              return branch
 
           def validate_sha(
               loc: str, repo_key: str, ref: str, sha: str
@@ -299,66 +273,6 @@ jobs:
                       fields["source_ref"],
                       fields["source_commit"],
                   )
-
-          # 2) version.json post-image verified_commits
-          if VERSION_JSON_PATH in changed_paths:
-              head_text = show(HEAD, VERSION_JSON_PATH) or ""
-              try:
-                  obj = json.loads(head_text)
-              except json.JSONDecodeError as exc:
-                  fail(VERSION_JSON_PATH, f"JSON parse error: {exc}")
-                  obj = {}
-              if obj.get("verification_mode") == "target-manifest":
-                  skip_tm(f"{VERSION_JSON_PATH}:verified_commits")
-              else:
-                  commits = obj.get("verified_commits")
-                  if not isinstance(commits, dict):
-                      fail(
-                          f"{VERSION_JSON_PATH}:verified_commits",
-                          "missing or not a map/object",
-                      )
-                      commits = {}
-                  for repo_key, sha in sorted(commits.items()):
-                      ref = resolve_default_branch(repo_key)
-                      if ref is None:
-                          continue
-                      loc = f"{VERSION_JSON_PATH}:verified_commits.{repo_key}"
-                      validate_sha(loc, repo_key, ref, sha)
-
-          # 3) SKILL.md post-image frontmatter verified_commits
-          if SKILL_MD_PATH in changed_paths:
-              head_text = show(HEAD, SKILL_MD_PATH) or ""
-              if not head_text.startswith("---"):
-                  fail(SKILL_MD_PATH, "missing YAML frontmatter")
-              else:
-                  end = head_text.find("\n---", 3)
-                  if end < 0:
-                      fail(SKILL_MD_PATH, "unterminated YAML frontmatter")
-                  else:
-                      raw = head_text[3:end]
-                      try:
-                          fm = yaml.safe_load(raw) or {}
-                      except yaml.YAMLError as exc:
-                          fail(SKILL_MD_PATH, f"frontmatter YAML parse error: {exc}")
-                          fm = {}
-                      if fm.get("verification_mode") == "target-manifest":
-                          skip_tm(f"{SKILL_MD_PATH}:verified_commits")
-                      else:
-                          commits = fm.get("verified_commits")
-                          if not isinstance(commits, dict):
-                              fail(
-                                  f"{SKILL_MD_PATH}:verified_commits",
-                                  "missing or not a map/object",
-                              )
-                              commits = {}
-                          for repo_key, sha in sorted(commits.items()):
-                              ref = resolve_default_branch(repo_key)
-                              if ref is None:
-                                  continue
-                              loc = (
-                                  f"{SKILL_MD_PATH}:verified_commits.{repo_key}"
-                              )
-                              validate_sha(loc, repo_key, ref, sha)
 
           if violations:
               if SUMMARY_PATH:

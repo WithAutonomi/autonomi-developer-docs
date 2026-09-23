@@ -8,67 +8,82 @@
   verification_mode: current-merged-truth
 -->
 
-The language bindings in `ant-sdk` are clients for the `antd` daemon. They share the same daemon surface, but they do not expose identical constructors, transports, or helper APIs.
+These language bindings are client libraries that your application imports and calls. They send requests to a local daemon, a separately running background service called [antd](../../use-antd.md), which handles the network connection, encryption, and configured payments.
 
-## Architecture
+## Package availability
 
-Each binding translates language-native inputs into requests to `antd`, then maps daemon responses back into that language's models and errors.
+The Python and JavaScript clients install from PyPI and npm. Other languages have their own package or source-install instructions, listed below. Follow the guide for your language: package versions and supported operations can differ.
 
-The pattern is:
+| Language | Installation used in this guide | Transport |
+|----------|---------------------|-----------|
+| [Go](go.md) | Public Go module pinned to `v0.12.1` | REST, gRPC |
+| [Rust](rust.md) | Local Cargo path dependency | REST, gRPC |
+| [Python](python.md) | PyPI `antd[rest]`; gRPC extra available separately | REST, gRPC |
+| [JavaScript](javascript.md) | npm `@withautonomi/antd` | REST |
+| [TypeScript](typescript.md) | npm `@withautonomi/antd` with type declarations | REST |
+| [Java](java.md) | Local Maven publication built from source | REST, gRPC |
+| [C#](csharp.md) | Local .NET project reference | REST, gRPC |
+| [Kotlin](kotlin.md) | Unavailable for supported consumer installation | REST, gRPC source implementation |
+| [Swift](swift.md) | Local Swift package path | REST, gRPC |
+| [Ruby](ruby.md) | Locally built gem | REST, gRPC |
+| [PHP](php.md) | Release-source Composer project | REST |
+| [C++](cpp.md) | Local CMake subdirectory | REST, optional gRPC |
+| [Dart](dart.md) | Local Dart path dependency | REST, gRPC |
+| [Zig](zig.md) | Local Zig path dependency | REST |
 
-1. your application talks to a language client
-2. the language client talks to `antd`
-3. `antd` talks to the Autonomi network through `ant-core`
+## How it connects
 
-## Defaults
+```text
+Your application
+       |
+       v
+Client library in your application
+       |
+       v
+antd: separate background service
+       |
+       v
+Autonomi Network
+```
 
-The daemon defaults are:
+REST clients connect to `http://localhost:8082` by default. gRPC clients connect to `localhost:50051`. You can override these addresses when you create a client.
 
-- REST: `http://localhost:8082`
-- gRPC: `localhost:50051`
+## Common operations
 
-Bindings usually default to those same endpoints when you do not supply an override.
+Each implementation includes operations for these tasks:
 
-## Transport Split
+| Task | Typical operation |
+|------|-------------------|
+| Check connectivity | `health` |
+| Store public data | `dataPutPublic` or `data_put_public` |
+| Retrieve public data | `dataGetPublic` or `data_get_public` |
+| Store private data | `dataPut` or `data_put` |
+| Retrieve private data | `dataGet` or `data_get` |
+| Upload and download public files | `filePutPublic` / `fileGetPublic`, or snake_case equivalents |
+| Estimate storage cost | `dataCost`, `fileCost`, or language-specific equivalents |
+| Read the wallet balance | `walletBalance` or `wallet_balance` |
 
-- JavaScript and TypeScript are documented as REST-based
-- Python, Go, and Rust document both REST and gRPC support
-- other bindings vary by package and docs coverage
+Names follow each language's conventions, so exact capitalization varies by binding.
 
-Check the individual page before assuming a transport is available in your language.
+## Error handling
 
-## Discovery helpers
+The bindings map service failures to language-specific error types:
 
-Several bindings include daemon discovery helpers based on the `daemon.port` file written by `antd` on startup.
+| Status | Meaning |
+|--------|---------|
+| 400 | Invalid request parameters |
+| 402 | Payment required or insufficient funds |
+| 404 | Prepared upload or in-memory chunk not found |
+| 409 | Data already exists or version conflict |
+| 413 | Upload too large |
+| 500 | Internal service error; `antd v0.13.0` also reports a missing DataMap this way |
+| 502 | Network communication failure |
+| 503 | Service unavailable, such as an unconfigured wallet |
 
-Examples from the current packages:
-
-- JavaScript: `RestClient.autoDiscover()`
-- Python: `discover_daemon_url()` and `discover_grpc_target()`
-- Go: `NewClientAutoDiscover()`
-- Rust: `discover_daemon_url()` and `discover_grpc_target()`
-
-Some bindings use discovery only through explicit helper APIs rather than by default constructors.
-
-## Naming Differences
-
-The bindings use different entry points:
-
-| Language | Current entry point |
-|------|------|
-| JavaScript | `createClient()` or `new RestClient(...)` |
-| TypeScript | `createClient()` with exported types from the same `antd` package |
-| Python | `AntdClient()` / `AsyncAntdClient()` |
-| Go | `NewClient(...)` |
-| Rust | `Client::new(...)` from the `antd-client` crate |
-
-Use the package-specific page when you need exact constructors, install commands, or transport notes.
+A malformed address is an invalid request and returns status 400. `antd v0.13.0` has a known error-mapping defect: retrieving a valid DataMap address that is not stored returns status 500 over REST or `INTERNAL` over gRPC instead of a not-found response. Do not interpret every internal error as missing data; inspect the message and confirm the address.
 
 ## Related pages
 
-- [Python SDK](python.md)
-- [JavaScript SDK](javascript.md)
-- [TypeScript SDK](typescript.md)
-- [Rust SDK](rust.md)
-- [Go SDK](go.md)
-- [REST API](../rest-api.md)
+- [Choose a language binding](README.md)
+- [REST API Reference](../rest-api.md)
+- [Connect from Your Application](../../native/README.md) for SDKs that do not need a local daemon

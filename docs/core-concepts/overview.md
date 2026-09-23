@@ -33,21 +33,28 @@ This page introduces the concepts that matter most when you build on Autonomi.
 
 ## Storage model
 
-Autonomi stores data as immutable, content-addressed chunks. The developer-facing storage surfaces in this docs set are public data, private data, chunks, files, and DataMaps. Public workflows return an address that can be shared; private workflows return retrieval metadata that you keep client-side.
+When you upload a file, self-encryption splits it into chunks and encrypts them before they are stored on the Autonomi Network. Each chunk has an address derived from its contents and cannot be changed in place.
+
+Self-encryption also creates a **DataMap**: the information needed to find the chunks, decrypt them, and reassemble the original file. Public and private files use this same storage model. The difference is how the DataMap is handled:
+
+- **Public uploads** publish the DataMap and return an address. Share that address so others can retrieve the file.
+- **Private uploads** return the DataMap to you instead of publishing it. Keep it private and backed up; you need it to retrieve the file.
+
+Raw chunk operations let you store bytes directly when your application needs control over its own storage format. They do not apply self-encryption or create a DataMap for you.
 
 Read more in [Data Types](data-types.md).
 
 ## Keys, addresses, and DataMaps
 
-Wallet keys pay for writes, public addresses retrieve public data, and `DataMap` values are the critical retrieval material for private data.
+Wallet keys pay for writes, public addresses retrieve public data, and a `DataMap` provides the critical retrieval material for private data.
 
 Read more in [Keys, Addresses, and DataMaps](keys-addresses-and-datamaps.md).
 
 ## Self-encryption
 
-Before uploaded content is stored, it is encrypted and split into chunks. The `self_encryption` crate and the higher-level upload paths in `ant-sdk` and `ant-core` are responsible for producing the DataMap and chunk layout used later for retrieval.
+Data and file uploads use self-encryption to encrypt content, split it into chunks, and produce the `DataMap` used later for retrieval. Raw chunk operations are the exception: they store the bytes you supply and do not apply self-encryption for you.
 
-Read more in [Self-Encryption](self-encryption.md).
+Read more in [Self-encryption](self-encryption.md).
 
 ## Post-quantum cryptography
 
@@ -67,6 +74,6 @@ Start here depending on what you need next:
 
 - If you are building an application: [Data Types](data-types.md), then [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md)
 - If you need to understand wallets, public addresses, and private retrieval material: [Keys, Addresses, and DataMaps](keys-addresses-and-datamaps.md)
-- If you need to understand the encryption path: [Self-Encryption](self-encryption.md)
+- If you need to understand the encryption path: [Self-encryption](self-encryption.md)
 - If you need to understand upload costs and wallets: [Payment Model](payment-model.md), then [Estimate Costs and Handle Upload Payments](../guides/estimate-costs-and-handle-upload-payments.md)
 - If you need the security context: [Post-Quantum Cryptography](post-quantum-cryptography.md)

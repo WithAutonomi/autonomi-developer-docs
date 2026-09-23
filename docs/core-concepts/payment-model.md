@@ -40,7 +40,7 @@ Autonomi uses a pay-once storage model. You pay in Autonomi Network Token (ANT) 
 
 ## Why it matters
 
-You cannot treat uploads as fire-and-forget writes. The daemon, CLI, and native Rust library all require wallet context for paid storage operations, and they differ in where they expose cost estimation, wallet approval, and payment-mode control.
+You cannot treat uploads as fire-and-forget writes. [`antd`](../sdk/use-antd.md), the [CLI](../cli/use-the-cli.md), and [Direct Rust](../rust/README.md) all require wallet context for paid storage operations, and they differ in where they expose cost estimation, wallet approval, and payment-mode control.
 
 ## How it works
 
@@ -55,19 +55,21 @@ The tools use different wallet inputs:
 - `antd` uses `AUTONOMI_WALLET_KEY` for direct-wallet uploads
 - `ant` and `ant-core` use `SECRET_KEY` or an attached `Wallet`
 
-Without wallet configuration, write endpoints either fail or switch into an external-signer preparation flow.
+Without wallet configuration, direct-wallet write endpoints fail. External-signer preparation endpoints can collect quotes without giving `antd` custody of the wallet key.
 
-When you use the CLI or build in Rust with ant-core, quote collection and payment construction use on-chain market prices from the payment vault when preparing uploads. That keeps the client-side payment proofs aligned with the prices nodes verify on receipt.
+The OpenAPI description and `antd` runtime behavior are not fully aligned for public external-signer preparation. Follow [Use External Signers for Upload Payments](../sdk/how-to-guides/use-external-signers-for-upload-payments.md) for supported operations and known limitations before integrating this flow.
 
-### EVM network choices
+When you use the CLI or Direct Rust with `ant-core`, the client asks close peers for signed storage quotes, validates them, and uses them to construct the on-chain payment.
 
-The `ant` CLI exposes these EVM network values:
+### Ethereum Virtual Machine network choices
+
+The `ant` CLI exposes these Ethereum Virtual Machine (EVM) network values:
 
 - `arbitrum-one`
 - `arbitrum-sepolia`
 - `local`
 
-The daemon-side external-signer flow also exposes the RPC URL and payment contract addresses the signer needs to submit the transaction for the selected network.
+The `antd` external-signer flow also exposes the Remote Procedure Call (RPC) URL and payment contract addresses the signer needs to submit the transaction for the selected EVM network.
 
 ### Cost estimation
 
@@ -82,17 +84,17 @@ Those endpoints return a structured estimate with cost, file size, chunk count, 
 
 The supported payment modes are:
 
-| Mode | Current behavior |
+| Mode | Behavior |
 |------|------------------|
-| `auto` | Choose Merkle for larger batches and single payments otherwise |
+| `auto` | Choose Merkle batch payment for larger batches and single payments otherwise |
 | `merkle` | Force Merkle batch payment |
 | `single` | Force per-chunk payment |
 
-In `ant-core`, the Merkle threshold is `64` chunks.
+In `ant-core`, the Merkle batch payment threshold is `64` chunks.
 
 Nodes verify the payment proof that arrives with each write. That includes signature checks, on-chain payment verification, and record-level validation before content is accepted into the chunk store.
 
-Node-side storage pricing follows `BASELINE + K × (n / D)^2`, where `n` is the number of close records the node is already storing and `D` is a fixed divisor. That gives lightly loaded nodes a non-zero spam-barrier price and pushes larger uploads toward less-loaded close groups as the network fills.
+Node-side storage pricing follows `BASELINE + (n * n * K) / (D * D)`, where `n` is the `key_count` in the node's signed storage commitment, `K` is a fixed coefficient, and `D` is a fixed divisor. If no commitment is available, the node uses the non-zero baseline price. The client recomputes the expected price from the same committed key count before paying.
 
 ### What happens on retrieval
 
@@ -100,7 +102,7 @@ Downloads do not require a separate payment step. Payments are tied to storage w
 
 ## Practical example
 
-Two payment patterns show up across the daemon and direct-network interfaces:
+Two payment patterns show up across `antd` and the CLI:
 
 1. Estimate and upload through `antd`
 
@@ -126,7 +128,7 @@ SECRET_KEY=0x... ant \
   file upload my_data.bin --public --merkle
 ```
 
-In both examples, payment happens as part of the upload flow, but the daemon example exposes explicit cost-estimation endpoints while the CLI example emphasizes direct upload flags and wallet setup.
+In both examples, payment happens as part of the upload flow, but the `antd` example exposes explicit cost-estimation endpoints while the CLI example emphasizes direct upload flags and wallet setup.
 
 ## Related pages
 

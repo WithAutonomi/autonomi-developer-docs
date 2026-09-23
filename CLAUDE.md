@@ -136,12 +136,12 @@ On first mention in rendered prose, expand important acronyms when that helps a 
 - An agent reading any single page via llms.txt should understand the topic without needing other pages.
 - Link to related pages at the end, not inline as prerequisites.
 - When you mention another supported tool, route, or approach that is not explained on the current page, add an inline link to the relevant page if one exists.
-- Use the four primary interface labels consistently in navigation and overview pages: SDK, MCP, CLI, and Direct Rust.
+- Use supported interface labels consistently in navigation and overview pages; help readers choose by task rather than declaring one interface universally primary.
 - Keep Core Concepts tool-neutral and use `How-To Guides` for shared or cross-interface task pages.
 - Keep pages interface-pure unless they are explicitly comparison or chooser pages.
 - Use tabs for languages or equivalent interfaces within one interface, never for switching between interfaces.
 - In user-facing prose, name the specific tool or interface rather than using abstract words like `route` or `path`.
-- Inside each interface section in `SUMMARY.md`, use a landing page first and nest child pages beneath it. Add landing pages for How-To Guides or Reference when a section has enough pages to benefit from that extra layer, and omit empty groups.
+- Inside each interface section in `SUMMARY.md`, put the overview first; onboarding pages may be its peers rather than hidden beneath it. Group collection children beneath their How-To Guides or Reference landing page, and omit empty groups.
 - Getting Started and How-to pages must explain what tool or route they cover, why you would choose it, and where the alternatives live when multiple supported routes exist.
 - Explain a tool or interface before telling the reader to install, run, or configure it.
 - Titles should describe user outcomes or choices, not internal mechanisms, unless the mechanism name itself is the thing the page teaches.
@@ -347,7 +347,7 @@ Each page type has a required structure. Follow the template for the page type d
   verification_mode: current-merged-truth
 -->
 
-The [Language] SDK is a thin REST/gRPC client for the antd daemon.
+[Describe the released interface and whether it connects directly or uses a local service. Do not assume all language packages use antd.]
 
 ## Install
 
@@ -355,7 +355,7 @@ The [Language] SDK is a thin REST/gRPC client for the antd daemon.
 [install command]
 ```
 
-## Connect to the daemon
+## Connect
 
 ```[language]
 [import + client init]
@@ -381,7 +381,7 @@ The [Language] SDK is a thin REST/gRPC client for the antd daemon.
 
 ## Full API reference
 
-For all available endpoints, see the [REST API Reference](../rest-api.md).
+[Link to the reference for this interface. Use the REST or gRPC reference for antd clients, not for native packages with different APIs.]
 ```
 
 ---
