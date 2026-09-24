@@ -36,6 +36,8 @@ Install [Foundry](https://book.getfoundry.sh/getting-started/installation) and m
 
 For same-machine devnets or local testnets created outside `LocalDevnet`, set `ClientConfig { allow_loopback: true, ..ClientConfig::default() }` before `Client::connect`. Keep the default `false` when connecting to the Autonomi Network.
 
+On a host without working IPv6, set `ipv6: false` in `ClientConfig`; otherwise the client fails with `Failed to create dual-stack network nodes`. `LocalDevnet` has no equivalent option, so run its examples on a host with IPv6 support.
+
 ## Connect to the Autonomi Network
 
 ```rust
@@ -57,6 +59,8 @@ Set `ANT_BOOTSTRAP_PEER` to the address and port of one `quic` entry from the [b
 ```text
 Connected through <IP:PORT>
 ```
+
+`Client::connect` returns once the client starts, even if no bootstrap peer responds. An unreachable network surfaces on the first data operation, for example as a not-found error.
 
 To enable paid operations, attach a wallet:
 
@@ -176,7 +180,7 @@ Bound calls to `finalize_resume`. A persistent storage failure returns `Partial`
 | Type | Description |
 |------|-------------|
 | `ant_core::data::Client` | Main Autonomi Network client |
-| `ant_core::data::ClientConfig` | Quote, Merkle batch store (`merkle_store_timeout_secs`, 270 s default), and chunk retrieve (`chunk_get_timeout_secs`) timeouts; concurrency limits; loopback policy. Non-Merkle chunk PUT response timeout is set by an internal `STORE_RESPONSE_TIMEOUT` constant, not via this struct. |
+| `ant_core::data::ClientConfig` | Quote, Merkle batch store (`merkle_store_timeout_secs`, 270 s default), and chunk retrieve (`chunk_get_timeout_secs`) timeouts; concurrency limits; loopback policy; IPv6 socket mode (`ipv6`). Non-Merkle chunk PUT response timeout is set by an internal `STORE_RESPONSE_TIMEOUT` constant, not via this struct. |
 | `ant_core::data::PaymentMode` | `Auto`, `Merkle`, or `Single` |
 | `ant_core::data::DataMap` | Private retrieval map for uploaded data |
 | `ant_core::data::LocalDevnet` | Local development helper |
