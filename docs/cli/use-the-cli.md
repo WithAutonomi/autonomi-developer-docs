@@ -143,6 +143,10 @@ Use the same installation method for updates. See the [update reference](command
 
 **npm cannot find the platform executable**: Reinstall without `--omit=optional` or `--no-optional`; the CLI binary comes from an optional platform package.
 
+**Failed to create dual-stack network nodes**: The computer or container has no working IPv6. Add `--ipv4-only` before the subcommand, for example `ant --ipv4-only file download <ADDRESS> -o <FILE>`.
+
+**Not found after `found 0 peers`**: The CLI could not reach any bootstrap peer, so the address may still be correct. Check that your network allows outbound UDP, which the CLI uses to connect over QUIC.
+
 **Connection configuration errors**: The CLI includes built-in bootstrap peers, so npm does not need to create a `bootstrap_peers.toml` file for normal use. A custom config file or explicit peer settings take precedence; check those if you have configured them.
 
 ## Next steps

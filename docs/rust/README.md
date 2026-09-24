@@ -23,7 +23,7 @@ To store and retrieve data in Rust, use a client library that calls the local `a
 
 Use `antd-client` when you want a separate background service, `antd`, to handle network access. Your application calls the Rust library, which sends requests to `antd` over REST or gRPC.
 
-The Rust client library is included in the `ant-sdk v0.12.1` release source but is not published on crates.io. Use it only from a checkout pinned to the `ant-sdk v0.12.1` release commit. If you need an obtainable crates.io dependency, choose Direct Rust with `ant-core 0.8.1`.
+The Rust client library is included in the `ant-sdk v0.12.1` release source but is not published on crates.io. Use it only from a checkout pinned to the `ant-sdk v0.12.1` release commit. If you need an obtainable crates.io dependency, choose Direct Rust with `ant-core 0.10.0`.
 
 Choose `antd-client` if you want:
 
@@ -53,9 +53,7 @@ See [Build with Direct Rust](build-directly-in-rust.md) and [Rust Library Refere
 | Runs in | your application | your application |
 | Network access | through `antd` | direct |
 | Good fit | network access managed by a separate service | network access managed within your application |
-| Installation | Pinned `ant-sdk v0.12.1` source checkout | `ant-core 0.8.1` from crates.io |
-
-The local-development examples use `ant-core 0.8.0`, separately from the direct-network dependency. Keep the versions shown in those examples together rather than substituting `0.8.1`.
+| Installation | Pinned `ant-sdk v0.12.1` source checkout | `ant-core 0.10.0` from crates.io |
 
 ## Upstream sources
 

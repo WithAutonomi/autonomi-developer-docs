@@ -35,7 +35,7 @@ If you are only building read-only features, you do not need any of this wallet 
 
 ## Prerequisites
 
-- The `antd v0.13.0` binary or `ant-cli v0.3.6`
+- The `antd v0.13.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
 - A hex-encoded private key you control when you are not using a local devnet
 - A low-value wallet suitable for the environment you selected
 - `curl` for the `antd` wallet checks

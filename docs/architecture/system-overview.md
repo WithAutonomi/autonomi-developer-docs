@@ -70,11 +70,11 @@ Application
   +-- Native library --> bundled ant-core 0.8.1 --> client saorsa-core    |
   |                                                + saorsa-transport --+
   |                                                                      |
-  +-- Direct Rust --> ant-core 0.8.1 --> client saorsa-core              | QUIC
-  |                                      + saorsa-transport -------------+
+  +-- Direct Rust --> ant-core 0.10.0 --> client saorsa-core             | QUIC
+  |                                       + saorsa-transport ------------+
   |                                                                      |
-  +-- CLI --> ant --> ant-core 0.8.1 --> client saorsa-core              |
-                                         + saorsa-transport -------------+
+  +-- CLI --> ant --> ant-core 0.10.0 --> client saorsa-core             |
+                                          + saorsa-transport ------------+
                                                                          |
                                                                          v
                                                                  remote ant-node
@@ -97,7 +97,7 @@ The developer interfaces covered by these guides are:
 
 Both the `antd` client libraries and the native libraries run inside your application. An `antd` client library sends requests to a separate background service that handles the network connection; a native library handles that connection within your application. You can also call `antd` without a client library, for example by sending HTTP requests to its REST API.
 
-These interfaces target the same Autonomi Network. Native libraries, Direct Rust, and the CLI connect without `antd`; choose according to your application's requirements. `antd 0.13.0` ships `ant-core 0.8.0`; native SDK packages `0.0.9`, `ant-cli 0.3.6`, and the published Direct Rust package use `ant-core 0.8.1`.
+These interfaces target the same Autonomi Network. Native libraries, Direct Rust, and the CLI connect without `antd`; choose according to your application's requirements. `antd 0.13.0` ships `ant-core 0.8.0`; native SDK packages `0.0.9` use `ant-core 0.8.1`; `ant-cli 0.3.8` and the Direct Rust examples use `ant-core 0.10.0`.
 
 The native libraries, `antd`, the CLI, and Direct Rust use `ant-core` on the client side. For normal data operations, `ant-core` runs a client-mode `saorsa-core` peer and connects to remote storage nodes over `saorsa-transport`; it does not route requests through a local `ant-node`. The optional `ant-core` devnet feature links `ant-node` only to run a local test network.
 
@@ -109,7 +109,7 @@ The `ant-node` crate builds on `saorsa-core::P2PNode`. It adds configuration, ch
 
 `ant-node` accepts chunks as its storage data type.
 
-With its default settings, `ant-node 0.18.1` records but does not penalize a peer for failing to hold a chunk for which it belongs to the close group. This does not disable storage auditing: failed audits of a peer's signed storage commitment still incur penalties, as do replication fetch responses reporting storage-read faults. A missing chunk and a failed storage read are different outcomes. The `ANT_SUSPEND_UNHELD_CHUNK_PENALTY` environment override can change the missing-chunk penalty policy.
+With its default settings, `ant-node 0.20.0` records but does not penalize a peer for failing to hold a chunk for which it belongs to the close group. This does not disable storage auditing: failed audits of a peer's signed storage commitment still incur penalties, as do replication fetch responses reporting storage-read faults. A missing chunk and a failed storage read are different outcomes. The `ANT_SUSPEND_UNHELD_CHUNK_PENALTY` environment override can change the missing-chunk penalty policy.
 
 ## Routing and transport
 
@@ -140,7 +140,7 @@ For data and file uploads, client-side self-encryption turns content into a `Dat
 - [ant-protocol](https://github.com/WithAutonomi/ant-protocol)
 - [self_encryption](https://github.com/WithAutonomi/self_encryption)
 
-Client and node releases have separate dependency graphs. They share `saorsa-core 0.27.3` and `saorsa-transport 0.36.3`, but `antd 0.13.0` uses an older `ant-core` and `ant-protocol` than the CLI. See [Source Repositories](../reference/source-repositories.md) for exact package identities and source-identity limitations.
+Client and node releases have separate dependency graphs. `ant-cli 0.3.8` and `ant-node 0.20.0` share `saorsa-core 0.28.0`, `saorsa-transport 0.37.0`, and `ant-protocol 3.0.0`; `antd 0.13.0` uses older `ant-core`, `ant-protocol`, `saorsa-core`, and `saorsa-transport` versions. See [Source Repositories](../reference/source-repositories.md) for exact package identities and source-identity limitations.
 
 ## Related pages
 

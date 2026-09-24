@@ -19,7 +19,7 @@ Set up an isolated local Autonomi Network with `ant-dev 0.1.0` from the `ant-sdk
 
 `ant-dev 0.1.0` starts `ant-devnet`, provisions local EVM contracts and a funded test wallet, and launches `antd`. Use this source-only workflow only for isolated local testing. Its teardown command performs broad process termination and data deletion, so use a disposable virtual machine or similarly isolated environment rather than a workstation that holds other Autonomi data or runs other Anvil processes.
 
-This guide uses `ant-sdk v0.12.0` with `ant-node v0.17.1`. Keep these versions together rather than substituting the independently released `antd 0.13.0` or `ant-node 0.18.1`. Before depending on the local environment, complete every verification step below in your disposable environment.
+This guide uses `ant-sdk v0.12.0` with `ant-node v0.17.1`. Keep these versions together rather than substituting the independently released `antd 0.13.0` or `ant-node 0.20.0`. Before depending on the local environment, complete every verification step below in your disposable environment.
 
 ## Prerequisites
 

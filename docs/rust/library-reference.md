@@ -12,21 +12,21 @@
 
 ## Install
 
-For direct access to the Autonomi Network, use the released crate without local-development dependencies:
+`ant-core 0.10.0` requires Rust 1.91 or later. For direct access to the Autonomi Network, use the released crate without local-development dependencies:
 
 ```toml
 [dependencies]
-ant-core = "=0.8.1"
+ant-core = "=0.10.0"
 tokio = { version = "1", features = ["full"] }
 ```
 
 Retain your application's `Cargo.lock`: an exact `ant-core` version does not pin every dependency it uses.
 
-The local examples below use `ant-core 0.8.0`. The `devnet` feature enables `LocalDevnet`; `ant-core 0.8.1` depends on `ant-node 0.18.1` for this feature. Keep the local examples on the version shown rather than substituting the direct-network dependency above.
+The local examples below also enable the `devnet` feature, which provides `LocalDevnet` and adds `ant-node 0.20.0` as a dependency:
 
 ```toml
 [dependencies]
-ant-core = { version = "=0.8.0", features = ["devnet"] }
+ant-core = { version = "=0.10.0", features = ["devnet"] }
 bytes = "1"
 tempfile = "3"
 tokio = { version = "1", features = ["full"] }
@@ -52,7 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-Set `ANT_BOOTSTRAP_PEER` to one `peers` value from the [bootstrap list shipped with `ant-core 0.8.1`](https://github.com/WithAutonomi/ant-client/blob/dbc01ce8fdbdfe9ac4d064d35f36b4684bf6a616/resources/bootstrap_peers.toml), in `IP:PORT` form. Expected output:
+Set `ANT_BOOTSTRAP_PEER` to the address and port of one `quic` entry from the [bootstrap list shipped with `ant-core 0.10.0`](https://github.com/WithAutonomi/ant-client/blob/9112d683d8dbecffd8ad437546453f9f52310964/ant-core/resources/bootstrap_peers.toml), in `IP:PORT` form. An entry written as `/ip4/<IP>/udp/<PORT>/quic` becomes `<IP>:<PORT>`. Expected output:
 
 ```text
 Connected through <IP:PORT>
@@ -261,7 +261,7 @@ Enable the `ant-core` `devnet` feature before you use this section:
 
 ```toml
 [dependencies]
-ant-core = { version = "=0.8.0", features = ["devnet"] }
+ant-core = { version = "=0.10.0", features = ["devnet"] }
 ```
 
 Confirm that `anvil --version` succeeds before running the example.

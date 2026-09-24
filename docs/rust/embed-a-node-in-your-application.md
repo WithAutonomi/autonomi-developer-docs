@@ -12,7 +12,7 @@ Use the `ant-node` API when your Rust application needs to own a node runtime di
 
 ## Prerequisites
 
-- Rust toolchain
+- Rust 1.91 or later
 - A Rust application that can own an async node task for the life of the process
 - A rewards address for production node operation
 
@@ -24,11 +24,11 @@ Use the published `ant-node` crate from crates.io:
 
 ```toml
 [dependencies]
-ant-node = "=0.18.1"
+ant-node = "=0.20.0"
 tokio = { version = "1", features = ["full"] }
 ```
 
-The crate enables its `logging` feature by default. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
+The crate enables its `logging` and `webrtc-direct` features by default. With `webrtc-direct`, the node also starts a WebRTC Direct listener for browser clients on a UDP port chosen by the operating system; set `config.webrtc_direct.enabled = false` if your application does not serve browsers. If you opt into `default-features = false`, add `features = ["logging"]` explicitly when you still want tracing output from the node runtime.
 
 Test startup, events, and shutdown in an isolated environment before embedding the node in your application.
 
@@ -101,6 +101,7 @@ Expected output includes `Started` after the node begins running and `ShuttingDo
 - `payment.rewards_address`
 - `payment.evm_network`
 - `storage`
+- `webrtc_direct`
 - `close_group_cache_dir`
 - `max_message_size`
 - `log_level`
@@ -122,6 +123,8 @@ The node is running when `node.run().await?` starts successfully, the runtime bi
 **Missing rewards configuration with storage enabled in development mode**: Development mode relaxes network restrictions, but storage initialization still needs `payment.rewards_address`. Configure it or disable storage for a non-storing node.
 
 **Multiple identities under the default root**: Use an explicit `root_dir` if you do not want identity auto-discovery under the default node directory.
+
+**Failed to create dual-stack network nodes**: The host has no working IPv6. Set `config.ipv4_only = true` before building the node.
 
 **Node task blocks the rest of the app**: Put your application orchestration around the async node task instead of expecting `run()` to return immediately.
 

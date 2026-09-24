@@ -10,11 +10,11 @@
 
 Choose Direct Rust when you want your application to talk to the Autonomi Network without using `antd`. This interface gives your application direct access to networking, uploads, and downloads through `ant-core`.
 
-This guide uses `ant-core 0.8.0` for local development. Keep that version for this example: `ant-core 0.8.1` uses a different node dependency. See the [Rust Library Reference](library-reference.md) for the direct-network dependency.
+This guide uses `ant-core 0.10.0` with its `devnet` feature for local development. See the [Rust Library Reference](library-reference.md) for the direct-network dependency.
 
 ## Prerequisites
 
-- Rust toolchain
+- Rust 1.91 or later
 - [Foundry](https://book.getfoundry.sh/getting-started/installation) with `anvil` available on `PATH`
 - A new or existing Rust application
 
@@ -36,7 +36,7 @@ Update `Cargo.toml`:
 
 ```toml
 [dependencies]
-ant-core = { version = "=0.8.0", features = ["devnet"] }
+ant-core = { version = "=0.10.0", features = ["devnet"] }
 bytes = "1"
 tokio = { version = "1", features = ["full"] }
 ```

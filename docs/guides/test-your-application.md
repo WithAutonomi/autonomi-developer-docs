@@ -35,7 +35,7 @@ The concrete examples use the Python `antd` client from the pinned `ant-sdk v0.1
 
 The local workflow is limited to disposable, isolated environments. Its `ant dev stop` command broadly kills matching Anvil processes and deletes shared paths under `~/.local/share/ant` on non-Windows systems. Run integration tests only in a disposable runner or virtual machine, and dispose of that environment after the test.
 
-Use `ant-sdk v0.12.0` and `ant-node v0.17.1` together for this integration setup, rather than substituting the independently released `antd 0.13.0` or `ant-node 0.18.1`. Keep it separate from newer client installations and complete the isolated test before depending on it.
+Use `ant-sdk v0.12.0` and `ant-node v0.17.1` together for this integration setup, rather than substituting the independently released `antd 0.13.0` or `ant-node 0.20.0`. Keep it separate from newer client installations and complete the isolated test before depending on it.
 
 ## Steps
 
