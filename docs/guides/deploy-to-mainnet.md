@@ -21,11 +21,10 @@ This guide covers read-only startup, wallet inspection, cost preflight, and opti
 
 ## Prerequisites
 
-- The `antd v0.13.0` binary or `ant-cli v0.3.6`
+- The `antd v0.13.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
 - `curl`, Python 3, and a base64 command-line utility
 - A process supervisor that keeps `antd` bound to loopback or another protected interface
 - For wallet-backed `antd`: a low-value production wallet funded with ANT and gas
-- For the direct CLI: the `ant-cli v0.3.6` installer bootstrap configuration or real bootstrap peers from an approved source
 
 The `antd` examples below use REST directly. If you use a [language client](../sdk/reference/language-bindings/overview.md), follow its setup instructions and check compatibility with `antd v0.13.0`.
 
@@ -217,7 +216,7 @@ The storage estimate samples at most five chunk addresses, the gas figure is heu
 
 ### 7. Check the direct CLI separately
 
-The `ant-cli v0.3.6` installer supplies a bootstrap configuration. Do not override it with example IP addresses. A source-built CLI needs real bootstrap peers from an approved source.
+The CLI includes built-in bootstrap peers. You do not need a separate connection file for the npm installation; if you override the defaults, use real network contacts rather than example IP addresses.
 
 ```bash
 #!/usr/bin/env bash

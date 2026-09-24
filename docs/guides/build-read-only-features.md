@@ -36,7 +36,7 @@ This keeps retrieval-only tools, dashboards, and content browsers separate from 
 
 - A 64-character public address, or a hex-encoded `DataMap` for private data
 - For REST: the `antd v0.13.0` binary running on `http://127.0.0.1:8082`
-- For CLI: `ant-cli v0.3.6` with a valid bootstrap configuration
+- For CLI: [ant installed](../cli/use-the-cli.md#install-the-cli) using npm or your operating system's installer
 - A known copy of the expected content if you want to verify its bytes
 
 You do not need `AUTONOMI_WALLET_KEY`, `SECRET_KEY`, ANT, gas, or token approval for these retrieval operations.
@@ -100,7 +100,7 @@ The buffered endpoints, `GET /v1/data/public/{address}` and `POST /v1/data/get`,
 
 ### 3. Retrieve a file with the CLI
 
-The `ant-cli v0.3.6` installer writes `bootstrap_peers.toml` to the standard `ant` configuration directory. If you built the CLI from source, configure real bootstrap peers before using this command. Do not replace that configuration with example IP addresses.
+The CLI includes built-in bootstrap peers, so no separate connection file is required for normal use. If you supply a custom `bootstrap_peers.toml` or explicit peer settings, use real network contacts rather than example IP addresses.
 
 Public retrieval:
 
@@ -165,7 +165,7 @@ Downloaded content matches the expected file
 
 **500 Internal Server Error for missing data**: `antd v0.13.0` reports an absent public `DataMap` as `INTERNAL_ERROR` instead of not found. Check that the address identifies stored public data before treating other 500 responses as retryable service failures.
 
-**No bootstrap peers**: Restore the `ant-cli v0.3.6` installer's `bootstrap_peers.toml` or provide real bootstrap peers from an approved source.
+**Connection configuration errors**: Check custom bootstrap files or explicit peer settings first. Normal CLI use does not require a separate config file; if you selected a local-development manifest, follow that environment's setup instead.
 
 **Private retrieval without a DataMap**: Private content requires the caller-held `DataMap`, even though the storage payment has already happened.
 

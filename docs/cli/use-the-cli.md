@@ -14,13 +14,21 @@ The command is `ant`. Start with a free download; you do not need a wallet or to
 
 ## Install the CLI
 
-Choose your operating system. The installer adds `ant` and its connection settings.
+Choose an installation method. Use npm if you have Node.js, or use the installer for your operating system.
 
 {% tabs %}
+{% tab title="npm" %}
+With [Node.js 18 or later](https://nodejs.org/en/download), run:
+
+```sh
+npm install -g @withautonomi/ant
+```
+
+This installs the CLI for your platform on macOS, Linux, or Windows. Keep npm's optional dependencies enabled; they contain the executable.
+{% endtab %}
 {% tab title="Linux and macOS" %}
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh | bash
-ant --version
 ```
 
 {% endtab %}
@@ -29,7 +37,6 @@ Run in PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.ps1 | iex
-ant --version
 ```
 
 The installer adds `ant` to your user PATH, the command search path. If an already-open terminal cannot find it, open a new terminal.
@@ -114,11 +121,29 @@ On success, the CLI prints a public address and upload details. Keep the address
 
 For private storage, omit `--public`. The CLI saves a local DataMap file and prints its path. Protect and back up that file: it lets you retrieve the data. See [private-file retrieval](command-reference.md#download-a-file) for the download command.
 
+## Update the CLI
+
+If you installed with npm:
+
+```sh
+npm update -g @withautonomi/ant
+```
+
+For installations made with the shell or PowerShell installer:
+
+```sh
+ant update
+```
+
+Use the same installation method for updates. See the [update reference](command-reference.md#update-command) for channel options.
+
 ## Common errors
 
 **Command not found**: Use the installer's printed destination in your command search path, or reopen your terminal after Windows installation.
 
-**No bootstrap peers**: The installer supplies a `bootstrap_peers.toml` connection file but preserves an existing copy. For manual installation, follow the configuration instructions supplied with your [CLI release](https://github.com/WithAutonomi/ant-client/releases/latest).
+**npm cannot find the platform executable**: Reinstall without `--omit=optional` or `--no-optional`; the CLI binary comes from an optional platform package.
+
+**Connection configuration errors**: The CLI includes built-in bootstrap peers, so npm does not need to create a `bootstrap_peers.toml` file for normal use. A custom config file or explicit peer settings take precedence; check those if you have configured them.
 
 ## Next steps
 

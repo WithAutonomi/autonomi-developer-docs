@@ -624,7 +624,15 @@ ant node reset --force
 
 **Command:** `ant update`
 
-Checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
+For installations made from release downloads or the shell/PowerShell installers, checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
+
+For npm installations, use:
+
+```sh
+npm update -g @withautonomi/ant
+```
+
+`ant update` does not replace an npm-managed executable. When an update is available or you pass `--force`, it directs you to npm instead; if the version is already current, it reports that no update is needed. The channel and replacement options below apply to installations managed by `ant update`.
 
 **Parameters:**
 

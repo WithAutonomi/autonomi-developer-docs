@@ -89,7 +89,13 @@ For the skill's source, updates, and issues, see the [Autonomi skill repository]
 
 ## Use the CLI
 
-The command-line interface (CLI), `ant`, is the tool the skill uses for downloads, uploads, wallet management, and node operations. Installing the skill adds instructions, not the CLI executable. Let your agent follow the skill to install it, or follow [Use the CLI](../cli/use-the-cli.md) to install and use it yourself.
+The command-line interface (CLI), `ant`, is the tool the skill uses for downloads, uploads, wallet management, and node operations. Installing the skill adds instructions, not the CLI executable. Let your agent install it, or run this with [Node.js 18 or later](https://nodejs.org/en/download):
+
+```sh
+npm install -g @withautonomi/ant
+```
+
+For other installation methods and a first download, see [Use the CLI](../cli/use-the-cli.md). Skill updates and CLI updates are separate; update an npm-installed CLI with `npm update -g @withautonomi/ant`.
 
 You do not need a wallet to download public data. Uploads require storage payment; keep wallet setup separate from your first read.
 
