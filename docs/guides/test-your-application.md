@@ -151,6 +151,7 @@ set -euo pipefail
 
 WORK_DIR="$HOME/autonomi-local"
 source "$WORK_DIR/.venv/bin/activate"
+python -m pip install pytest
 pytest -q "$WORK_DIR/test_integration.py"
 ```
 
@@ -164,7 +165,7 @@ This test uses local test funds and can automatically grant the local payment va
 
 ### 5. Run bundled smoke tests
 
-Inside the pinned `ant-sdk` checkout and active virtual environment, `ant-dev` provides these example runners:
+From the pinned `ant-sdk` checkout, with the local environment's virtual environment active, `ant-dev` provides these example runners:
 
 `connect` is read-only. `data` estimates cost, performs a local paid upload, and reads the data back. Its first payment can also grant an unlimited allowance, so run it only against the isolated local environment.
 
@@ -172,7 +173,9 @@ Inside the pinned `ant-sdk` checkout and active virtual environment, `ant-dev` p
 #!/usr/bin/env bash
 set -euo pipefail
 
-source .venv/bin/activate
+WORK_DIR="$HOME/autonomi-local"
+source "$WORK_DIR/.venv/bin/activate"
+cd "$WORK_DIR/ant-sdk"
 ant dev example connect
 ant dev example data
 ```
