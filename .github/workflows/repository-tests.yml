@@ -27,9 +27,8 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        # Pinned literally rather than installed from scripts/requirements.txt,
-        # matching sweep-sha-reachability.yml: the requirements file is
-        # PR-controlled.
+        # Same literal pin as sweep-sha-reachability.yml; keep it in step with
+        # scripts/requirements.txt.
         run: pip install 'PyYAML>=6,<7'
 
       - name: Run governance, documentation-guard, and scanner tests
