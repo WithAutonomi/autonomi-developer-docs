@@ -32,7 +32,7 @@ mkdir autonomi-read
 cd autonomi-read
 ```
 
-If you already have a project from another SDK guide, open its directory instead. Keep using that directory for installation, the example file, and the run command. Choose the same language tab in this step and the download step. These installations add application clients, not the antd executable.
+If you already have a project from another SDK guide, open its directory instead. Keep using that directory for installation, the example file, and the run command. Choose the same language tab in this step and the download step. These installations add application clients, not the antd executable. The Python and Node.js examples use `antd` client 0.2 with `antd` 0.14; the Rust example uses the `v0.12.1` client source.
 
 {% tabs %}
 {% tab title="cURL" %}
@@ -273,7 +273,7 @@ Your application requested existing public content from the local service. `antd
 |---|---|
 | Connection refused or failed to connect | Check the first terminal: antd must still be running on `http://localhost:8082`. Wait for its API-listening message before retrying. A healthy local API does not guarantee that every public address is retrievable. |
 | File already exists, `EEXIST`, or an output-name warning | Choose a new output filename in the example. The programs preserve your existing file. |
-| `500 INTERNAL_ERROR` during retrieval | A missing public DataMap can return this error rather than not-found (or `INTERNAL` over gRPC). Inspect the error message and confirm the public data address with its publisher; not every internal error means missing data. See [REST API errors](reference/rest-api.md) for more detail. |
+| `404 NOT_FOUND` during retrieval | No public DataMap was found at the address (`NOT_FOUND` over gRPC). Confirm the address with its publisher. If `/health` shows no connected peers, restore connectivity first: without peers, a lookup can also report not found. See [REST API errors](reference/rest-api.md) for more detail. |
 
 ## Next steps
 

@@ -15,13 +15,13 @@
   verification_mode: current-merged-truth
 -->
 
-Use the `antd v0.13.0` REST API to inspect a wallet, request a sampled upload estimate, and understand the approval and payment-mode choices before an upload.
+Use the `antd v0.14.0` REST API to inspect a wallet, request a sampled upload estimate, and understand the approval and payment-mode choices before an upload.
 
 The examples use cURL to keep payment requests independent of binding-specific behavior. If you use a daemon-backed [SDK binding](../sdk/reference/language-bindings/overview.md), follow its installation instructions and test it against your target environment.
 
 ## Prerequisites
 
-- The `antd v0.13.0` binary running on `http://127.0.0.1:8082`
+- The `antd v0.14.0` binary running on `http://127.0.0.1:8082`
 - `curl` and Python 3 for the response checks below
 - For wallet endpoints: `AUTONOMI_WALLET_KEY` configured when starting `antd`
 - For public EVM environments: a funded wallet and the built-in `arbitrum-one` or `arbitrum-sepolia` preset
@@ -89,14 +89,14 @@ The estimate is not a quote for the complete public operation:
 
 - storage pricing is extrapolated from at most five sampled chunk addresses
 - `estimated_gas_cost_wei` is an advisory heuristic, not a live gas-oracle result
-- `/v1/data/cost` counts the encrypted data chunks but not the additional paid `DataMap` storage performed by `POST /v1/data/public`
+- `/v1/data/cost` counts the encrypted data chunks but not the additional paid `DataMap` storage performed by `POST /v1/data/public`, whose `chunks_stored` includes that DataMap chunk
 - the final payment can differ because stored-chunk availability and prices can change
 
 Do not use this response as a maximum charge or an exact balance requirement.
 
 ### 3. Estimate a public file
 
-For a file on the same machine as `antd`, `/v1/files/cost` accepts `is_public`. `antd v0.13.0` approximates one additional `DataMap` chunk in this estimate.
+For a file on the same machine as `antd`, `/v1/files/cost` accepts `is_public`. `antd v0.14.0` approximates one additional `DataMap` chunk in this estimate. `POST /v1/files/public` pays for the data chunks and the DataMap chunk in one batch, so its `chunks_stored`, `storage_cost_atto`, and `gas_cost_wei` also include the DataMap chunk.
 
 ```bash
 #!/usr/bin/env bash
@@ -171,7 +171,7 @@ For the no-spend portion of this guide, confirm that the cost response contains 
 
 **400 Bad Request**: Check the base64 payload and use `auto`, `merkle`, or `single` for `payment_mode`.
 
-**Binding import resolves to the wrong package**: Do not install `antd` from npm; that name belongs to Ant Design. Rust `antd-client` is absent from crates.io. Follow the [language-specific installation instructions](../sdk/reference/language-bindings/overview.md) instead of assuming a package name or version, or use cURL.
+**Binding import resolves to the wrong package**: Do not install `antd` from npm; that name belongs to Ant Design. The pub.dev package named `antd` is also unrelated; the Dart client is `antd_client`. Rust `antd-client` is absent from crates.io. Follow the [language-specific installation instructions](../sdk/reference/language-bindings/overview.md) instead of assuming a package name or version, or use cURL.
 
 ## Next steps
 

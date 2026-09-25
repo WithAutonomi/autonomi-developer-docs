@@ -91,8 +91,8 @@ ant-keygen verify \
 
 ## Packages and tools
 
-- [`saorsa-pqc 0.5.2`](https://crates.io/crates/saorsa-pqc/0.5.2) ships with `ant-cli 0.3.8` and `ant-node 0.20.0`; [`saorsa-pqc 0.5.1`](https://crates.io/crates/saorsa-pqc/0.5.1) ships with `antd 0.13.0`
-- [`saorsa-transport 0.37.0`](https://crates.io/crates/saorsa-transport/0.37.0) ships with `ant-cli 0.3.8` and `ant-node 0.20.0`; [`saorsa-transport 0.36.3`](https://crates.io/crates/saorsa-transport/0.36.3) ships with `antd 0.13.0`
+- [`saorsa-pqc 0.5.2`](https://crates.io/crates/saorsa-pqc/0.5.2) ships with `antd 0.14.0`, `ant-cli 0.3.8`, and `ant-node 0.20.0`
+- [`saorsa-transport 0.37.0`](https://crates.io/crates/saorsa-transport/0.37.0) ships with `antd 0.14.0`, `ant-cli 0.3.8`, and `ant-node 0.20.0`
 - [`ant-keygen v0.1.0`](https://github.com/WithAutonomi/ant-keygen/releases/tag/v0.1.0)
 
 ## Related pages

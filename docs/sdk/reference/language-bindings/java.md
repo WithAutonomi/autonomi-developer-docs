@@ -118,12 +118,12 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalException` for this behavior. The client source is pinned independently to `v0.12.1`.
+`antd 0.14.0` reports a valid address with no stored data as not found. Handle `NotFoundException` for this case. The client source is pinned independently to `v0.12.1`.
 
 ```java
 import com.autonomi.antd.AntdClient;
 import com.autonomi.antd.errors.AntdException;
-import com.autonomi.antd.errors.InternalException;
+import com.autonomi.antd.errors.NotFoundException;
 
 public class HandleErrors {
     public static void main(String[] args) throws Exception {
@@ -131,8 +131,8 @@ public class HandleErrors {
 
         try (var client = new AntdClient()) {
             client.dataGetPublic(missingAddress);
-        } catch (InternalException exception) {
-            System.out.println("Missing data returned an internal error");
+        } catch (NotFoundException exception) {
+            System.out.println("No data is stored at that address");
         } catch (AntdException exception) {
             System.out.println(exception.getMessage());
         }
@@ -143,7 +143,7 @@ public class HandleErrors {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
 
 ## Full API reference

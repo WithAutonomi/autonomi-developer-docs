@@ -25,7 +25,7 @@ The shell setup commands on this page use **Bash on macOS or Linux**, not PowerS
 
 Choose one tab. If you followed [Retrieve Data from the Network](retrieve-data-from-the-network.md), reuse that project and its installed client; do not create another project or reinstall it. Otherwise, open a working directory for your application and follow the selected setup.
 
-These commands install a **client library**, not the antd executable. Other supported languages have [language-specific references](reference/language-bindings/overview.md).
+These commands install a **client library**, not the antd executable. Other supported languages have [language-specific references](reference/language-bindings/overview.md). The Python and Node.js examples use `antd` client 0.2 with `antd` 0.14; the Rust example uses the `v0.12.1` client source.
 
 {% tabs %}
 {% tab title="cURL" %}
@@ -113,7 +113,7 @@ exec ./antd --rest-addr 127.0.0.1:8082 --grpc-addr 127.0.0.1:50051
 
 Leave that terminal running and return to your application directory in another terminal. Startup identifies REST port `8082`, gRPC port `50051`, and network mode `default`. Keep the service local: antd has no built-in API authentication.
 
-Do not add individual Ethereum Virtual Machine (EVM) overrides to this public-network setup. In antd 0.13.0, any of `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS` selects custom payment encoding that mainnet storage nodes can reject **after funds have been spent**. Even a custom RPC URL is not a safe substitute for the built-in preset.
+Do not add individual Ethereum Virtual Machine (EVM) overrides to this public-network setup. In antd 0.14.0, any of `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS` selects custom payment encoding that mainnet storage nodes can reject **after funds have been spent**. Even a custom RPC URL is not a safe substitute for the built-in preset.
 
 Follow [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) to inspect the configured wallet address, ANT balance, and gas balance before uploading. A successful `/health` response means the API responds; `write_ready` measures connectivity, not funds or guaranteed storage. If you want to keep the signing key outside antd, use [external signers](how-to-guides/use-external-signers-for-upload-payments.md) instead of the paid examples below.
 

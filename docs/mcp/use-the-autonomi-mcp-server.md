@@ -23,7 +23,7 @@ Run the installation from a directory without an existing `ant-sdk` folder. If y
 Run these commands to install the server and make it available across your Claude Code projects:
 
 ```bash
-git clone --branch v0.13.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
+git clone --branch v0.14.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
 uv tool install ./ant-sdk/antd-mcp --with "./ant-sdk/antd-py[rest]" &&
 claude mcp add -s user antd-autonomi -- antd-mcp
 ```
@@ -35,7 +35,7 @@ Open a new Claude Code session in the project where you want to use the tools.
 Install the server:
 
 ```bash
-git clone --branch v0.13.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
+git clone --branch v0.14.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
 uv tool install ./ant-sdk/antd-mcp --with "./ant-sdk/antd-py[rest]"
 ```
 
@@ -59,7 +59,7 @@ Open Cursor's MCP settings to check that `antd-autonomi` is enabled. See [Cursor
 Install the server:
 
 ```bash
-git clone --branch v0.13.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
+git clone --branch v0.14.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git &&
 uv tool install ./ant-sdk/antd-mcp --with "./ant-sdk/antd-py[rest]"
 ```
 

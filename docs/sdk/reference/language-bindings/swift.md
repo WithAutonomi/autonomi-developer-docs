@@ -126,7 +126,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client source is pinned independently to `v0.12.1`.
+`antd 0.14.0` reports a valid address with no stored data as not found. Handle `NotFoundError` for this case. The client source is pinned independently to `v0.12.1`.
 
 ```swift
 import Foundation
@@ -140,8 +140,8 @@ struct HandleErrors {
 
         do {
             _ = try await client.dataGetPublic(address: missingAddress)
-        } catch is InternalError {
-            print("Missing data returned an internal error")
+        } catch is NotFoundError {
+            print("No data is stored at that address")
         } catch let error as AntdError {
             print(error.message)
         } catch {
@@ -154,7 +154,7 @@ struct HandleErrors {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
 
 ## Full API reference

@@ -29,12 +29,12 @@ Use Terminal on a Mac with Apple Silicon. The prebuilt macOS executable is ARM64
 
 ```bash
 set -euo pipefail
-mkdir antd-0.13.0
-cd antd-0.13.0
+mkdir antd-0.14.0
+cd antd-0.14.0
 curl --fail --location --show-error \
-  https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/antd-darwin-arm64 \
+  https://github.com/WithAutonomi/ant-sdk/releases/download/v0.14.0/antd-darwin-arm64 \
   --output antd
-printf '2998b2e67f1d036b2d1307ec837f297c503f0303f37d7c5fbac82561b297c3cb  antd\n' | shasum -a 256 -c -
+printf '6175801e60018518a6d9c3b5d728364f3d0970e22304cef182ca3964eef7fc26  antd\n' | shasum -a 256 -c -
 chmod u+x antd
 ./antd --version
 ```
@@ -48,18 +48,18 @@ set -euo pipefail
 case "$(uname -m)" in
   x86_64)
     ASSET=antd-linux-amd64
-    SHA256=55c95f20e7ed75c82473e302d9cc85a69814eaa7ac30986a7e4f1ed4fb7909cd
+    SHA256=096f5a42f3c6908be6746c683bb9216c8e9fdde2c544d1202c9dee9049c72fbf
     ;;
   aarch64|arm64)
     ASSET=antd-linux-arm64
-    SHA256=4d76541eac3b2549fa6575a2075b5adcdb80531f12fea50c43e157a2d103da59
+    SHA256=2717f3f3fd24422bb5f0cd21517f88e153498b196d1638faa2690f948c4e4bed
     ;;
   *) printf 'No prebuilt executable for this architecture.\n' >&2; exit 1 ;;
 esac
-mkdir antd-0.13.0
-cd antd-0.13.0
+mkdir antd-0.14.0
+cd antd-0.14.0
 curl --fail --location --show-error \
-  "https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/$ASSET" \
+  "https://github.com/WithAutonomi/ant-sdk/releases/download/v0.14.0/$ASSET" \
   --output antd
 printf '%s  antd\n' "$SHA256" | sha256sum -c -
 chmod u+x antd
@@ -72,13 +72,13 @@ Use PowerShell on Windows x64. The executable runs from the download directory, 
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-New-Item -ItemType Directory -Path antd-0.13.0 | Out-Null
-Set-Location antd-0.13.0
+New-Item -ItemType Directory -Path antd-0.14.0 | Out-Null
+Set-Location antd-0.14.0
 Invoke-WebRequest -UseBasicParsing `
-  -Uri 'https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/antd-windows-amd64.exe' `
+  -Uri 'https://github.com/WithAutonomi/ant-sdk/releases/download/v0.14.0/antd-windows-amd64.exe' `
   -OutFile antd.exe
 $hash = (Get-FileHash -Algorithm SHA256 .\antd.exe).Hash
-if ($hash -ne '30bc63b3c0cf52860c28d00ad9188dc8bac23e3f81c81241624ff33b2cbb4e7b') {
+if ($hash -ne '2bece8f0d35d85567df6fdf1a2f4274e258b1db583c22abe7bea65f8923fefac') {
   throw 'Checksum mismatch. Do not run the downloaded file.'
 }
 Write-Output 'antd.exe: OK'
@@ -89,9 +89,9 @@ if ($LASTEXITCODE -ne 0) { throw 'antd did not report its version successfully.'
 {% endtab %}
 {% endtabs %}
 
-Expect `antd: OK` (`antd.exe: OK` on Windows), followed by `antd 0.13.0 (build 6fe2b51105cd)`. The checksum checks the file's contents; it is not a separate signature verification.
+Expect `antd: OK` (`antd.exe: OK` on Windows), followed by `antd 0.14.0 (build dbf6a7d3d951)`. The checksum checks the file's contents; it is not a separate signature verification.
 
-The [release page](https://github.com/WithAutonomi/ant-sdk/releases/tag/v0.13.0) also provides macOS and Windows installers, and Linux x64 Debian/RPM packages. The remaining steps use the local executable downloaded above.
+The [release page](https://github.com/WithAutonomi/ant-sdk/releases/tag/v0.14.0) also provides macOS and Windows installers, and Linux x64 Debian/RPM packages. The remaining steps use the local executable downloaded above.
 
 ### 2. Start without a wallet
 
@@ -142,7 +142,7 @@ Look for these fields in the JSON response:
 ```json
 {
   "status": "ok",
-  "version": "0.13.0"
+  "version": "0.14.0"
 }
 ```
 
@@ -182,17 +182,17 @@ You installed and started a local service, checked its API, and used it to retri
 As an alternative to the download, install [Rust](https://www.rust-lang.org/tools/install) (which includes Cargo) and [protoc](https://protobuf.dev/installation/) (the Protocol Buffers compiler), with both tools on your `PATH`. The following Bash commands are for macOS or Linux. Run them in a separate working directory, then continue with step 2 from the `ant-sdk/antd` directory containing the built executable:
 
 ```bash
-git clone --depth 1 --branch v0.13.0 https://github.com/WithAutonomi/ant-sdk.git ant-sdk
+git clone --depth 1 --branch v0.14.0 https://github.com/WithAutonomi/ant-sdk.git ant-sdk
 cd ant-sdk
-test "$(git rev-parse HEAD)" = "6fe2b51105cd10a4d2217068a066d3d3f505ddb6" || exit 1
-printf 'ant-sdk v0.13.0\n'
+test "$(git rev-parse HEAD)" = "dbf6a7d3d9511da6518ed369a2d1e4dba2c9ae51" || exit 1
+printf 'ant-sdk v0.14.0\n'
 cd antd
 cargo build --release --locked
 cp target/release/antd ./antd
 ./antd --version
 ```
 
-Expected version output: `antd 0.13.0 (build 6fe2b51105cd)`.
+Expected version output: `antd 0.14.0 (build dbf6a7d3d951)`.
 
 ## Next steps
 

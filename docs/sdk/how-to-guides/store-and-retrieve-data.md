@@ -32,7 +32,7 @@ Run your selected recipe as a complete program. Python recipes are complete `app
 
 Install and start antd using the OS-specific instructions in [Start the Local Daemon](../start-the-local-daemon.md). The clients here use `http://localhost:8082`. Reads need no wallet. For writes, stop a read-only instance and follow [Start antd with a payment wallet](../store-data-on-the-network.md#2-start-antd-with-a-payment-wallet), then inspect its configured wallet and balances with [Prepare a Wallet for Uploads](../../guides/prepare-a-wallet-for-uploads.md).
 
-Use the built-in `EVM_NETWORK=arbitrum-one` or `arbitrum-sepolia` preset for the matching public environment. With antd 0.13.0, any individual override (`EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS`) selects custom payment encoding that mainnet storage nodes can reject after funds are spent. Remove all four; a custom RPC URL alone is not safe for public writes. Keep the unauthenticated service bound to loopback, not a public interface.
+Use the built-in `EVM_NETWORK=arbitrum-one` or `arbitrum-sepolia` preset for the matching public environment. With antd 0.14.0, any individual override (`EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS`) selects custom payment encoding that mainnet storage nodes can reject after funds are spent. Remove all four; a custom RPC URL alone is not safe for public writes. Keep the unauthenticated service bound to loopback, not a public interface.
 
 Assess your application's upload flow in the [local-development setup](../../guides/set-up-a-local-network.md) before committing funds on the public Autonomi Network. That setup supplies its own local payment configuration; do not replace it with the public-network settings.
 
@@ -422,7 +422,7 @@ If a file download fails after upload, retain its printed address and retry only
 
 **503 Service Unavailable**: `antd` does not have a wallet key for a direct write. Restart it with `AUTONOMI_WALLET_KEY` or let `ant dev start` provision a local environment.
 
-**500 Internal Error during retrieval**: Inspect the full error and confirm the address or DataMap. Missing data can surface as an internal error; not every internal error means data is absent.
+**404 Not Found during retrieval**: No data was found for the address or DataMap. Confirm it, and check `/health` for connected peers: without them, a lookup can also report not found.
 
 ## Next steps
 

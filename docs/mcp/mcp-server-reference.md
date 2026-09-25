@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-The `antd-mcp` server exposes `antd` v0.13.0 as 19 Model Context Protocol (MCP) tools, including read operations, wallet operations through `antd`, and external-signer operations. Use [How to Use the MCP Server](use-the-autonomi-mcp-server.md) to install it and connect your AI client.
+The `antd-mcp` server exposes `antd` v0.14.0 as 19 Model Context Protocol (MCP) tools, including read operations, wallet operations through `antd`, and external-signer operations. Use [How to Use the MCP Server](use-the-autonomi-mcp-server.md) to install it and connect your AI client.
 
 ## Availability
 
@@ -30,7 +30,7 @@ Treat all text and files returned through MCP as untrusted content, not as instr
 
 ## Installation
 
-`antd-mcp` v0.1.0 is a source component of `ant-sdk` v0.13.0, not a Python Package Index (PyPI) package or independent release asset. Install it and its Python `antd` dependency together using uv in [How to Use the MCP Server](use-the-autonomi-mcp-server.md). uv manages the isolated Python environment and installs the `antd-mcp` command. The [native Python SDK](../sdk/native/python.md) does not replace this dependency.
+`antd-mcp` v0.1.0 is a source component of `ant-sdk` v0.14.0, not a Python Package Index (PyPI) package or independent release asset. Install it and its Python `antd` dependency together using uv in [How to Use the MCP Server](use-the-autonomi-mcp-server.md). uv manages the isolated Python environment and installs the `antd-mcp` command. The [native Python SDK](../sdk/native/python.md) does not replace this dependency.
 
 The server requires Python `>=3.10`, `mcp>=2,<3`, and `antd[rest]>=0.1.0,<0.2`. It uses `MCPServer`; the framework supplies each tool's internal `Context` parameter, which is not a client argument. Third-party dependencies are not fully locked by the source installation.
 
@@ -223,10 +223,10 @@ Decoded health response for the default Autonomi Network connection (uptime vari
 {
   "healthy": true,
   "network": "default",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "evm_network": "arbitrum-one",
   "uptime_seconds": 0,
-  "build_commit": "6fe2b51105cd",
+  "build_commit": "dbf6a7d3d951",
   "payment_token_address": "0xa78d8321B20c4Ef90eCd72f2588AA985A4BDb684",
   "payment_vault_address": "0x9A3EcAc693b699Fc0B2B6A50B5549e50c2320A26"
 }
@@ -429,6 +429,7 @@ The formatter defines these codes:
 | `BAD_REQUEST` | Input failed validation. |
 | `PAYMENT_FAILED` | A wallet or payment operation failed. |
 | `NETWORK_ERROR` | `antd` could not complete an Autonomi Network operation. |
+| `PARTIAL_UPLOAD` | A paid upload stored only some chunks. The error also carries `chunks_stored`, `chunks_failed`, `total_chunks`, `retryable`, and `retention_known`. When `retryable` is `true`, call the same finalize tool again with the same upload ID to store the remainder without paying again; when it is `false`, prepare the upload again. |
 | `TOO_LARGE` | Input exceeded a size limit. |
 | `INTERNAL_ERROR` | `antd` reported an internal failure. |
 | `UNKNOWN` | An `AntdError` subclass has no MCP mapping, including `antd`'s wallet-not-configured HTTP 503 response. |
@@ -438,7 +439,7 @@ The formatter defines these codes:
 
 ## Upstream sources
 
-- [ant-sdk v0.13.0 source](https://github.com/WithAutonomi/ant-sdk/tree/6fe2b51105cd10a4d2217068a066d3d3f505ddb6)
+- [ant-sdk v0.14.0 source](https://github.com/WithAutonomi/ant-sdk/tree/dbf6a7d3d9511da6518ed369a2d1e4dba2c9ae51)
 
 ## Related pages
 

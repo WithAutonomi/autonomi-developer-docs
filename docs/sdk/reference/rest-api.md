@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-This page describes the REST surface exposed by `antd 0.13.0`. By default, `antd` listens on `http://127.0.0.1:8082`.
+This page describes the REST surface exposed by `antd 0.14.0`. By default, `antd` listens on `http://127.0.0.1:8082`.
 
 REST request and response bodies are JSON except for data streaming responses. Binary payloads use base64-encoded `data` fields; signed quotes and their commitment sidecars use the base64 fields described under [Quote verification](#quote-verification).
 
@@ -21,6 +21,7 @@ The downloadable OpenAPI schema is incomplete for external signing: it omits mul
 ## Limits
 
 - The maximum REST request body is 100 MiB. Base64 encoding and the surrounding JSON count toward this limit, so the maximum raw in-memory payload is smaller.
+- `POST /v1/verify/quotes` has its own 40 MiB request-body limit; see [Verify Quotes](#verify-quotes).
 - Hex-decoded DataMaps are limited to 10 MiB on `POST /v1/data/get`, `POST /v1/data/stream`, and `POST /v1/files/get`.
 - File endpoints pass a local path rather than transferring file bytes through the REST body limit.
 
@@ -38,10 +39,10 @@ Returns `antd` liveness, the selected network, and a live connectivity snapshot.
 {
   "status": "ok",
   "network": "default",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "evm_network": "arbitrum-one",
   "uptime_seconds": 12345,
-  "build_commit": "6fe2b51105cd",
+  "build_commit": "dbf6a7d3d951",
   "payment_token_address": "0xa78d8321B20c4Ef90eCd72f2588AA985A4BDb684",
   "payment_vault_address": "0x9A3EcAc693b699Fc0B2B6A50B5549e50c2320A26",
   "write_ready": true,
@@ -93,7 +94,7 @@ Stores public data and returns the public address that can be shared with reader
 }
 ```
 
-`payment_mode_used` reports the resolved mode, so a request using `auto` returns either `single` or `merkle`. `chunks_stored` covers the data chunks and excludes the separate DataMap store used to produce `address`.
+`payment_mode_used` reports the resolved mode, so a request using `auto` returns either `single` or `merkle`. `chunks_stored` counts the data chunks plus the DataMap chunk that `antd` stores separately to produce `address`.
 
 **Example:**
 
@@ -257,7 +258,7 @@ curl --no-buffer -X POST http://127.0.0.1:8082/v1/data/stream \
 
 Returns an advisory storage and gas estimate for a data payload without uploading it. `antd` samples up to five chunk addresses spread across the payload and extrapolates from the first sample that returns live quotes. The gas value is a fixed heuristic, not a live gas-price query.
 
-The response does not expose estimate confidence. If `cost` is `"0"` and `chunk_count` is greater than five, only the sampled chunks were known to be stored; unsampled chunks may still require payment. This endpoint also excludes the separate DataMap store performed by a public direct write.
+The response does not expose estimate confidence. If `cost` is `"0"` and `chunk_count` is greater than five, only the sampled chunks were known to be stored; unsampled chunks may still require payment. This endpoint also excludes the separate DataMap store performed by a public direct write, which `POST /v1/data/public` counts in `chunks_stored`.
 
 **Parameters:**
 
@@ -449,7 +450,7 @@ These endpoints work on paths visible to the machine running `antd`.
 
 **Endpoint:** `POST /v1/files/public`
 
-Uploads a local file publicly. Also stores the DataMap on-network as an additional chunk and returns its network address.
+Uploads a local file publicly. The data chunks and the DataMap chunk are paid for in one batch and stored on-network, and the response returns the DataMap's network address.
 
 **Parameters:**
 
@@ -470,7 +471,7 @@ Uploads a local file publicly. Also stores the DataMap on-network as an addition
 }
 ```
 
-`storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and `payment_mode_used` describe the data-chunk upload. They exclude the separate direct-wallet operation that stores the DataMap and produces `address`. `payment_mode_used` is the resolved `single` or `merkle` mode.
+`storage_cost_atto`, `gas_cost_wei`, and `chunks_stored` include the DataMap chunk, the same extra chunk that `POST /v1/files/cost` adds with `is_public: true`. `payment_mode_used` is the resolved `single` or `merkle` mode.
 
 **Example:**
 
@@ -801,13 +802,13 @@ curl -X POST http://127.0.0.1:8082/v1/upload/prepare \
 
 Finalizes a prepared upload after the external signer has submitted the matching payment transaction.
 
-Prepared state is held only by the running `antd` process; restarting it invalidates every `upload_id`. State becomes eligible for cleanup after one hour, with cleanup running every five minutes. Payment fields, including a transaction hash for every expected wave-batch quote, are validated before state is consumed, so you can correct a validation error and retry the same ID. Once validation succeeds, finalize removes the state before storing; any later network or DataMap-store failure requires a new prepare call and payment reconciliation.
+Prepared state is held only by the running `antd` process; restarting it invalidates every `upload_id`. State becomes eligible for cleanup after one hour, with cleanup running every five minutes. Payment fields, including a transaction hash for every expected wave-batch quote, are validated before state is consumed, so a bad request leaves the paid-for upload in place and you can correct it and retry the same ID. Once validation succeeds, finalize consumes the prepared state and stores the chunks. A storage shortfall after payment returns `PARTIAL_UPLOAD` and, when its `retryable` flag is `true`, keeps the paid attempt under the same `upload_id` for a retry. Any other later failure, such as a payment-verification error or a failed `store_data_map` store, requires a new prepare call and payment reconciliation.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `upload_id` | string | Yes | Value returned by a prepare endpoint |
+| `upload_id` | string | Yes | Value returned by a prepare endpoint, or the same value again after a retryable `PARTIAL_UPLOAD` |
 | `tx_hashes` | object | No | Wave-batch only: map of `quote_hash` to `tx_hash` |
 | `winner_pool_hashes` | array | No | Merkle: one winner pool hash per entry in the prepare response's `merkle_batches`, in the same order. An empty string or `null` in a slot marks a batch the signer did not pay; keep unpaid slots in place rather than compacting or reordering the list |
 | `winner_pool_hash` | string | No | Merkle, legacy single-batch: winner pool hash emitted by `MerklePaymentMade`. Accepted only when the upload has exactly one batch; do not combine it with `winner_pool_hashes` |
@@ -858,7 +859,7 @@ curl -X POST http://127.0.0.1:8082/v1/upload/finalize \
   -d '{"upload_id":"<hex_id>","winner_pool_hashes":["0x...","0x..."],"store_data_map":true}'
 ```
 
-When part of an upload stores but the rest misses quorum after retries, finalize returns `502` with the `PARTIAL_UPLOAD` code and machine-readable counts:
+When part of an upload stores but the rest is still unstored after retries, finalize returns `502` with the `PARTIAL_UPLOAD` code, machine-readable counts, and a `retryable` flag:
 
 ```json
 {
@@ -866,11 +867,15 @@ When part of an upload stores but the rest misses quorum after retries, finalize
   "code": "PARTIAL_UPLOAD",
   "chunks_stored": 200,
   "chunks_failed": 56,
-  "total_chunks": 256
+  "total_chunks": 256,
+  "retryable": true
 }
 ```
 
-The stored chunks persist. Re-prepare the same content and finalize again to pay for and store only the missing remainder.
+The stored chunks persist. Branch on `code` rather than the HTTP status, then on `retryable`:
+
+- `retryable: true`: `antd` keeps the payment proofs and the unstored chunks under the same `upload_id`. Repeat the same finalize request with that `upload_id` to store the remainder against the same on-chain payment. Do not prepare again or pay again. `antd` ignores `tx_hashes`, `winner_pool_hash`, and `winner_pool_hashes` on this resume, but still rejects a field that belongs to the other payment type. Bound the retry loop, because a persistent failure returns `PARTIAL_UPLOAD` on every call. The retained attempt is process-local: it becomes eligible for cleanup one hour after the partial upload is reported and is lost if `antd` restarts.
+- `retryable: false`: nothing was retained. A Merkle finalize returns this when one or more `winner_pool_hashes` slots are unpaid, because only a fully paid batch list takes the resumable path. Re-prepare the same content and finalize again to pay for and store only the missing remainder.
 
 A partial upload is reported only when at least one Merkle batch was paid. When every `winner_pool_hashes` slot is empty, finalize returns `402` with the `PAYMENT_REQUIRED` code instead.
 
@@ -888,7 +893,7 @@ Opt in with `include_signed_quotes: true` on a data, file, or chunk prepare requ
 | `quote` | string | Base64-encoded MessagePack signed quote; pass unchanged as `signed_quote` to verification |
 | `commitment_sidecar` | string, optional | Base64-encoded MessagePack storage commitment, the signed record bound to the quote; omitted when unavailable or the quote does not bind one |
 
-Treat the serialized quote and sidecar as opaque bytes. A quote that binds a commitment fails verification without its matching sidecar. Merkle prepares do not expose signed quotes through this option. Python `antd 0.1.0` and Node.js `@withautonomi/antd 0.1.0` do not expose the opt-in or verification helpers; use these REST fields directly rather than assuming those packages provide matching methods.
+Treat the serialized quote and sidecar as opaque bytes. A quote that binds a commitment fails verification without its matching sidecar. Merkle prepares do not expose signed quotes through this option. The Python `antd` and Node.js `@withautonomi/antd` 0.2.0 clients do not expose the opt-in or verification helpers; use these REST fields directly rather than assuming those packages provide matching methods.
 
 ### Verify Quotes
 
@@ -912,7 +917,14 @@ Each entry contains:
 | `signed_quote` | string | Yes | Unchanged `quote` from the matching signed quote entry |
 | `commitment_sidecar` | string | Conditional | Unchanged sidecar; required when the quote binds a storage commitment |
 
-**Response:** HTTP `200` with `valid` and an `entries` array in request order. Overall `valid` is true only for a nonempty array where every entry passes. Invalid quote contents produce per-entry false verdicts, not a successful payment authorization. More than 1024 entries returns `400` / `BAD_REQUEST`; malformed request bodies and field types can receive framework rejection responses instead.
+**Limits:**
+
+- At most 1024 entries per call.
+- Request bodies on this route are limited to 40 MiB. A larger body is rejected with `413` before it is parsed.
+- Per entry, a `signed_quote` longer than 21,848 base64 characters (16 KiB decoded) or a `commitment_sidecar` longer than 10,924 base64 characters (8 KiB decoded) receives a `valid: false` verdict without being decoded.
+- The endpoint has no authentication or rate limiting, like the wallet endpoints. Keep `antd` on loopback or behind your own access control.
+
+**Response:** HTTP `200` with `valid` and an `entries` array in request order. Overall `valid` is true only for a nonempty array where every entry passes. Invalid quote contents produce per-entry false verdicts, not a successful payment authorization. More than 1024 entries returns `400` / `BAD_REQUEST`, and a body over 40 MiB returns `413`; malformed request bodies and field types can receive framework rejection responses instead.
 
 Each verdict contains:
 
@@ -975,30 +987,41 @@ These checks exercise empty and malformed input only; they do not demonstrate va
 |------|------|---------|------------|
 | `400` | `BAD_REQUEST` | Invalid base64, hex, DataMap, payment mode, visibility, payment fields, local path, or more than 1024 verification entries | Correct the request. Malformed JSON may instead receive a framework-generated rejection body. Invalid quote contents in `/v1/verify/quotes` return per-entry verdicts under HTTP `200` |
 | `402` | `PAYMENT_REQUIRED` | Payment failed or no Merkle batch was paid | Fund the configured wallet or submit the required external payment |
-| `404` | `NOT_FOUND` | Prepared `upload_id` or in-memory chunk not found | Check the identifier; prepare again if process-local state expired, was consumed, or was lost on restart |
+| `404` | `NOT_FOUND` | No DataMap is stored at the requested address, a chunk needed for retrieval is missing, or a prepared `upload_id` or in-memory chunk was not found | Confirm the address or DataMap, and check `connected_peers` in `/health`, because a lookup with no connected peers also returns `NOT_FOUND`. For an `upload_id`, prepare again if process-local state expired, was consumed, or was lost on restart |
 | `404` | Framework response | No route matched the requested path | Correct the endpoint path |
 | `405` | Framework response | The route does not support the HTTP method | Use the method documented for the endpoint |
 | `409` | `ALREADY_EXISTS` | The requested record is already stored | Use the returned or computed content address instead of repeating the write |
-| `413` | `TOO_LARGE`, or framework rejection | A handler rejected an in-memory operation, or the request body exceeded 100 MiB | Use a file endpoint or reduce the request body |
+| `413` | `TOO_LARGE`, or framework rejection | A handler rejected an in-memory operation, the request body exceeded 100 MiB, or a `/v1/verify/quotes` body exceeded 40 MiB | Use a file endpoint or reduce the request body |
 | `415` | Framework response | A JSON endpoint did not receive `Content-Type: application/json` | Add the JSON content-type header |
 | `422` | Framework response | JSON parsed but could not be converted to the endpoint's request fields | Check required fields and their types |
-| `500` | `INTERNAL_ERROR` | Serialization, encryption, protocol, or internal task failure. `antd v0.13.0` also reports a missing DataMap or missing wrapper chunk needed to resolve a nested DataMap this way instead of returning `404` | Inspect the error message and confirm the address or DataMap. Do not treat every internal error as missing data; match `x-request-id` with `antd` logs before retrying |
+| `500` | `INTERNAL_ERROR` | Serialization, encryption, protocol, or internal task failure | Inspect the error message and match `x-request-id` with `antd` logs before retrying |
 | `501` | `NOT_IMPLEMENTED` | The requested behavior is not implemented | Use a supported endpoint |
 | `502` | `NETWORK_ERROR` | `antd` could not complete a network operation | Confirm peer connectivity and retry |
-| `502` | `PARTIAL_UPLOAD` | Some chunks stored while others failed quorum after retries | Re-prepare the same content and finalize again; the response includes `chunks_stored`, `chunks_failed`, and `total_chunks` |
+| `502` | `PARTIAL_UPLOAD` | Some chunks stored while others are still unstored after retries | Check `retryable`. When `true`, repeat the same external-signer finalize call with the same `upload_id`. When `false`, nothing was retained: retry the direct upload, or prepare the same content again and finalize to store only the remainder. The response includes `chunks_stored`, `chunks_failed`, `total_chunks`, and `retryable` |
 | `503` | `SERVICE_UNAVAILABLE` | A direct write or wallet operation needs a wallet that is not configured in `antd` | Set `AUTONOMI_WALLET_KEY`, or use the external-signer prepare/finalize flow for writes |
 | `504` | `TIMEOUT` | A network operation exceeded its deadline | Check connectivity and retry |
 
-Handler-generated errors use this shape:
+Handler-generated errors always include a human-readable `error` and a machine-readable `code`:
 
 ```json
 {
-  "error": "Bad request: invalid base64: ...",
+  "error": "Bad request: address must be exactly 64 hex characters",
   "code": "BAD_REQUEST"
 }
 ```
 
-`PARTIAL_UPLOAD` also includes `chunks_stored`, `chunks_failed`, and `total_chunks`.
+A lookup of a well-formed public address with no stored DataMap returns `404`:
+
+```json
+{
+  "error": "Record not found: DataMap chunk not found at <64_hex_address>",
+  "code": "NOT_FOUND"
+}
+```
+
+A `404` does not prove that the data is absent: when `antd` has no connected peers, a lookup also returns `NOT_FOUND`. Check `connected_peers` in [Health Check](#health-check) before treating the address as unused.
+
+Prefer `code` over the HTTP status where they diverge. For example, `PARTIAL_UPLOAD` arrives as `502`, the same status as `NETWORK_ERROR`. `PARTIAL_UPLOAD` also includes `chunks_stored`, `chunks_failed`, `total_chunks`, and `retryable`.
 
 ## Related pages
 

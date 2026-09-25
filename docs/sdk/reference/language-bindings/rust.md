@@ -116,7 +116,7 @@ Retrieved: Hello from Rust!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `AntdError::Internal` for this behavior. The client source is pinned independently to `v0.12.1`.
+`antd 0.14.0` reports a valid address with no stored data as not found. Handle `AntdError::NotFound` for this case. The client source is pinned independently to `v0.12.1`.
 
 ```rust
 use antd_client::{AntdError, Client, DEFAULT_BASE_URL};
@@ -129,7 +129,7 @@ async fn main() {
 
     match client.data_get_public(missing_address).await {
         Ok(data) => println!("{}", data.len()),
-        Err(AntdError::Internal(_)) => println!("Missing data returned an internal error"),
+        Err(AntdError::NotFound(_)) => println!("No data is stored at that address"),
         Err(error) => println!("{error}"),
     }
 }
@@ -138,7 +138,7 @@ async fn main() {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
 
 ## Full API reference

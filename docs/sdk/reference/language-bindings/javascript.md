@@ -12,13 +12,13 @@ Use the JavaScript client library in your Node.js application to store and retri
 
 ## Install
 
-Use Node.js 18 or later. Install [@withautonomi/antd](https://www.npmjs.com/package/@withautonomi/antd/v/0.1.0) in your application directory:
+Use Node.js 18 or later. Install [@withautonomi/antd](https://www.npmjs.com/package/@withautonomi/antd) in your application directory:
 
 ```bash
 npm install @withautonomi/antd
 ```
 
-Installing the client does not install or start antd. Keep the `@withautonomi/` scope: the npm package named `antd` is the unrelated Ant Design library. Save each example as `app.mjs` and run it with `node app.mjs`.
+Installing the client does not install or start antd. Keep the `@withautonomi/` scope: the npm package named `antd` is the unrelated Ant Design library. Examples on this page use `@withautonomi/antd` 0.2 with antd 0.14. Save each example as `app.mjs` and run it with `node app.mjs`.
 
 ## Connect to antd
 
@@ -114,10 +114,10 @@ The retrieval methods above return the complete content in memory. Keep private 
 
 ## Error handling
 
-antd can report a missing DataMap as an internal error instead of not found. Handle `InternalError`, but do not interpret every internal error as missing data. Confirm the address with its publisher and inspect the error message.
+An address with no stored data rejects with `NotFoundError`, a subclass of `AntdError`.
 
 ```javascript
-import { InternalError, createClient } from "@withautonomi/antd";
+import { NotFoundError, createClient } from "@withautonomi/antd";
 
 async function main() {
   const client = createClient();
@@ -125,8 +125,8 @@ async function main() {
   try {
     await client.dataGetPublic("0".repeat(64));
   } catch (error) {
-    if (error instanceof InternalError) {
-      console.log(`Internal error; confirm the address and inspect the cause: ${error.message}`);
+    if (error instanceof NotFoundError) {
+      console.log("No data is stored at that address");
     } else {
       throw error;
     }
@@ -139,11 +139,13 @@ main().catch((error) => {
 });
 ```
 
-Output shape for an internal error:
+Output when the valid address is not stored:
 
 ```text
-Internal error; confirm the address and inspect the cause: <error details>
+No data is stored at that address
 ```
+
+External-signer finalize methods reject with `PartialUploadError`, a subclass of `NetworkError`, when some chunks remain unstored; it carries `chunksStored`, `chunksFailed`, `totalChunks`, `retryable`, and `retentionKnown`. When `retryable` is `true`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Store and retrieve data
 

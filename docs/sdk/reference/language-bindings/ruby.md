@@ -12,15 +12,13 @@ Use the Ruby SDK to store and retrieve data through a local daemon, a background
 
 ## Install
 
-Use Ruby 3.1 or later. This workflow builds the gem from the exact ant-sdk v0.12.1 release source, rather than using the separately published [antd 0.1.0 gem](https://rubygems.org/gems/antd/versions/0.1.0) on RubyGems.
+Use Ruby 3.1 or later. Install the [antd gem](https://rubygems.org/gems/antd) from RubyGems:
 
 ```bash
-git clone --branch v0.12.1 --depth 1 https://github.com/WithAutonomi/ant-sdk.git
-test "$(git -C ant-sdk rev-parse HEAD)" = "f9cd5c5fc08133847909e47e04af186593ccbaee"
-cd ant-sdk/antd-ruby
-gem build antd.gemspec
-gem install ./antd-0.1.0.gem
+gem install antd
 ```
+
+In a Bundler project, run `bundle add antd` instead. Examples on this page use the `antd` gem 0.2 with antd 0.14.
 
 For gRPC, also install the optional runtime dependency:
 
@@ -89,7 +87,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client source is pinned independently to `v0.12.1`.
+An address with no stored data raises `Antd::NotFoundError`, a subclass of `Antd::AntdError`.
 
 ```ruby
 require "antd"
@@ -97,8 +95,8 @@ require "antd"
 begin
   client = Antd::Client.new
   client.data_get_public("0" * 64)
-rescue Antd::InternalError
-  puts "Missing data returned an internal error"
+rescue Antd::NotFoundError
+  puts "No data is stored at that address"
 rescue Antd::AntdError => e
   puts e.message
 end
@@ -107,8 +105,10 @@ end
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
+
+External-signer finalize methods raise `Antd::PartialUploadError`, a subclass of `Antd::NetworkError`, when some chunks remain unstored; it carries `chunks_stored`, `chunks_failed`, `total_chunks`, `retryable`, and `retention_known`. When `retryable` is `true`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Full API reference
 
