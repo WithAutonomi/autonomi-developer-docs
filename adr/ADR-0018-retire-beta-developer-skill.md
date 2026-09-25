@@ -10,10 +10,12 @@
 
 ## Context
 
-The beta developer skill and its plugin distribution are being retired. The separate general Autonomi skill is an external prototype, not a continuation of this repository's maintained developer-skill contract.
+The beta developer skill and its plugin distribution are being retired in favor of a single, more general Autonomi skill and its supporting processes in the skills repository.
 
 ## Decision Drivers
 
+- Give agents and users one general skill, with more flexibility and a better experience than several skills in different locations.
+- House this and future skills in one findable location that supports their distribution and installation.
 - End obsolete distribution and maintenance obligations.
 - Avoid a disproportionate compatibility service.
 - Preserve documentation verification safeguards.
@@ -22,7 +24,7 @@ The beta developer skill and its plugin distribution are being retired. The sepa
 
 1. Continue maintaining the beta skill: retains obsolete obligations.
 2. Provide a versioned migration or forwarding manifest: creates continuing compatibility work.
-3. Withdraw distribution and retain a short notice: chosen.
+3. Retire it in favor of the general skill in the skills repository, retaining a short notice: chosen.
 
 ## Decision
 
@@ -30,9 +32,9 @@ Retire `skills/start/`, `.claude-plugin/`, and their skill-only registry, scanni
 
 Withdraw the existing raw skill and manifest URLs without retaining the old manifest, issuing a major-version bump, or providing a compatibility service. This is retirement, not relocation or automatic migration.
 
-Retain a short administrative notice at the existing developer-skill documentation URL, included in GitBook navigation. It records this decision without installation commands or technical product claims. Remove its obsolete ant-sdk verification stamp; no replacement ant-sdk SHA can verify retirement. This exception applies only to that notice.
+Retain a short notice at the existing developer-skill documentation URL, included in GitBook navigation. It records the deprecation and links to the general skill, without installation commands. Remove its obsolete ant-sdk verification stamp; no replacement ant-sdk SHA can verify retirement. This exception applies only to that notice.
 
-The general skill's separate home is [WithAutonomi/skills](https://github.com/WithAutonomi/skills). Identify it as a distinct prototype, not a newly maintained product contract or an artifact automatically maintained by this repository's scanner.
+The general skill and its supporting processes live in [WithAutonomi/skills](https://github.com/WithAutonomi/skills), which also houses future skills. That repository maintains them; this repository's scanner and verification rules do not apply to it.
 
 All other public-documentation verification, released-source boundaries, target-manifest protections, update-track enforcement, infrastructure, and fail-closed behavior remain unchanged.
 
