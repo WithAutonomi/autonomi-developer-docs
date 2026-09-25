@@ -1,4 +1,4 @@
-# Python SDK
+# Python Client Reference
 
 <!-- verification:
   source_repo: ant-sdk
@@ -8,53 +8,96 @@
   verification_mode: current-merged-truth
 -->
 
-The Python SDK is the Python client for the `antd` daemon.
+Use the Python client library in your application to store and retrieve data. It sends requests to a local daemon, a separate background service called **antd** that connects to the Autonomi Network. Follow [Start the Local Daemon](../../start-the-local-daemon.md) before connecting. This reference covers REST; synchronous and asynchronous REST/gRPC clients are available.
 
 ## Install
 
+Use Python 3.10 or later. Install the [antd package](https://pypi.org/project/antd/0.1.0/) with its REST dependencies in your project's virtual environment. To create one:
+
 ```bash
-pip install antd[rest]
-pip install antd[grpc]
-pip install antd[all]
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install 'antd[rest]'
 ```
 
-## Connect to the daemon
+Check that `python3 --version` reports 3.10 or later before creating the environment. The `rest` extra supplies the HTTP dependency; `grpc` and `all` supply gRPC-only or combined dependencies. Installing the client does not install or start antd. Save each Python example as `app.py` and run it with `python app.py`.
 
-```python
-from antd import AntdClient, AsyncAntdClient, discover_daemon_url
+## Connect to antd
 
-# REST transport by default
-client = AntdClient()
-
-# Async REST client
-async_client = AsyncAntdClient()
-
-# Explicit gRPC transport
-grpc_client = AntdClient(transport="grpc", target="localhost:50051")
-
-# Use discovery helpers if antd chose a non-default port
-base_url = discover_daemon_url() or "http://localhost:8082"
-discovered_client = AntdClient(base_url=base_url)
-```
-
-## Store and retrieve data
-
-For upload examples in this section, start `antd` in a write-enabled mode first. On the default network, that means wallet plus EVM payment configuration. On a local devnet, `ant dev start` provisions that for you.
+With the local service running, `AntdClient()` uses `http://localhost:8082` with a 300-second timeout.
 
 ```python
 from antd import AntdClient
 
-client = AntdClient()
-status = client.health()
-assert status.ok
 
-result = client.data_put_public(b"Hello from Python!")
-print(result.address)
+def main() -> None:
+    client = AntdClient()
+    try:
+        health = client.health()
+        print(f"antd version: {health.version}")
+    except Exception as exc:
+        raise SystemExit(f"antd request failed: {exc}") from exc
+    finally:
+        client.close()
 
-data = client.data_get_public(result.address)
-assert data == b"Hello from Python!"
-print(data.decode())
+
+if __name__ == "__main__":
+    main()
 ```
+
+A successful run prints:
+
+```text
+antd version: <version>
+```
+
+For a different port, pass `base_url` to `AntdClient`. Port discovery is explicit: import `discover_daemon_url` from `antd` and use its result, or `http://localhost:8082` if it returns an empty string. The health result does not include peer counts or `write_ready`; use the [REST health endpoint](../rest-api.md#health) for those fields. A successful health check is not a guarantee that an upload will succeed.
+
+## Retrieve public data
+
+Retrieve a public JPEG without a wallet. This example writes `example.jpg` in your working directory, replacing a file with that name if one exists.
+
+```python
+from pathlib import Path
+
+from antd import AntdClient
+
+
+def main() -> None:
+    client = AntdClient()
+    try:
+        data = client.data_get_public(
+            "711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a"
+        )
+        Path("example.jpg").write_bytes(data)
+        print(f"Saved {len(data)} bytes to example.jpg")
+    except Exception as exc:
+        raise SystemExit(f"Retrieval failed: {exc}") from exc
+    finally:
+        client.close()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Expected output:
+
+```text
+Saved 138931 bytes to example.jpg
+```
+
+## Data methods
+
+| Method | Input | Result |
+|------|------|------|
+| `health()` | None | `HealthStatus` |
+| `data_get_public(address)` | Public address as a 64-character hexadecimal string | `bytes` |
+| `data_get(data_map)` | Caller-held DataMap as a hexadecimal string | `bytes` |
+| `data_put_public(data)` | `bytes` | `DataPutPublicResult`; retrieve with its `address` |
+| `data_put(data)` | `bytes` | `DataPutResult`; retain its `data_map` for retrieval |
+
+The retrieval methods above return the complete content in memory. Keep private DataMaps secure: anyone with the DataMap can retrieve the content.
 
 ## Type mappings
 
@@ -76,23 +119,48 @@ print(data.decode())
 
 ## Error handling
 
+antd can report a missing DataMap as an internal error instead of not found. Handle `InternalError`, but do not interpret every internal error as missing data. Confirm the address with its publisher and inspect the error message.
+
 ```python
-from antd import AntdClient, AntdError, NotFoundError, PaymentError
+from antd import AntdClient, AntdError, InternalError
 
-client = AntdClient()
+def main() -> None:
+    client = AntdClient()
+    try:
+        client.data_get_public("0" * 64)
+    except InternalError as exc:
+        print(f"Internal error; confirm the address and inspect the cause: {exc}")
+    except AntdError as exc:
+        print(f"antd request failed: {exc}")
+    finally:
+        client.close()
 
-try:
-    client.data_get_public("nonexistent_address")
-except NotFoundError:
-    print("Data not found")
-except PaymentError:
-    print("Insufficient funds")
-except AntdError as error:
-    print(error)
+
+if __name__ == "__main__":
+    main()
 ```
 
-REST and gRPC share the same high-level API, including wallet operations and external-signer prepare/finalize methods. `payment_mode` is available on both transports.
+Output shape for an internal error:
+
+```text
+Internal error; confirm the address and inspect the cause: <error details>
+```
+
+## Store and retrieve data
+
+`data_put_public` uploads content and returns a shareable address; `data_put` returns a private DataMap instead. Both accept `payment_mode`, using `PaymentMode.AUTO` by default. Follow [Store Data on the Network](../../store-data-on-the-network.md) for wallet and upload setup.
+
+Uploads require a configured wallet and Ethereum Virtual Machine (EVM) payment settings. They can spend funds and publish data permanently. Confirm the intended network, payment contracts, and budget before uploading; a successful health check or retrieval does not establish upload readiness. Use the [local-development setup](../../../guides/set-up-a-local-network.md) to assess your integration before committing funds.
+
+### External-signer limitations
+
+REST and gRPC expose wallet operations and external-signer prepare/finalize methods, but their response fields are not identical. The Python REST parser expects `payment_type: "merkle_batch"`, while antd returns `payment_type: "merkle"`, so it drops Merkle pool commitments. Its generated gRPC messages also omit multi-batch fields, and its convenience methods do not support multi-batch Merkle finalization. Do not use the Python convenience client for Merkle preparation; use the raw [REST external-signer workflow](../../how-to-guides/use-external-signers-for-upload-payments.md) instead.
 
 ## Full API reference
 
-For all available daemon endpoints, see the [REST API](../rest-api.md).
+For all available **antd** endpoints, see the [REST API](../rest-api.md).
+
+## Related pages
+
+- [Native Python SDK](../../native/python.md): connect directly without a local service, using a different package and API.
+- [Native SDKs](../../native/README.md): language options for direct connections.

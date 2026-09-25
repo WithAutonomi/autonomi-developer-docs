@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-Reference for the `ant` CLI command tree and its flags. The command tree below follows the direct-network CLI surface, and the option tables stay grouped by command family for easier scanning. Hidden or advanced flags are called out where they matter for troubleshooting.
+Reference for the released `ant` CLI command tree and its flags. The option tables stay grouped by command family for easier scanning. Hidden or advanced flags are called out where they matter for troubleshooting.
 
 ## Command tree
 
@@ -22,6 +22,11 @@ ant
 │   │   ├── status
 │   │   └── info
 │   ├── dismiss
+│   ├── logs
+│   │   └── forward
+│   │       ├── enable
+│   │       ├── disable
+│   │       └── status
 │   ├── reset
 │   ├── start
 │   ├── status
@@ -41,15 +46,17 @@ ant
 
 ## Root command and global flags
 
-### `ant [OPTIONS] <COMMAND>`
+### Root command
 
-The root command accepts the global flags used across data and node operations. Root flags must appear before the subcommand.
+**Command:** `ant [OPTIONS] <COMMAND>`
+
+The root command accepts flags used across data and node operations. Connection and payment flags must appear before the subcommand. The global `--json` flag can appear before or after it.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `--json` | boolean | No | Emit structured JSON |
+| `--json` | boolean | No | Request structured JSON from commands that support it. Wallet and chunk commands keep their normal text or raw-byte output. |
 | `-b, --bootstrap <IP:PORT>` | socket list | No | Bootstrap peers for data operations. Can be comma-separated or repeated. |
 | `--devnet-manifest <PATH>` | path | No | Path to a local devnet manifest JSON file |
 | `--allow-loopback` | boolean | No | Allow loopback connections for local devnet or local testing |
@@ -57,12 +64,14 @@ The root command accepts the global flags used across data and node operations. 
 | `--quote-timeout-secs <N>` | integer | No | Hidden. Controls lightweight network-operation timeouts such as DHT lookups. |
 | `--store-timeout-secs <N>` | integer | No | Hidden. Sets `ClientConfig.store_timeout_secs`. Non-Merkle chunk PUT response timeout is set by an internal `STORE_RESPONSE_TIMEOUT` constant; Merkle batch PUT timeout is set by `merkle_store_timeout_secs` (270 s default, library-only); chunk GET timeout is set by `--chunk-get-timeout-secs`. |
 | `--chunk-get-timeout-secs <N>` | integer | No | Hidden. Per-peer response timeout for chunk retrieve operations. Default 10 s. |
-| `--quote-concurrency <N>` | integer | No | Hidden. Caps the quote channel only. It does not affect store or download concurrency. |
-| `--store-concurrency <N>` | integer | No | Hidden. Controls upload chunk concurrency. `--chunk-concurrency` is accepted as an alias. |
+| `--quote-concurrency <N>` | integer | No | Hidden and deprecated. Caps the adaptive quote channel only, except that the legacy default `32` is ignored. It does not affect store or download concurrency. |
+| `--store-concurrency <N>` | integer | No | Hidden and deprecated. Caps the adaptive store channel only, except that the legacy default `8` is ignored. `--chunk-concurrency` is accepted as an alias. |
 | `-v, --verbose...` | count | No | Increase log verbosity: `-v`, `-vv`, or `-vvv` |
-| `--evm-network <NET>` | string | No | EVM network for payments: `arbitrum-one`, `arbitrum-sepolia`, or `local` |
+| `--evm-network <NET>` | string | No | EVM network for payments: `arbitrum-one`, `arbitrum-sepolia`, or `local`. Defaults to `arbitrum-one`, except when a devnet manifest that carries an EVM block is loaded. |
 | `-h, --help` | boolean | No | Print help |
 | `-V, --version` | boolean | No | Print version |
+
+When you load a devnet manifest that carries an EVM block, set `--evm-network` explicitly. Pass `local` to use the manifest's EVM configuration, or pass `arbitrum-one` or `arbitrum-sepolia` to override it. Omitting the flag is rejected so a payment cannot silently target the wrong network. Selecting a preset alongside such a manifest prints a warning that the manifest's EVM configuration is ignored. A manifest without an EVM block, or a run with no manifest, still defaults to `arbitrum-one`.
 
 **Environment:**
 
@@ -78,7 +87,9 @@ ant --help
 
 ## File commands
 
-### `ant file upload <PATH>`
+### Upload a file
+
+**Command:** `ant file upload <PATH>`
 
 Uploads a file with self-encryption and EVM payment.
 
@@ -87,20 +98,22 @@ Uploads a file with self-encryption and EVM payment.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `PATH` | path | Yes | File to upload |
-| `--public` | boolean | No | Store the DataMap on-network so anyone with the address can download the file |
+| `--public` | boolean | No | Store the DataMap on the Autonomi Network so anyone with the address can download the file |
 | `--merkle` | boolean | No | Force Merkle batch payment |
 | `--no-merkle` | boolean | No | Force single per-chunk payments |
-| `--store-timeout <N>` | integer | No | Hidden. Overrides `ClientConfig.store_timeout_secs` for this upload only. See the `--store-timeout-secs` row in the [Root command and global flags](#root-command-and-global-flags) section for what that field does and does not govern. |
-| `--store-concurrency <N>` | integer | No | Hidden. Overrides upload chunk concurrency for this upload. |
+| `--store-timeout <N>` | integer | No | Hidden legacy option. Overrides `ClientConfig.store_timeout_secs` for this invocation, but does not govern upload PUT timeouts. |
+| `--store-concurrency <N>` | integer | No | Hidden and deprecated. Caps the adaptive store channel for this upload, except that the legacy default `8` is ignored. |
 | `--overwrite` | boolean | No | Replace any existing `<filename>.datamap` instead of writing a suffixed `<filename>-2.datamap`. |
 
 **Example:**
 
 ```bash
-SECRET_KEY=0x<hex_private_key> ant file upload photo.jpg --public
+ant file upload photo.jpg --public
 ```
 
-### `ant file download [ADDRESS]`
+### Download a file
+
+**Command:** `ant file download [ADDRESS]`
 
 Downloads a public file by address or a private file using a local DataMap file.
 
@@ -112,7 +125,7 @@ Downloads a public file by address or a private file using a local DataMap file.
 | `--datamap <PATH>` | path | No | Local `.datamap` file for private download |
 | `-o, --output <PATH>` | path | Conditionally | Required for address-based downloads. Optional for `--datamap` downloads that can infer the original filename. |
 | `--peers <COUNT>` | integer | No | Number of closest peers to try for each chunk fetch. Accepts a positive integer. `--peer-count` is accepted as an alias. |
-| `--all-peers` | boolean | No | Diagnostic mode: download the file as usual, then fetch each chunk from every selected closest peer and print ranked per-peer results. `--try-all-peers` is accepted as an alias. The number of closest peers swept per chunk comes from `--peers`, defaulting to the client close-group size. With `--json`, the per-peer results are emitted as a `chunk_peer_check` object on the download result. |
+| `--all-peers` | boolean | No | Diagnostic mode: download the file as usual, then fetch each chunk from every selected closest peer and print ranked per-peer results. `--try-all-peers` is accepted as an alias. The number of closest peers swept per chunk comes from `--peers`, defaulting to the client close group size. With `--json`, the per-peer results are emitted as a `chunk_peer_check` object on the download result. |
 
 **Example:**
 
@@ -122,7 +135,7 @@ ant file download 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb707
 
 The output path is your local filename. In this example, the command downloads a public JPEG of Lucky the dog and saves it as `lucky.jpg`.
 
-Private datamap example:
+Private DataMap example:
 
 ```bash
 ant file download --datamap photo.jpg.datamap
@@ -134,7 +147,9 @@ Diagnostic example (download, then rank closest-peer results for each chunk):
 ant file download 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a -o lucky.jpg --all-peers --peers 5
 ```
 
-### `ant file cost <PATH>`
+### Estimate file cost
+
+**Command:** `ant file cost <PATH>`
 
 Estimates the upload cost for a file without uploading it.
 
@@ -152,9 +167,11 @@ Estimates the upload cost for a file without uploading it.
 ant file cost photo.jpg --merkle
 ```
 
-## Chunk commands
+## Commands for chunks
 
-### `ant chunk put [FILE]`
+### Store a chunk
+
+**Command:** `ant chunk put [FILE]`
 
 Stores a single chunk from a file or from standard input.
 
@@ -167,10 +184,12 @@ Stores a single chunk from a file or from standard input.
 **Example:**
 
 ```bash
-echo "hello autonomi" | SECRET_KEY=0x<hex_private_key> ant chunk put
+printf 'hello Autonomi\n' | ant chunk put
 ```
 
-### `ant chunk get <ADDRESS>`
+### Retrieve a chunk
+
+**Command:** `ant chunk get <ADDRESS>`
 
 Retrieves a single chunk by address.
 
@@ -180,24 +199,28 @@ Retrieves a single chunk by address.
 |------|------|----------|-------------|
 | `ADDRESS` | string | Yes | Hex-encoded chunk address (64 hex characters) |
 | `-o, --output <PATH>` | path | No | Write the chunk to a file instead of stdout |
-| `--all-peers` | boolean | No | Diagnostic mode: try every selected closest peer and print ranked per-peer results. Chunk bytes are only written when `-o`/`--output` is also supplied. |
+| `--all-peers` | boolean | No | Diagnostic mode: try every selected closest peer and print ranked per-peer results. Bytes for the chunk are only written when `-o`/`--output` is also supplied. |
 | `--peer-count <N>` | integer | No | Diagnostic mode only. Number of closest peers to try with `--all-peers`. Requires `--all-peers`. |
 
 **Example:**
 
 ```bash
-ant chunk get <chunk_address> -o chunk.bin
+: "${CHUNK_ADDRESS:?Set CHUNK_ADDRESS to a 64-character chunk address}"
+ant chunk get "$CHUNK_ADDRESS" -o chunk.bin
 ```
 
 Diagnostic example (try all closest peers and rank results):
 
 ```bash
-ant chunk get <chunk_address> --all-peers --peer-count 5
+: "${CHUNK_ADDRESS:?Set CHUNK_ADDRESS to a 64-character chunk address}"
+ant chunk get "$CHUNK_ADDRESS" --all-peers --peer-count 5
 ```
 
 ## Wallet commands
 
-### `ant wallet address`
+### Show the wallet address
+
+**Command:** `ant wallet address`
 
 Prints the wallet address derived from `SECRET_KEY`.
 
@@ -208,10 +231,12 @@ This command has no command-specific parameters.
 **Example:**
 
 ```bash
-SECRET_KEY=0x<hex_private_key> ant wallet address
+ant wallet address
 ```
 
-### `ant wallet balance`
+### Show the wallet balance
+
+**Command:** `ant wallet balance`
 
 Prints the token balance for the configured EVM network.
 
@@ -222,21 +247,24 @@ This command has no command-specific parameters.
 **Example:**
 
 ```bash
-SECRET_KEY=0x<hex_private_key> ant wallet balance
+ant wallet balance
 ```
 
 ## Node commands
 
-### `ant node daemon start`
+### Start node management
 
-Launches the node daemon as a detached background process. By default it binds to a random free port on `127.0.0.1` and writes the chosen port to `daemon.port` for SDK discovery.
+**Command:** `ant node daemon start`
+
+Launches the node-management service as a detached background process. By default it binds to a random free port on `127.0.0.1` and writes the chosen port to `ant/daemon.port`. This file belongs to node management; SDK discovery reads the separate `ant/sdk/daemon.port` file written by `antd`.
 
 **Parameters:**
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `--port <PORT>` | integer | No | Pin the HTTP port. `0` is equivalent to the default (OS-assigned). |
-| `--listen-addr <IP>` | IP address | No | Bind address. Defaults to `127.0.0.1`. Binding to a non-loopback address (e.g. `0.0.0.0`) exposes node management without authentication — only do this when the network path is controlled. |
+| `--listen-addr <IP>` | IP address | No | Bind address. Defaults to `127.0.0.1`. Binding to a non-loopback address (e.g. `0.0.0.0`) exposes node management without authentication; use it only across a controlled connection. |
+| `--log-path <PATH>` | path | No | Write daily rotating node-management logs using this path as the log-family name. The service retains 30 daily files. Without this option, the service does not write its own log file. |
 
 **Example:**
 
@@ -247,7 +275,9 @@ ant node daemon start
 ant node daemon start --listen-addr 0.0.0.0 --port 8765
 ```
 
-### `ant node daemon stop`
+### Stop node management
+
+**Command:** `ant node daemon stop`
 
 Shuts down the running node daemon.
 
@@ -261,7 +291,9 @@ This command has no command-specific parameters.
 ant node daemon stop
 ```
 
-### `ant node daemon status`
+### Show node-management status
+
+**Command:** `ant node daemon status`
 
 Shows whether the node daemon is running and reports summary stats.
 
@@ -275,9 +307,11 @@ This command has no command-specific parameters.
 ant node daemon status
 ```
 
-### `ant node daemon info`
+### Show node-management information
 
-Outputs daemon connection details for programmatic use. This command always emits JSON.
+**Command:** `ant node daemon info`
+
+Outputs daemon connection details. The default output is human-readable; add the root `--json` flag for programmatic use.
 
 **Parameters:**
 
@@ -287,9 +321,66 @@ This command has no command-specific parameters.
 
 ```bash
 ant node daemon info
+ant --json node daemon info
 ```
 
-### `ant node add`
+### Enable log forwarding
+
+**Command:** `ant node logs forward enable`
+
+Records consent to forward node logs to the Autonomi beta log endpoint. If the node-management service is running, forwarding starts immediately. Otherwise, the setting takes effect the next time that service starts.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `--token <TOKEN>` | string | Conditionally | Write-only beta program token. Required the first time; re-enabling can reuse the stored token. |
+| `--endpoint <URL>` | URL | No | Override the forwarding endpoint. Intended for testing with a local sink. |
+| `--level <LEVEL>` | string | No | Lowest forwarded level: `trace`, `debug`, `info`, `warn`, or `error`. Defaults to `info`. |
+
+**Example:**
+
+```bash
+: "${BETA_TOKEN:?Set BETA_TOKEN to the supplied beta program token}"
+ant node logs forward enable --token "$BETA_TOKEN" --level info
+```
+
+### Disable log forwarding
+
+**Command:** `ant node logs forward disable`
+
+Stops forwarding node logs without changing the nodes themselves.
+
+**Parameters:**
+
+This command has no command-specific parameters.
+
+**Example:**
+
+```bash
+ant node logs forward disable
+```
+
+### Check log forwarding
+
+**Command:** `ant node logs forward status`
+
+Shows whether forwarding is enabled, whether it is active, which nodes are included, and delivery statistics.
+
+**Parameters:**
+
+This command has no command-specific parameters.
+
+**Example:**
+
+```bash
+ant node logs forward status
+ant --json node logs forward status
+```
+
+### Add nodes
+
+**Command:** `ant node add`
 
 Adds one or more nodes to the registry.
 
@@ -319,7 +410,9 @@ ant node add --rewards-address 0xYourWallet --count 1
 ant node add --rewards-address 0xYourWallet --count 1 --upgrade-channel stable
 ```
 
-### `ant node start`
+### Start nodes
+
+**Command:** `ant node start`
 
 Starts all registered nodes, or one named node with `--service-name`.
 
@@ -335,7 +428,9 @@ Starts all registered nodes, or one named node with `--service-name`.
 ant node start --service-name node1
 ```
 
-### `ant node status`
+### Show node status
+
+**Command:** `ant node status`
 
 Shows the status of all registered nodes. Each node reports a state, shown in the table as `Running`, `Stopped`, `Starting`, `Stopping`, `Errored`, or `Evicted`. An evicted node is one the node daemon automatically stopped when its host ran low on disk. Eviction stops the node and attempts to delete its data directory to reclaim space, then keeps the node's registry record marked `Evicted`. The table row for an evicted node shows the eviction reason and the exact `ant node dismiss` command to clear it. Deletion can fail; check the eviction reason to see what was attempted, and treat `reclaimed_bytes` in the JSON output as the recorded estimate for that attempt rather than a measurement of free space now available.
 
@@ -353,7 +448,7 @@ ant node status
 
 **JSON output:**
 
-Add `--json` (a root flag, so it comes before the subcommand) to emit a machine-readable payload.
+Add `--json` before or after the subcommand to emit a machine-readable payload.
 
 ```bash
 ant --json node status
@@ -408,7 +503,7 @@ Example payload with two running nodes that share a partition and one previously
     {
       "node_id": 1,
       "name": "node1",
-      "version": "0.4.0",
+      "version": "0.18.0",
       "status": "running",
       "pid": 48213,
       "uptime_secs": 7200
@@ -416,7 +511,7 @@ Example payload with two running nodes that share a partition and one previously
     {
       "node_id": 2,
       "name": "node2",
-      "version": "0.4.0",
+      "version": "0.18.0",
       "status": "running",
       "pid": 48219,
       "uptime_secs": 6600
@@ -424,7 +519,7 @@ Example payload with two running nodes that share a partition and one previously
     {
       "node_id": 3,
       "name": "node3",
-      "version": "0.4.0",
+      "version": "0.18.0",
       "status": "evicted",
       "eviction": {
         "reason": "Automatically evicted to reclaim disk space: only 480 MiB free on its partition. Its data directory was deleted, recovering ~2.00 GiB.",
@@ -487,7 +582,9 @@ Output:
 ✓ Dismissed node 3 (node3)
 ```
 
-### `ant node stop`
+### Stop nodes
+
+**Command:** `ant node stop`
 
 Stops all registered nodes, or one named node with `--service-name`.
 
@@ -503,7 +600,9 @@ Stops all registered nodes, or one named node with `--service-name`.
 ant node stop --service-name node1
 ```
 
-### `ant node reset`
+### Reset nodes
+
+**Command:** `ant node reset`
 
 Resets node state, including data, logs, and registry information.
 
@@ -521,9 +620,19 @@ ant node reset --force
 
 ## Update command
 
-### `ant update`
+### Update the CLI
 
-Checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
+**Command:** `ant update`
+
+For installations made from release downloads or the shell/PowerShell installers, checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
+
+For npm installations, use:
+
+```sh
+npm update -g @withautonomi/ant
+```
+
+`ant update` does not replace an npm-managed executable. When an update is available or you pass `--force`, it directs you to npm instead; if the version is already current, it reports that no update is needed. The channel and replacement options below apply to installations managed by `ant update`.
 
 **Parameters:**
 

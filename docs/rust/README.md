@@ -15,42 +15,45 @@
   verification_mode: current-merged-truth
 -->
 
-Rust gives you two supported ways to build on Autonomi.
+To store and retrieve data in Rust, use a client library that calls the local `antd` service or the `ant-core` library that connects directly to the Autonomi Network. Both libraries run in your application; the difference is which process handles the network connection.
 
 ## Choose how you'll work in Rust
 
-### Rust through the SDK daemon
+### Rust client library for antd
 
-Use the Rust SDK when you want Rust code to talk to `antd` just like the other SDK languages do.
+Use `antd-client` when you want a separate background service, `antd`, to handle network access. Your application calls the Rust library, which sends requests to `antd` over REST or gRPC.
 
-Choose the Rust SDK if you want:
+The Rust client library is included in the `ant-sdk v0.12.1` release source but is not published on crates.io. Use it only from a checkout pinned to the `ant-sdk v0.12.1` release commit. If you need an obtainable crates.io dependency, choose Direct Rust with `ant-core 0.10.0`.
 
-- the same daemon-based model used by Python, Node.js / TypeScript, Go, and the other SDKs
-- REST or gRPC access through a stable local gateway
-- a Rust app that fits into the broader SDK workflow
+Choose `antd-client` if you want:
 
-See [Rust SDK](../sdk/reference/language-bindings/rust.md).
+- to keep the network connection in a separate local service
+- to use the same REST or gRPC service as the other [antd client libraries](../sdk/reference/language-bindings/overview.md)
 
-### Native Rust with ant-core
+Not every SDK library uses `antd`: the [native libraries for Python, Node.js, and .NET](../sdk/native/README.md) connect directly from your application.
 
-Use `ant-core` when you want direct, daemon-free Rust access to networking, uploads, and payment flows.
+See [Rust client library](../sdk/reference/language-bindings/rust.md).
 
-Choose native Rust with ant-core if you want:
+### Direct Rust with ant-core
 
-- direct control over the network client in Rust
-- no daemon process between your code and the network
-- access to native Rust types, local devnet helpers, and direct client tuning such as loopback and timeout control
+Use `ant-core` to handle networking, uploads, and payment flows within your Rust application, without a separate `antd` service.
 
-See [Build Directly in Rust](build-directly-in-rust.md) and [Rust Library Reference](library-reference.md).
+Choose Direct Rust with `ant-core` if you want:
+
+- direct control over the Autonomi Network client in Rust
+- no `antd` process between your code and the Autonomi Network
+- access to Rust types, local devnet helpers, and client tuning such as loopback and timeout control
+
+See [Build with Direct Rust](build-directly-in-rust.md) and [Rust Library Reference](library-reference.md).
 
 ## How the two Rust paths differ
 
-| | Rust SDK | `ant-core` |
+| | `antd-client` | `ant-core` |
 |---|---|---|
-| Interface model | daemon-based | direct Rust library |
+| Runs in | your application | your application |
 | Network access | through `antd` | direct |
-| Good fit | SDK-style app development | native Rust control |
-| Closest equivalent | Python / Node.js / TypeScript SDKs | no daemon equivalent |
+| Good fit | network access managed by a separate service | network access managed within your application |
+| Installation | Pinned `ant-sdk v0.12.1` source checkout | `ant-core 0.10.0` from crates.io |
 
 ## Upstream sources
 
@@ -59,6 +62,6 @@ See [Build Directly in Rust](build-directly-in-rust.md) and [Rust Library Refere
 
 ## Related pages
 
-- [Build Directly in Rust](build-directly-in-rust.md)
-- [Rust SDK](../sdk/reference/language-bindings/rust.md)
+- [Build with Direct Rust](build-directly-in-rust.md)
+- [Rust client library](../sdk/reference/language-bindings/rust.md)
 - [Rust Library Reference](library-reference.md)

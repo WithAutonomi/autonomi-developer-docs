@@ -30,7 +30,7 @@ If you are building on Autonomi, you need to understand three different things:
 
 - wallet keys pay for uploads
 - public addresses retrieve public data
-- `DataMap` retrieves private data
+- a `DataMap` supplies the metadata needed to retrieve private data
 
 Treating those as one all-purpose developer key makes the rest of the system harder to understand.
 
@@ -48,25 +48,25 @@ The wallet private key is used for paid writes.
 
 Depending on the tool you use, that appears as:
 
-- `AUTONOMI_WALLET_KEY` for `antd`
-- `SECRET_KEY` for `ant`
-- an attached `Wallet` in `ant-core`
+- `AUTONOMI_WALLET_KEY` for [`antd`](../sdk/use-antd.md)
+- `SECRET_KEY` for [`ant`](../cli/use-the-cli.md)
+- an attached `Wallet` in [`ant-core`](../rust/library-reference.md)
 
 This key is about payment, not about private-data decryption.
 
 ## Public address
 
-A public address is what you use to retrieve data that has been published on the network.
+A public address is what you use to retrieve data that has been published on the Autonomi Network.
 
 When you upload public data or store a public DataMap, the tooling returns an address that other readers can use later. If the content changes, the address changes too, because the storage model is content-addressed and immutable.
 
 ## DataMap
 
-A `DataMap` is the private retrieval material that ties uploaded content back to its encrypted chunks.
+A `DataMap` is retrieval metadata that ties uploaded content back to its encrypted chunks. Public uploads store it on the Autonomi Network; private uploads return it to you.
 
 For private data:
 
-- the chunks are still stored on the network
+- the chunks are still stored on the Autonomi Network
 - the `DataMap` is returned to you instead of being stored publicly
 - if you lose that `DataMap`, you lose the practical ability to retrieve the private content
 
@@ -89,6 +89,6 @@ The simplest way to think about the split is:
 ## Related pages
 
 - [Data Types](data-types.md)
-- [Self-Encryption](self-encryption.md)
+- [Self-encryption](self-encryption.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
 - [Build Read-Only Features](../guides/build-read-only-features.md)

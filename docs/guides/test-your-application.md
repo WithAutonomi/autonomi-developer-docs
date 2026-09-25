@@ -22,193 +22,187 @@
   verification_mode: current-merged-truth
 -->
 
-Test against the local tooling first, then move outward to more production-like environments.
+Test application logic without Autonomi services first, then run integration tests in an isolated local environment before considering a paid public-network test.
 
-This guide focuses on the shared testing progression that applies across SDK, CLI, and direct Rust work, even though the local daemon environment is the first concrete example.
+The concrete examples use the Python `antd` client from the pinned `ant-sdk v0.12.0` checkout, not a separately published Python package. CLI and Direct Rust projects should apply the same test boundaries around their own adapters. For other SDK installation choices, see [SDK Language Bindings](../sdk/reference/language-bindings/overview.md).
 
 ## Prerequisites
 
-- A test framework for your language
-- `ant-dev` installed from an `ant-sdk` checkout, or a direct-network local devnet if you are testing `ant-core`
+- Python 3.10 or newer
+- Git for the pinned source checkout
+- For integration tests: a fresh disposable environment prepared with the exact `ant-sdk v0.12.0` and `ant-node v0.17.1` checkouts
+- `protoc`, Rust, Foundry, and `anvil` for the local integration environment
 
-If you also use [the direct-network CLI](../cli/use-the-cli.md), isolate `ant-dev` in a virtualenv, `pipx`, or a separate `PATH` so the two `ant` commands do not shadow each other.
+The local workflow is limited to disposable, isolated environments. Its `ant dev stop` command broadly kills matching Anvil processes and deletes shared paths under `~/.local/share/ant` on non-Windows systems. Run integration tests only in a disposable runner or virtual machine, and dispose of that environment after the test.
+
+Use `ant-sdk v0.12.0` and `ant-node v0.17.1` together for this integration setup, rather than substituting the independently released `antd 0.13.0` or `ant-node 0.20.0`. Keep it separate from newer client installations and complete the isolated test before depending on it.
 
 ## Steps
 
-### 1. Keep unit tests local to your own code
+### 1. Install the pinned Python source for unit tests
 
-Mock the daemon client or direct-network wrapper at your application boundary.
+Pin the `ant-sdk v0.12.0` checkout and install it into a virtual environment. The local path keeps these tests on the exact source version used by the integration setup rather than a separately published package.
 
-{% tabs %}
-{% tab title="Python" %}
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+git clone --branch v0.12.0 --depth 1 https://github.com/WithAutonomi/ant-sdk.git
+test "$(git -C ant-sdk rev-parse HEAD)" = "8378338ca04d3a78db8ad0c943daf182cfd27763"
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --editable "ant-sdk/antd-py[rest]" pytest
+
+python -c 'from antd import AntdClient, DataPutPublicResult; print("antd Python source import passed")'
+```
+
+Expected output:
+
+```text
+antd Python source import passed
+```
+
+### 2. Keep unit tests independent of Autonomi services
+
+Create `test_storage.py`:
+
 ```python
 from unittest.mock import MagicMock
+
 from antd import DataPutPublicResult
 
-def test_store_data():
+
+def store_message(client: object, message: bytes) -> str:
+    result = client.data_put_public(message)
+    return result.address
+
+
+def test_store_message_returns_the_public_address() -> None:
     mock_client = MagicMock()
     mock_client.data_put_public.return_value = DataPutPublicResult(
-        address="abc123",
-        chunks_stored=1,
-        payment_mode_used="auto",
+        address="ab" * 32,
+        chunks_stored=3,
+        payment_mode_used="single",
     )
 
-    result = mock_client.data_put_public(b"test data")
-    assert result.address == "abc123"
+    address = store_message(mock_client, b"test data")
+
+    assert address == "ab" * 32
+    mock_client.data_put_public.assert_called_once_with(b"test data")
 ```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { describe, expect, it, vi } from "vitest";
 
-describe("store data", () => {
-  it("returns an address", async () => {
-    const mockClient = {
-      dataPutPublic: vi.fn().mockResolvedValue({
-        address: "abc123",
-        chunksStored: 1,
-        paymentModeUsed: "auto",
-      }),
-    };
-
-    const result = await mockClient.dataPutPublic(Buffer.from("test data"));
-    expect(result.address).toBe("abc123");
-  });
-});
-```
-{% endtab %}
-{% endtabs %}
-
-### 2. Run integration tests against the local daemon environment
-
-Start the local environment:
+Run it:
 
 ```bash
-ant dev start --ant-node-dir ../ant-node
+#!/usr/bin/env bash
+set -euo pipefail
+
+source .venv/bin/activate
+pytest -q test_storage.py
 ```
 
-Check the daemon:
+Expected output ends with:
 
-```bash
-curl http://localhost:8082/health
+```text
+1 passed
 ```
 
-Then run a round-trip integration test.
+This test verifies your application boundary without starting `antd`, connecting to the Autonomi Network, or making a payment.
 
-{% tabs %}
-{% tab title="Python" %}
+### 3. Prepare an isolated integration environment
+
+Use a fresh disposable runner, separate from the unit-test checkout, and follow [Set Up a Local Network](set-up-a-local-network.md). That setup pins:
+
+- `ant-sdk v0.12.0` at `8378338ca04d3a78db8ad0c943daf182cfd27763`
+- `ant-node v0.17.1` at `953e565fb713e43769e0e82dc4f424b8cc63ed7a`
+
+It also installs both Python packages from source. Installing only `ant-sdk/ant-dev` can resolve its `antd[rest,grpc]` dependency from PyPI instead of the pinned checkout; install both to keep the same pairing.
+
+Do not use `ant dev reset`. `ant-dev 0.1.0` first runs its broad teardown, then omits the required `preset` restart argument and fails. Do not use `ant dev stop` outside a disposable environment because it broadly terminates Anvil processes and deletes shared paths under `~/.local/share/ant` on non-Windows systems.
+
+### 4. Run a local round-trip integration test
+
+After the isolated local environment reports healthy, create `autonomi-local/test_integration.py` from the directory that contains `autonomi-local`:
+
 ```python
 from antd import AntdClient
 
-def test_round_trip():
+
+def test_public_data_round_trip() -> None:
     client = AntdClient()
     status = client.health()
     assert status.ok
+    assert status.network == "local"
 
     original = b"Integration test data"
     result = client.data_put_public(original)
-    retrieved = client.data_get_public(result.address)
 
+    assert len(result.address) == 64
+    retrieved = client.data_get_public(result.address)
     assert retrieved == original
 ```
-{% endtab %}
-{% tab title="Node.js / TypeScript" %}
-```typescript
-import { describe, expect, it } from "vitest";
-import { createClient } from "antd";
 
-describe("integration", () => {
-  it("round-trips public data", async () => {
-    const client = createClient();
-    const status = await client.health();
-    expect(status.ok).toBe(true);
-
-    const original = Buffer.from("Integration test data");
-    const result = await client.dataPutPublic(original);
-    const retrieved = await client.dataGetPublic(result.address);
-
-    expect(retrieved).toEqual(original);
-  });
-});
-```
-{% endtab %}
-{% endtabs %}
-
-### 3. Use the built-in example smoke tests
-
-The `ant-dev` CLI can run example programs from the repo:
+Run it:
 
 ```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORK_DIR="$HOME/autonomi-local"
+source "$WORK_DIR/.venv/bin/activate"
+python -m pip install pytest
+pytest -q "$WORK_DIR/test_integration.py"
+```
+
+Expected output ends with:
+
+```text
+1 passed
+```
+
+This test uses local test funds and can automatically grant the local payment vault an unlimited allowance when the existing allowance is too low. Retain the test output. The result applies only to the source-only workflow in your isolated local environment and does not establish production compatibility.
+
+### 5. Run bundled smoke tests
+
+From the pinned `ant-sdk` checkout, with the local environment's virtual environment active, `ant-dev` provides these example runners:
+
+`connect` is read-only. `data` estimates cost, performs a local paid upload, and reads the data back. Its first payment can also grant an unlimited allowance, so run it only against the isolated local environment.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORK_DIR="$HOME/autonomi-local"
+source "$WORK_DIR/.venv/bin/activate"
+cd "$WORK_DIR/ant-sdk"
 ant dev example connect
 ant dev example data
 ```
 
-These are a good smoke-test layer before you run your own suite.
+The exact output depends on the local environment. Both commands must exit with status 0; preserve their output with the rest of your integration-test results.
 
-### 4. Add CI setup explicitly
+### 6. Isolate the local setup in shared CI
 
-If your CI job starts the local environment, make the `ant-node` checkout explicit:
+A shared continuous integration (CI) job for this source-only local workflow must use a disposable runner, pin both source tags, install `protoc`, Rust, Foundry, both Python source packages, and preserve logs on failure.
 
-```yaml
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check out ant-sdk
-        uses: actions/checkout@v4
-        with:
-          repository: WithAutonomi/ant-sdk
-          path: ant-sdk
-
-      - name: Check out ant-node
-        uses: actions/checkout@v4
-        with:
-          repository: WithAutonomi/ant-node
-          path: ant-node
-
-      - name: Install Foundry
-        run: |
-          curl -sL https://foundry.paradigm.xyz | bash
-          ~/.foundry/bin/foundryup
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-        # ant-devnet requires anvil for the local EVM testnet; appending
-        # to $GITHUB_PATH puts it on PATH for every subsequent step.
-
-      - name: Install ant-dev
-        run: pip install -e ant-sdk/ant-dev/
-
-      - name: Start local environment
-        run: ant dev start --ant-node-dir ./ant-node
-
-      - name: Wait for antd
-        run: |
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:8082/health && exit 0
-            sleep 1
-          done
-          exit 1
-
-      - name: Run tests
-        run: pytest -v
-
-      - name: Stop local environment
-        if: always()
-        run: ant dev stop
-```
+Do not add `ant dev reset` as recovery. On a disposable runner, `ant dev stop` is contained but still uses broad process and filesystem matching; destroying the runner is the safer cleanup boundary.
 
 ## Verify it worked
 
-Your local integration environment is healthy when `ant dev status` reports a running daemon and your round-trip test passes against `http://localhost:8082`.
+Your unit layer is working when `test_storage.py` passes without any Autonomi process. Your local integration layer is working when the full health response identifies `network: local` and `test_integration.py` retrieves bytes identical to those uploaded.
+
+Neither result proves compatibility with the deployed production Autonomi Network. Before production uploads, run a controlled paid upload and retrieval test using the checklist in [Deploy to Mainnet](deploy-to-mainnet.md).
 
 ## Common errors
 
-**Health check never turns green**: Inspect `ant dev logs`.
+**Python uses a different client version**: For this setup, install `ant-sdk/antd-py[rest,grpc]` and `ant-sdk/ant-dev` together from the pinned source checkout instead of substituting the separately published `antd` package.
 
-**Wrong daemon API shape in tests**: Update tests to the JSON/base64 `antd` surface.
+**Health check never turns green**: Preserve `~/.ant-dev/antd.log` and `~/.ant-dev/devnet.log` from the disposable environment. Check `protoc`, `anvil`, source commits, and the `ant-node` path.
 
-**Local wallet issues**: Recreate the environment with `ant dev reset` or `ant dev stop` followed by `ant dev start`.
+**Wrong daemon API shape in direct HTTP tests**: Buffered data endpoints return base64 inside JSON. The Python client decodes that field and returns `bytes`.
+
+**Local wallet issues**: Do not use the broken reset command. Preserve the manifest and logs, dispose of the isolated environment, then create a fresh isolated run.
 
 ## Next steps
 

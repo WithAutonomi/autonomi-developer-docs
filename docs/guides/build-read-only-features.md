@@ -15,104 +15,159 @@
   verification_mode: current-merged-truth
 -->
 
-Build read-only Autonomi features when you only need to retrieve data that has already been stored and paid for.
+Retrieve existing public or private data without configuring a wallet or an upload payment flow.
 
-This guide compares the SDK, CLI, and direct Rust ways to build read-only retrieval features so you can choose the right read-only architecture for your application.
+This guide covers read-only retrieval through the `antd` REST API and CLI. For application code, see [SDK retrieval](../sdk/retrieve-data-from-the-network.md) or [Direct Rust](../rust/build-directly-in-rust.md). SDK client package versions are independent of antd; follow the [language-specific installation instructions](../sdk/reference/language-bindings/overview.md).
 
 ## Why this matters
 
-Read-only features are simpler than upload-enabled ones.
+Read-only features have fewer security and operational requirements than upload-enabled features.
 
-If your application only reads data that has already been written to the network:
+If your application only reads data that has already been written to the Autonomi Network:
 
 - you do not need ANT
 - you do not need gas
 - you do not need a wallet
 - you do not need upload permissions
 
-That can make retrieval-only tools, dashboards, content browsers, and other read-heavy features much easier to build and operate.
+This keeps retrieval-only tools, dashboards, and content browsers separate from wallet keys and token approvals.
 
 ## Prerequisites
 
-- A known public address to retrieve, or a `DataMap` for private data
-- One of these routes:
-  - SDKs through `antd`
-  - the `ant` CLI
-  - native Rust with `ant-core`
+- A 64-character public address, or a hex-encoded `DataMap` for private data
+- For REST: the `antd v0.13.0` binary running on `http://127.0.0.1:8082`
+- For CLI: [ant installed](../cli/use-the-cli.md#install-the-cli) using npm or your operating system's installer
+- A known copy of the expected content if you want to verify its bytes
 
-If you do not already have an address or `DataMap`, create one first by following [Store and Retrieve Data with the SDKs](../sdk/how-to-guides/store-and-retrieve-data.md) or by storing data through the CLI or direct Rust.
+You do not need `AUTONOMI_WALLET_KEY`, `SECRET_KEY`, ANT, gas, or token approval for these retrieval operations.
 
 ## Steps
 
-### 1. Choose the interface you want to use
+### 1. Retrieve public data through antd
 
-With the SDK:
+The streaming endpoint writes the decrypted bytes directly instead of returning a base64 field inside JSON.
 
-- [Build with the SDKs](../sdk/install.md)
-- [Start the Local Daemon](../sdk/start-the-local-daemon.md)
-- [Retrieve Data from the Network](../sdk/retrieve-data-from-the-network.md)
-
-With the CLI:
-
-- [Use the CLI](../cli/use-the-cli.md)
-
-With Direct Rust:
-
-- [Build Directly in Rust](../rust/build-directly-in-rust.md)
-
-### 2. Retrieve public or private data
-
-For public data, you need a public address.
-
-For private data, you need the `DataMap` or equivalent private retrieval material.
-
-With the SDK, `antd` can run without `AUTONOMI_WALLET_KEY` when you only need retrieval.
-
-Public retrieval through the daemon:
+Set `ADDRESS` to a real public address, then run:
 
 ```bash
-curl http://localhost:8082/v1/data/public/<address>
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${ADDRESS:?Set ADDRESS to a 64-character public address}"
+
+curl --fail --show-error \
+  "http://127.0.0.1:8082/v1/data/public/${ADDRESS}/stream" \
+  --output downloaded.bin
+
+test -s downloaded.bin
+printf 'Downloaded %s bytes\n' "$(wc -c < downloaded.bin)"
 ```
 
-Private retrieval through the daemon:
+Expected output:
+
+```text
+Downloaded <non-zero number> bytes
+```
+
+### 2. Retrieve private data through antd
+
+Keep the `DataMap` private. It contains the material needed to locate and decrypt the content.
 
 ```bash
-curl -X POST http://localhost:8082/v1/data/get \
-  -H "Content-Type: application/json" \
-  -d '{"data_map":"<hex_encoded_datamap>"}'
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${DATA_MAP:?Set DATA_MAP to the hex-encoded DataMap}"
+
+curl --fail --show-error \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data "{\"data_map\":\"${DATA_MAP}\"}" \
+  http://127.0.0.1:8082/v1/data/stream \
+  --output downloaded-private.bin
+
+test -s downloaded-private.bin
+printf 'Downloaded %s bytes\n' "$(wc -c < downloaded-private.bin)"
 ```
 
-The private retrieval response is JSON with the content returned as base64 in the `data` field.
+Expected output:
 
-With the CLI, public and private file retrieval use `ant file download` with either a public address or a local `.datamap` file:
+```text
+Downloaded <non-zero number> bytes
+```
+
+The buffered endpoints, `GET /v1/data/public/{address}` and `POST /v1/data/get`, instead return JSON with the content encoded as base64 in the `data` field.
+
+### 3. Retrieve a file with the CLI
+
+The CLI includes built-in bootstrap peers, so no separate connection file is required for normal use. If you supply a custom `bootstrap_peers.toml` or explicit peer settings, use real network contacts rather than example IP addresses.
+
+Public retrieval:
 
 ```bash
-ant --bootstrap 1.2.3.4:12000 file download <public_address> -o downloaded.bin
-ant --bootstrap 1.2.3.4:12000 file download --datamap my_data.bin.datamap -o downloaded.bin
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${ADDRESS:?Set ADDRESS to a 64-character public address}"
+
+ant file download "$ADDRESS" --output downloaded.bin
+test -s downloaded.bin
 ```
 
-For native Rust, use the retrieval APIs in `ant-core` after connecting to the network client.
+Private retrieval:
 
-### 3. Keep wallet setup out of your architecture unless you also upload
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-If your application only reads data that has already been stored, it does not need:
+: "${DATA_MAP_FILE:?Set DATA_MAP_FILE to a local .datamap file}"
+
+ant file download --datamap "$DATA_MAP_FILE" --output downloaded-private.bin
+test -s downloaded-private.bin
+```
+
+Expected output includes `Download complete!`, the output filename, its size, and elapsed time.
+
+### 4. Keep wallet setup out of read-only applications
+
+If your application only reads data that has already been stored, omit:
 
 - `AUTONOMI_WALLET_KEY`
 - `SECRET_KEY`
 - token approvals
 - upload payment flows
 
-That means you can keep the architecture focused on retrieval and content handling instead of wallet management.
+Add wallet configuration only when the application also uploads.
 
 ## Verify it worked
 
-Your read-only feature is configured correctly when it can retrieve the expected content from a known public address or private `DataMap` without any wallet setup.
+Compare the downloaded bytes with a known copy:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${EXPECTED_FILE:?Set EXPECTED_FILE to the known original file}"
+
+cmp "$EXPECTED_FILE" downloaded.bin
+printf 'Downloaded content matches the expected file\n'
+```
+
+Expected output:
+
+```text
+Downloaded content matches the expected file
+```
 
 ## Common errors
 
-**404 Not Found**: Check the address.
+**400 Bad Request**: A public address must be exactly 64 hexadecimal characters, and a private `DataMap` must be valid hex-encoded serialized data.
 
-**Trying to use private retrieval without a DataMap**: Private content still requires the retrieval metadata even though the content has already been paid for.
+**500 Internal Server Error for missing data**: `antd v0.13.0` reports an absent public `DataMap` as `INTERNAL_ERROR` instead of not found. Check that the address identifies stored public data before treating other 500 responses as retryable service failures.
+
+**Connection configuration errors**: Check custom bootstrap files or explicit peer settings first. Normal CLI use does not require a separate config file; if you selected a local-development manifest, follow that environment's setup instead.
+
+**Private retrieval without a DataMap**: Private content requires the caller-held `DataMap`, even though the storage payment has already happened.
 
 ## Next steps
 

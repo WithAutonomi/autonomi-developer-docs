@@ -22,7 +22,7 @@
   verification_mode: current-merged-truth
 -->
 
-Use the two-phase upload flow when your application needs a wallet outside `antd` to sign and submit upload payments.
+Keep your wallet key outside the service that handles uploads. This two-phase flow uses a local daemon, a background service called antd, to prepare and finalize uploads while your external wallet signs and submits the payments.
 
 This is the right approach when:
 
@@ -33,27 +33,27 @@ This is the right approach when:
 ## Prerequisites
 
 - `antd` running without `AUTONOMI_WALLET_KEY` (see [Start the Local Daemon](../start-the-local-daemon.md))
-- EVM configuration available to the daemon for the target network
 - An external signer or wallet stack that can submit the required payment transactions
+
+The cURL flow below uses the REST API. Transport differences for gRPC are called out where the two interfaces behave differently.
+
+Payments on the public Autonomi Network spend real funds. Assess your signer integration in the [local-development setup](../../guides/set-up-a-local-network.md) first; a successful health check or retrieval does not establish payment readiness.
 
 ## Steps
 
 ### 1. Start antd without a wallet key
 
-The daemon does not have an `--external-signer` flag. External-signer mode is the absence of `AUTONOMI_WALLET_KEY` plus the use of the prepare/finalize endpoints.
+`antd` does not have an `--external-signer` flag. External signing uses the prepare/finalize endpoints while `AUTONOMI_WALLET_KEY` is unset.
 
-From the `ant-sdk/antd` build directory, run:
+From the directory containing the executable installed by [Start the Local Daemon](../start-the-local-daemon.md), run:
 
 ```bash
-EVM_RPC_URL=https://your-rpc-endpoint \
-EVM_PAYMENT_TOKEN_ADDRESS=0x... \
-EVM_PAYMENT_VAULT_ADDRESS=0x... \
-./target/release/antd
+./antd
 ```
 
-If `antd` is already on your `PATH`, replace `./target/release/antd` with `antd`.
+From another directory, use the absolute path to that executable. A bare `antd` command is appropriate only if you deliberately installed the intended version on your `PATH`.
 
-Use `EVM_PAYMENT_VAULT_ADDRESS` for both wave-batch and Merkle uploads in the external-signer flow.
+On the default network, `antd v0.13.0` selects the Arbitrum One preset and returns its canonical RPC and payment contracts from the prepare endpoints. Do not set individual `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, or `EVM_PAYMENT_VAULT_ADDRESS` overrides; those activate custom payment handling that default-network storage nodes reject.
 
 ### 2. Prepare the upload
 
@@ -62,7 +62,7 @@ For a single chunk (up to 4 MiB of raw bytes), call `POST /v1/chunks/prepare`. T
 ```bash
 CHUNK_B64=$(printf 'Hello, Autonomi!' | base64)
 
-curl -X POST http://localhost:8082/v1/chunks/prepare \
+curl --fail-with-body -X POST http://localhost:8082/v1/chunks/prepare \
   -H "Content-Type: application/json" \
   -d "{\"data\":\"$CHUNK_B64\"}"
 ```
@@ -81,19 +81,19 @@ When the chunk is already stored on the Autonomi Network, the response returns `
   "total_amount": "<atto_tokens>",
   "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint"
+  "rpc_url": "<arbitrum_one_rpc_url>"
 }
 ```
 
 After the external signer calls `payForQuotes()` with the returned `payments`, finalize with `POST /v1/chunks/finalize`:
 
 ```bash
-curl -X POST http://localhost:8082/v1/chunks/finalize \
+curl --fail-with-body -X POST http://localhost:8082/v1/chunks/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote_hash":"0xtx_hash"}}'
 ```
 
-The finalize response returns the network address of the stored chunk. Requires antd 0.7.0 or later.
+The finalize response returns the Autonomi Network address of the stored chunk. This endpoint requires `antd` 0.7.0 or later.
 
 For multi-chunk uploads (arbitrary files or in-memory data larger than one chunk), use the data or file prepare/finalize endpoints described below.
 
@@ -102,7 +102,7 @@ For in-memory data, call `POST /v1/data/prepare`.
 ```bash
 DATA_B64=$(printf 'Hello, Autonomi!' | base64)
 
-curl -X POST http://localhost:8082/v1/data/prepare \
+curl --fail-with-body -X POST http://localhost:8082/v1/data/prepare \
   -H "Content-Type: application/json" \
   -d "{\"data\":\"$DATA_B64\"}"
 ```
@@ -111,7 +111,7 @@ The in-memory data prepare endpoint accepts `"private"` (default) or `"public"` 
 
 The prepare endpoints return a `payment_type` discriminator. Use that value to decide which on-chain call to make and which finalize payload to send back.
 
-The daemon starts uploads of 64 or more chunks on the Merkle path and smaller uploads on the wave-batch path, but that initial selection is not final. A large upload can still come back as `wave_batch`: the already-stored preflight can leave fewer than 64 chunks to pay for, and too few reachable Merkle-capable peers also switches the preparation to wave-batch. Branch on the returned `payment_type`, not on the chunk count you submitted.
+File prepares start uploads of 64 or more chunks on the Merkle path and smaller file uploads on the wave-batch path, but that initial selection is not final. A large file can still come back as `wave_batch`: the already-stored preflight can leave fewer than 64 chunks to pay for, and too few reachable Merkle-capable peers also switches the preparation to wave-batch. In-memory data prepares always use wave-batch. Branch on the returned `payment_type`, not on the submitted chunk count.
 
 Wave-batch prepare response:
 
@@ -129,7 +129,7 @@ Wave-batch prepare response:
   "total_amount": "<atto_token_amount>",
   "payment_vault_address": "0x...",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint",
+  "rpc_url": "<arbitrum_one_rpc_url>",
   "total_chunks": 12,
   "already_stored_count": 4
 }
@@ -174,7 +174,7 @@ Merkle prepare response:
   "payment_vault_address": "0x...",
   "total_amount": "0",
   "payment_token_address": "0x...",
-  "rpc_url": "https://your-rpc-endpoint",
+  "rpc_url": "<arbitrum_one_rpc_url>",
   "total_chunks": 128,
   "already_stored_count": 0
 }
@@ -182,7 +182,7 @@ Merkle prepare response:
 
 Each `pool_commitments` entry contains exactly 16 candidate payments. The sample above shows one candidate for brevity.
 
-`merkle_batches` lists one entry per on-chain payment. A single Merkle tree covers up to 256 fresh chunks (roughly 1 GiB), so an upload larger than that splits across several batches, and the external signer submits one `payForMerkleTree2()` transaction per entry. The top-level `depth`, `pool_commitments`, and `merkle_payment_timestamp` are legacy single-batch fields: the daemon populates them only when `merkle_batches` has exactly one entry, mirroring that entry. A multi-batch response omits them, so read the payment details from `merkle_batches` and treat the singular fields as a convenience for the single-batch case.
+`merkle_batches` lists one entry per on-chain payment. A single Merkle tree covers up to 256 fresh chunks (roughly 1 GiB), so an upload larger than that splits across several batches, and the external signer submits one `payForMerkleTree2()` transaction per entry. The top-level `depth`, `pool_commitments`, and `merkle_payment_timestamp` are legacy single-batch fields: `antd` populates them only when `merkle_batches` has exactly one entry, mirroring that entry. A multi-batch response omits them, so read the payment details from `merkle_batches` and treat the singular fields as a convenience for the single-batch case.
 
 Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Use the two counts to reconcile cost — the difference explains why a prepare can come back cheaper than the raw file size implies. Construct the payment itself from the returned `payments` or `merkle_batches` entries, never from the chunk counts.
 
@@ -194,7 +194,7 @@ Use your signer stack to submit the EVM payment transaction described by the pre
 
 `antd` does not sign or broadcast those transactions in this flow.
 
-- For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`. When the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network, there is nothing to submit — go straight to finalize.
+- For `wave_batch`, call `payForQuotes()` with the returned `payments` and keep the resulting transaction hashes keyed by `quote_hash`. When the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network, there is nothing to submit and you can go straight to finalize through REST or gRPC.
 - For `merkle`, call `payForMerkleTree2()` once per entry in `merkle_batches`, passing that entry's `depth`, `pool_commitments`, and `merkle_payment_timestamp`. Keep the `winner_pool_hash` from each transaction's `MerklePaymentMade` event, in the same order as the batches.
 
 Both calls use the `payment_vault_address` returned by the prepare step.
@@ -206,35 +206,37 @@ After the external payment is on-chain, call `POST /v1/upload/finalize` with the
 Wave-batch finalize request:
 
 ```bash
-curl -X POST http://localhost:8082/v1/upload/finalize \
+curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
 ```
 
-When the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network — for example on a repeated upload — finalize with an empty `tx_hashes` object. No on-chain payment is needed, and `antd` returns the DataMap directly:
+With REST, when the prepare response carried no `payments` because every chunk is already stored on the Autonomi Network, finalize with an empty `tx_hashes` object. No on-chain payment is needed, and `antd` returns the DataMap directly:
 
 ```bash
-curl -X POST http://localhost:8082/v1/upload/finalize \
+curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","tx_hashes":{}}'
 ```
 
+The gRPC `FinalizeUpload` method also accepts an empty wave-batch `tx_hashes` map for this all-already-stored case. Both transports validate that every payment reported by prepare has a transaction hash before consuming the prepared state. Missing receipts return REST `400 BAD_REQUEST` or gRPC `INVALID_ARGUMENT`; correct the request and retry the same ID. After validation succeeds, a later network failure requires a new prepare call and payment reconciliation.
+
 Merkle finalize request. Pass `winner_pool_hashes` as an array holding one winner hash per entry in the prepare response's `merkle_batches`, in the same order:
 
 ```bash
-curl -X POST http://localhost:8082/v1/upload/finalize \
+curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","winner_pool_hashes":["0x...","0x..."]}'
 ```
 
 When the prepared upload has exactly one batch, you can pass the single `winner_pool_hash` field instead. Do not combine the two fields in one request.
 
-Keep one slot per prepared batch, in the prepare response's order — do not compact or reorder the list. If the signer skipped a batch, send an empty string (or `null`) in that slot; the chunks that batch would have paid for surface as a partial upload rather than a stored result. If no batch was paid at all, finalize rejects the request with a `402` payment error instead — a partial upload is reported only when at least one batch was paid.
+Keep one slot per prepared batch, in the prepare response's order — do not compact or reorder the list. With REST, send an empty string or `null` when the signer skipped a batch. With gRPC, use an empty string because repeated string fields cannot carry `null`. The chunks that batch would have paid for surface as a partial upload rather than a stored result. If no batch was paid at all, finalize rejects the request with a `402` payment error instead — a partial upload is reported only when at least one batch was paid.
 
 Single-batch uploads may still use the legacy field:
 
 ```bash
-curl -X POST http://localhost:8082/v1/upload/finalize \
+curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
   -H "Content-Type: application/json" \
   -d '{"upload_id":"<hex_id>","winner_pool_hash":"0x..."}'
 ```
@@ -246,15 +248,23 @@ Expected response shape:
   "data_map": "<hex_encoded_datamap>",
   "address": "<64_hex_address_if_store_data_map_true>",
   "data_map_address": "<64_hex_address_if_visibility_public>",
-  "chunks_stored": <chunk_count>
+  "chunks_stored": 128
 }
 ```
 
-`address` is only present when `store_data_map` is `true`; that path stores the DataMap through `antd`'s configured wallet. Use it only when `antd` has a wallet key. `data_map_address` is only present when the upload was prepared with `visibility:"public"`; it is the Autonomi Network address of the DataMap chunk whose payment was included in the same external-signer batch.
+In REST responses, `address` is omitted unless `store_data_map` is `true`; that path stores the DataMap through `antd`'s configured wallet. Use it only when `antd` has a wallet key. `data_map_address` is omitted unless the upload was prepared with `visibility:"public"`; it is the Autonomi Network address of the DataMap chunk whose payment was included in the same external-signer batch. The gRPC response uses empty strings instead of omitted fields.
 
 ### 5. Use SDK helpers when available
 
-The language bindings for `antd` follow the same prepare/finalize split across both REST and gRPC transports, but their Merkle support is narrower than the raw API. The `finalize_merkle_upload`-style helpers accept a single `winner_pool_hash`, which serves single-batch uploads at most, and not every binding surfaces the Merkle payment fields on its prepare result. For Merkle uploads, the dependable interfaces are direct REST calls and the generated gRPC request and response types, which carry `merkle_batches` and `winner_pool_hashes` in full. Among the convenience clients, the Go binding exposes multi-batch natively, with `MerkleBatches` on the prepare result and a `FinalizeMerkleUploadMulti` helper; in other languages, drive a multi-batch upload through the REST endpoints shown in the steps above. For file and in-memory data uploads, gRPC `UploadService` exposes the full finalize surface, including `data_map`, `data_map_address`, and `store_data_map`. For single-chunk uploads, gRPC `ChunkService` exposes `PrepareChunk` and `FinalizeChunk`; `FinalizeChunk` returns the stored chunk address.
+The REST endpoints shown above expose the complete multi-batch surface in `antd v0.13.0`. The Go convenience client also exposes `MerkleBatches` and `FinalizeMerkleUploadMulti` through REST and gRPC.
+
+For Python, use `pip install 'antd[rest]'` (see [Python installation](../reference/language-bindings/python.md#install)). For Node.js / TypeScript, use `npm install @withautonomi/antd` and import from `"@withautonomi/antd"` (see [TypeScript installation](../reference/language-bindings/typescript.md#install)). These clients are separate from the [native SDKs](../native/README.md), whose APIs do not use this REST workflow.
+
+The Python `antd 0.1.0`, Node.js / TypeScript `@withautonomi/antd 0.1.0`, and Rust `v0.12.1` convenience clients accept one winner-pool hash and therefore handle single-batch Merkle uploads at most. The Python REST parser also checks for `payment_type: "merkle_batch"` while `antd` returns `payment_type: "merkle"`, and its packaged gRPC messages do not include the multi-batch fields. Do not use the Python convenience client for Merkle preparation with this release. For multi-batch uploads in these languages, use the REST requests shown above. The `upload.proto` file defines `merkle_batches` and `winner_pool_hashes`, but generated binding files do not all expose them.
+
+The OpenAPI schema also omits multi-batch Merkle fields and incorrectly rejects public in-memory preparation. Do not generate an external-signer client from that schema alone; use the [REST API](../reference/rest-api.md) fields for these operations.
+
+For file and in-memory data uploads, gRPC `UploadService` exposes `data_map`, `data_map_address`, and `store_data_map`. For single-chunk uploads, gRPC `ChunkService` exposes `PrepareChunk` and `FinalizeChunk`; `FinalizeChunk` returns the stored chunk address.
 
 If you are building in Rust with ant-core instead of `antd`, the library exposes native external-payment helpers such as `data_prepare_upload`, `data_prepare_upload_with_visibility`, `file_prepare_upload`, `prepare_merkle_batch_external`, and `finalize_merkle_batch`. Use `data_prepare_upload_with_visibility(content, Visibility::Public)` to bundle the DataMap chunk into the payment batch for a public in-memory upload. For uploads that span more than one Merkle tree, `prepare_merkle_batches_external` returns the batches to pay and `finalize_upload_merkle_multi` completes the upload from a `Vec` of winner hashes aligned to those batches. Progress-aware variants such as `file_prepare_upload_with_progress`, `finalize_upload_with_progress`, `finalize_upload_merkle_with_progress`, and `finalize_upload_merkle_multi_with_progress` are also available when you need UI feedback during long-running uploads.
 
@@ -272,7 +282,7 @@ Finalize succeeds when `antd` accepts the `upload_id` plus either the `tx_hashes
 
 **502 Partial Upload**: The payment landed and some chunks stored, but others missed quorum after retries (or belonged to a batch the signer never paid). The response body carries the `PARTIAL_UPLOAD` code with `chunks_stored`, `chunks_failed`, and `total_chunks`. The stored chunks persist, so re-prepare the same content and finalize again to pay for and store only the remainder.
 
-**503 Service Unavailable**: You started `antd` in direct-wallet mode or without the required network configuration.
+**503 Service Unavailable**: `antd` does not have an EVM network configured. On the default network, remove individual EVM overrides and restart `antd` so it selects the Arbitrum One preset. For a local network, use `ant dev start` to supply the matching local configuration.
 
 ## Next steps
 

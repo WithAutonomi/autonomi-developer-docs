@@ -23,12 +23,12 @@ Thanks for helping improve the Autonomi developer docs.
 - Update verification blocks when you change a verified page.
 - Use terminology from `CLAUDE.md` exactly.
 - Keep code examples complete, runnable, and explicit about which developer interface they cover.
-- Use the four primary interface labels consistently in navigation and overview pages: SDK, MCP, CLI, and Direct Rust.
+- Use supported interface labels consistently in navigation and overview pages; help readers choose by task rather than declaring one interface universally primary.
 - Keep Core Concepts tool-neutral and use `How-To Guides` for shared or cross-interface task pages.
 - Keep pages interface-pure unless they are explicitly comparison or chooser pages.
 - Use tabs for languages or equivalent interfaces within one interface, not for switching between interfaces.
 - In user-facing prose, name the specific tool or interface rather than using abstract words like `route` or `path`.
-- Inside each interface section in `SUMMARY.md`, use a landing page first and nest child pages beneath it. Add landing pages for How-To Guides or Reference when a section has enough pages to benefit from that extra layer, and omit empty groups.
+- Inside each interface section in `SUMMARY.md`, put the overview first; onboarding pages may be its peers rather than hidden beneath it. Group collection children beneath their How-To Guides or Reference landing page, and omit empty groups.
 
 ## Pull Requests
 

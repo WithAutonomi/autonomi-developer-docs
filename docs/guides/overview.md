@@ -22,34 +22,34 @@
   verification_mode: current-merged-truth
 -->
 
-Guides cover tasks that apply across more than one way of building on Autonomi — setting up a local network, preparing a wallet, handling payments, building read-only features, testing, and deploying.
+These guides cover tasks that apply across more than one Autonomi interface: retrieving data, preparing upload payments, running local development infrastructure, testing, and configuring production services.
 
 If you are looking for tasks that are specific to one interface, look inside that interface's section instead:
 
-- SDK-specific task guides live under [SDK](../sdk/install.md).
-- MCP-specific task guides live under [MCP](../mcp/use-mcp-with-ai-tools.md).
-- Rust-specific task guides live under [Developing in Rust](../rust/README.md).
-- CLI task recipes are still limited. Start with [Using the Autonomi CLI](../cli/use-the-cli.md) and the [CLI Command Reference](../cli/command-reference.md).
+- SDK task guides live under [SDK](../sdk/install.md).
+- MCP setup and skill installation live under [Agent Tools](../mcp/use-mcp-with-ai-tools.md).
+- CLI task guides start with [CLI](../cli/use-the-cli.md) and the [CLI Command Reference](../cli/command-reference.md).
+- Direct Rust task guides live under [Direct Rust](../rust/README.md).
 
 ## What is here
 
-- [Set Up a Local Network](set-up-a-local-network.md) — run a local Autonomi network for development and testing.
-- [Prepare a Wallet for Uploads](prepare-a-wallet-for-uploads.md) — create and fund a wallet so your application can pay for uploads.
-- [Estimate Costs and Handle Upload Payments](estimate-costs-and-handle-upload-payments.md) — understand upload pricing and wire payment handling into your code.
-- [Build Read-Only Features](build-read-only-features.md) — retrieve public data without needing to upload or pay.
-- [Test Your Application](test-your-application.md) — strategies for testing code that reads from and writes to the network.
-- [Deploy to Mainnet](deploy-to-mainnet.md) — move from local network and testing to the production Autonomi network.
+- [Build Read-Only Features](build-read-only-features.md) - retrieve existing data without configuring upload payments.
+- [Prepare a Wallet for Uploads](prepare-a-wallet-for-uploads.md) - configure wallet interfaces and understand their approval and balance limitations.
+- [Estimate Costs and Handle Upload Payments](estimate-costs-and-handle-upload-payments.md) - inspect sampled upload estimates and understand when uploads can approve token spend automatically.
+- [Set Up a Local Network](set-up-a-local-network.md) - prepare a pinned, isolated local Autonomi Network and account for known teardown risks.
+- [Test Your Application](test-your-application.md) - separate unit tests from integration tests that need local Autonomi services.
+- [Deploy to Mainnet](deploy-to-mainnet.md) - configure a mainnet-facing service with built-in EVM presets.
 
-Each page calls out which interfaces it applies to and links to the interface-specific equivalent where one exists.
+Choose a guide for your task, then follow the steps for the interface you use.
 
 ## If you are still deciding how to build
 
-Start with [What is Autonomi?](../index.md) for a short introduction to the network and a chooser across the four interfaces.
+Start with [What is Autonomi?](../index.md) for a short introduction to the Autonomi Network and the available developer and agent tools.
 
 ## Next steps
 
 - [What is Autonomi?](../index.md)
 - [Build with the SDKs](../sdk/install.md)
-- [Use MCP with AI Tools](../mcp/use-mcp-with-ai-tools.md)
+- [Build with AI Tools](../mcp/use-mcp-with-ai-tools.md)
 - [Use the CLI](../cli/use-the-cli.md)
-- [Developing in Rust](../rust/README.md)
+- [Direct Rust](../rust/README.md)

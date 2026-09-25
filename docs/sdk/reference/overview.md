@@ -8,81 +8,87 @@
   verification_mode: current-merged-truth
 -->
 
-The Autonomi SDKs center on `antd`, a local gateway daemon that exposes REST and gRPC APIs, plus language SDKs and local developer tooling around that daemon.
+A software development kit (SDK) brings together libraries, tools, and examples for building applications. To store or retrieve data, your application usually imports a language library and calls its methods. Supporting tools, such as a local daemon, are separate programs you start when your integration needs them.
 
-## Architecture
+## What your application calls
+
+Autonomi provides libraries for two connection arrangements. Both kinds of library run inside your application; the difference is where the connection to the Autonomi Network is managed.
+
+| Library | How it works | Reference |
+|---------|--------------|-----------|
+| Direct-connection library | Includes a compiled network client that your application loads | [Native SDK Reference](native-sdks.md) |
+| Client library for a local daemon | Sends requests to a separately running background service called `antd` | [Language Bindings](language-bindings/README.md) |
+
+The packages and APIs differ. Use the installation instructions for the library you choose; installing a client library does not start a daemon.
+
+## Connecting directly
+
+```text
+Your application
+       |
+       v
+Language library and bundled network client
+       |
+       v
+Autonomi Network
+```
+
+The compiled library is loaded by your application, not run as a separate command. Use the [Python SDK](../native/python.md), [Node.js SDK](../native/nodejs.md), or [.NET SDK](../native/csharp.md) reference for installation and language-specific usage.
+
+## Connecting through a local daemon
 
 ```text
 Your application
     |
-    |  cURL / SDK / gRPC client
+    |  Client library or direct REST/gRPC calls
     v
 +-----------------------------+
 |            antd             |
-|   REST :8082   gRPC :50051  |
+| REST 127.0.0.1:8082         |
+| gRPC 127.0.0.1:50051        |
 +-----------------------------+
               |
               v
-           ant-core
-              |
-              v
-       Autonomi Network
+        Autonomi Network
 ```
 
-The repo includes these developer-facing pieces:
-
-| Component | What it does |
-|------|------|
-| `antd/` | Runs the local REST and gRPC gateway daemon |
-| `antd-js/`, `antd-py/`, `antd-go/`, `antd-rust/`, and other language directories | Provide language-specific clients for the daemon |
-| `ant-dev/` | Starts a local development environment and example flows |
-| `antd-mcp/` | Exposes the daemon surface to MCP-compatible AI tools |
+Your application makes local API calls; the background service handles the connection to the Autonomi Network. Start it before making requests from a language client.
 
 ## Connection model
 
-The daemon defaults are:
+`antd` has no built-in authentication and listens only on the local machine by default:
 
-- REST: `http://localhost:8082`
-- gRPC: `localhost:50051`
+- REST: `http://127.0.0.1:8082`
+- gRPC: `127.0.0.1:50051`
 
-On startup, `antd` writes a `daemon.port` file with the resolved REST and gRPC ports. The default locations are:
+Any process that can connect can call write, wallet, and local-filesystem endpoints. Keep both listeners on loopback unless you place access controls in front of them. Enabling Cross-Origin Resource Sharing (CORS) does not add authentication.
 
-| Platform | `daemon.port` location |
-|------|------|
-| Windows | `%APPDATA%\ant\sdk\daemon.port` |
-| Linux | `~/.local/share/ant/sdk/daemon.port` or `$XDG_DATA_HOME/ant/sdk/daemon.port` |
-| macOS | `~/Library/Application Support/ant/sdk/daemon.port` |
+Some clients can discover antd automatically. See your [language reference](language-bindings/README.md) for connection options.
 
-Some SDKs expose a helper that reads this file instead of hardcoding `8082`. Check the language-specific page when you need to know whether discovery is automatic or exposed through an explicit helper.
+## API coverage
 
-## Shared Surfaces
+Use the [REST API](rest-api.md) to store and retrieve data and files, estimate costs, and manage upload payments.
 
-The `antd` REST surface groups into these areas:
+The gRPC definitions cover health, data, chunks, files, uploads, wallet operations, signed quote verification, and events. The Event Service method completes immediately without events, so it is not a usable event subscription.
 
-| Group | Routes |
-|------|------|
-| Health | `/health` |
-| Data | `/v1/data/public`, `/v1/data`, `/v1/data/get`, `/v1/data/cost` |
-| Chunks | `/v1/chunks`, `/v1/chunks/{addr}`, `/v1/chunks/prepare`, `/v1/chunks/finalize` |
-| Files | `/v1/files/public`, `/v1/files/public/get`, `/v1/files`, `/v1/files/get`, `/v1/files/cost` |
-| Wallet | `/v1/wallet/address`, `/v1/wallet/balance`, `/v1/wallet/approve` |
-| External signer flow | `/v1/chunks/prepare`, `/v1/chunks/finalize`, `/v1/data/prepare`, `/v1/upload/prepare`, `/v1/upload/finalize` |
+Health responses separate API liveness from network connectivity. `status: "ok"` means the API responds; `write_ready` reports a best-effort peer-count threshold, not wallet readiness or guaranteed storage. REST and gRPC expose the counts and the age of the last successful store-type operation. See [REST API](rest-api.md#health) for field meanings.
 
-The proto directory contains `health.proto`, `data.proto`, `chunks.proto`, `files.proto`, and `events.proto`.
+## Local-daemon client libraries
 
-## Language SDKs
+Choose a client in [Language Bindings](language-bindings/README.md). The Python and JavaScript clients install from PyPI and npm. Other languages have their own package or source-install instructions.
 
-The repo contains language SDK directories for Go, JavaScript/TypeScript, Python, C#, Kotlin, Swift, Ruby, PHP, Dart, Lua, Elixir, Zig, Rust, C++, and Java.
+Do not assume feature parity. Bindings have language-specific constructors and expose different transport subsets. For example:
 
-Do not assume perfect parity from this page alone. The SDKs expose the same daemon surface with language-specific constructors and, in some cases, transport differences. For example:
-
-- JavaScript examples use `createClient()` from `antd`
+- JavaScript examples use `createClient()` from `@withautonomi/antd`
 - Python examples use `AntdClient()` from `antd`
-- some SDK READMEs document both REST and gRPC, while others are REST-only today
+- some bindings implement both REST and gRPC, while others implement REST only
+- gRPC prepare responses omit `total_chunks` and `already_stored_count`, which REST returns
 
-Chunk writes still return `PutResult`-style shapes with `cost` plus an address. REST data writes return an address or `data_map` plus `chunks_stored` and `payment_mode_used`. File uploads return the richer shape with `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and the actual `payment_mode_used`.
+Chunk writes return `PutResult`-style shapes with `cost` plus an address, but `cost` is an empty string because the write path does not return its prepaid cost. REST data writes return an address or `data_map` plus `chunks_stored` and the resolved `payment_mode_used`, which is `single` or `merkle`, not the requested `auto`. File uploads also return `storage_cost_atto` and `gas_cost_wei`.
 
-When you need authoritative pricing separate from the write itself, use the explicit cost endpoints such as `POST /v1/data/cost` and `POST /v1/files/cost`.
+For public direct writes, `antd` stores the DataMap in a separate operation after uploading the data chunks. Reported cost, gas, chunk count, and payment mode cover the data-chunk upload only; they exclude that separate DataMap store.
+
+Cost endpoints such as `POST /v1/data/cost` and `POST /v1/files/cost` are advisory. They sample up to five chunk addresses, use the first live sampled price to extrapolate storage cost, and estimate gas without a live gas-price query. The write reconciles the amount actually due.
 
 Use the binding-specific page when you need package names, constructors, or transport details.
 
@@ -98,3 +104,5 @@ Use the binding-specific page when you need package names, constructors, or tran
 - [Use the Autonomi MCP Server](../../mcp/use-the-autonomi-mcp-server.md)
 - [MCP Server Reference](../../mcp/mcp-server-reference.md)
 - [REST API](rest-api.md)
+- [gRPC Services](grpc-services.md)
+- [Daemon Command Reference](daemon-command-reference.md)

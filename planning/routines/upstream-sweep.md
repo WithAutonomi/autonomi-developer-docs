@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Implements the `source audit -> draft -> verify` workflow defined in `planning/verification-workflow.md` on a daily cadence. Every weekday (and weekend) the routine checks every recorded `source_commit` in the docs and the developer skill against the corresponding upstream HEAD, audits any drifted page against the exact pinned SHAs the routine intends to stamp, and opens PRs or issues per the topology below.
+Implements the `source audit -> draft -> verify` workflow defined in `planning/verification-workflow.md` on a daily cadence. Every weekday (and weekend) the routine checks every recorded `source_commit` in the docs against the corresponding upstream HEAD at the declared `source_ref`, audits any drifted page against the exact pinned SHAs the routine intends to stamp, and opens PRs or issues per the topology below.
 
 The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning/implementation-plan.md` Section 8. It does not replace the eventual `repository_dispatch`-driven path; it sits alongside as an interim path that works without `notify-docs.yml` being installed in any upstream repo.
 
@@ -10,7 +10,7 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 
 - Execution venue: Claude Code Remote routine.
 - Schedule: daily at 09:00 UTC. Comfortably above the documented one-hour minimum interval for Remote-routine schedules.
-- Routine model: **Opus 4.8 or higher** end-to-end. The audit/write/verify loop in `## Opus audit/write/verify loop` requires the model to inspect upstream diffs and source at pinned SHAs, compare against docs and `SKILL.md`, write actual prose into draft PRs, and run practical verification. No subagent layer.
+- Routine model: **Opus 4.8 or higher** end-to-end. The audit/write/verify loop in `## Opus audit/write/verify loop` requires the model to inspect upstream diffs and source at pinned SHAs, compare against docs, write actual prose into draft PRs, and run practical verification. No subagent layer.
 - Prompt: the committed prompt at `planning/routines/upstream-sweep-prompt.md`.
 - Body: the prompt invokes `scripts/sweep_poll.py` for deterministic detection, then runs the audit/write/verify loop against pinned upstream checkouts and opens PRs/issues per the topology.
 - Webhook arm (`repository_dispatch` or per-event collation) is explicitly deferred to v2 of the trigger shape.
@@ -20,7 +20,7 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 1. Run the open-PR collision check. If a prior `claude/sweep-*` or `claude/prose-*` PR is still open, exit silently. The open PR is itself the signal that drift is pending review; drift is re-detected on the next run.
 2. Run `scripts/sweep_poll.py`. If the JSON status is `error`, open a fresh issue (best-effort labelled `upstream-sweep-failure` — see `## GitHub artifacts the routine produces` for the label-fallback rule) with the JSON diagnostics and a brief cause prose in the body, and exit. A human triages the issue and closes it manually when the underlying cause is understood; the routine never auto-closes failure issues.
 3. If `records` is empty or every record has `drifted: false`, exit silently. No GitHub artifact is produced for the happy no-drift path; the routine session log preserves the trace for debugging.
-4. For each drifted record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs and skill, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
+4. For each drifted record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
 5. Open at most two PRs (one sweep, one prose draft) plus zero or more issues (best-effort labelled `upstream-sweep-manual-review`) per the topology in `## Page batching rule`, `## Manual-review issue format`, `## Manual-review issue de-duplication`, and `## PR body format`. Manual-review issues are opened **before** PRs so PR bodies can reference issue numbers; a `Tracked in <PR URL>.` comment is posted on each issue once the corresponding PR exists. The PR bodies carry the run summary; no separate aggregated comment is posted anywhere.
 
 ## Branch convention
@@ -120,10 +120,7 @@ Every manual-review issue attempts to carry the `upstream-sweep-manual-review` l
   - upstream SHA range (`recorded_sha..head_sha`),
   - the ambiguity reason,
   - the independence rationale (case 5 only),
-  - a deterministic `Fingerprint:` line on its own line, surrounded by blank lines, of the form:
-    - docs records: `Fingerprint: <repo_path>:<line>|<source_repo>|<recorded_sha>..<head_sha>`,
-    - skill `version.json` records: `Fingerprint: skill_version_json|<repo_key>|<recorded_sha>..<head_sha>`,
-    - skill `SKILL.md` records: `Fingerprint: skill_md|<repo_key>|<recorded_sha>..<head_sha>`.
+  - a deterministic `Fingerprint:` line on its own line, surrounded by blank lines, of the form `Fingerprint: <repo_path>:<line>|<source_repo>|<recorded_sha>..<head_sha>`.
 
 The fingerprint includes the SHA range so a record whose `head_sha` advanced since the previous run is treated as a new event with a new issue, while a record that has not moved reuses the existing issue.
 
@@ -148,54 +145,34 @@ On a fingerprint match, the routine reuses the existing issue: it skips `gh issu
 Allowed:
 
 - verification-block lines (`source_commit:`, `verified_date:`) in `docs/**/*.md`,
-- the `verified_commits` map in `skills/start/version.json` (key set unchanged),
-- the `verified_commits` map and the `verified_date:` line in `skills/start/SKILL.md`'s YAML frontmatter (key set unchanged),
 - one new `planning/sweeps/<YYYY-MM-DD>.md` whose date suffix matches the head-branch date suffix.
 
 Forbidden:
 
 - any change to docs prose (`docs/**/*.md` outside an `<!-- verification: -->` block),
-- any change to `skills/start/SKILL.md` body (anything outside the YAML frontmatter),
-- any change to the `version:` line in `SKILL.md` frontmatter,
-- any change to `version` or `published_date` in `version.json`,
-- any change to `skills/start/CHANGELOG.md`,
-- any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`,
-- any add or remove of a key in the `verified_commits` map of `version.json` or `SKILL.md` frontmatter (key sets locked; values may refresh).
+- any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`, or any other path outside the allowed set,
+- any change inside a `verification_mode: target-manifest` block.
 
 `sweep-guard` enforces this envelope. It runs on `claude/sweep-*` only and green-skips on every other branch.
 
 ## Prose PR envelope (claude/prose-*)
 
-`claude/prose-*` PRs allow rendered prose changes plus the linked skill patch release when the audit found skill impact.
+`claude/prose-*` PRs allow rendered docs prose changes and their verification refreshes.
 
 Allowed:
 
-- `docs/**/*.md` — any change.
-- `skills/start/SKILL.md` — frontmatter and/or body may change. If body changes, the linked-release rule below applies in full.
-- `skills/start/version.json` — `verified_commits` value updates always (key set unchanged); `version` and `published_date` only as part of a linked release.
-- `skills/start/CHANGELOG.md` — only as part of a linked release.
+- `docs/**/*.md` — prose and verification changes, subject to target-manifest and deferred-record protection.
 - `planning/sweeps/<branch-date>.md` — optional add; date suffix matches `claude/prose-<YYYY-MM-DD>-<slug>`.
 
 Forbidden:
 
-- any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml` (byte-identical to base),
-- any add or remove of a key in the `verified_commits` map of `version.json` or `SKILL.md` frontmatter,
-- any change to `version`, `published_date`, frontmatter `version:`, or `CHANGELOG.md` **when the `SKILL.md` body is byte-identical to base** (release metadata may only move with a body change),
-- any of the linked-release fields missing **when the `SKILL.md` body has changed**.
+- any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`, or any other path outside the allowed set (byte-identical to base),
+- any change, addition, or removal of a `target-manifest` verification block,
+- any change inside a deferred record's verification block.
 
-Linked-release rule (both directions):
+`prose-guard` enforces the path, summary-date, and target-manifest restrictions in this envelope. Deferred-record protection requires the routine's self-check below; the guard does not know which records were deferred. It runs on `claude/prose-*` only and green-skips on every other branch.
 
-If `skills/start/SKILL.md` body bytes differ between base and head, the same PR must include all of:
-
-- `skills/start/version.json: version` bumped to a new patch version (`MAJOR.MINOR.(PATCH+1)`),
-- `skills/start/version.json: published_date` updated,
-- `skills/start/SKILL.md` frontmatter `version:` matching the new `version.json: version`,
-- `skills/start/SKILL.md` frontmatter `verified_date:` updated,
-- `skills/start/CHANGELOG.md` adding one new entry whose header matches the new `version`.
-
-If the `SKILL.md` body is byte-identical between base and head, **none** of `version`, `published_date`, frontmatter `version:`, or `CHANGELOG.md` may change.
-
-`prose-guard` enforces this envelope. It runs on `claude/prose-*` only and green-skips on every other branch.
+Both envelopes use positive path allowlists: anything not explicitly allowed is forbidden. Check both the old and new paths of renames and copies; moving a forbidden file into `docs/` does not bring it inside the envelope. Run summaries must be newly added files, not modifications of existing summaries, and their date must match the branch date.
 
 ## Opus audit/write/verify loop
 
@@ -206,14 +183,13 @@ For each drifted record:
 1. **Fetch both SHAs** per `## Audit-diff fetch rule`. If both fetch and compare API fail, fail closed for the page → manual-review issue.
 2. **Compute the upstream diff**: `git -C "$TMP" log --oneline <recorded>..<head>`, `git -C "$TMP" diff --stat <recorded>..<head>`, targeted `git -C "$TMP" diff <recorded>..<head> -- <path>`. Every git invocation in this step carries `-C "$TMP"` so it inspects the upstream checkout rather than the docs repo. Or read the compare API response when running via fallback.
 3. **Inspect upstream source artifacts** at `head_sha` (OpenAPI specs, `.proto` files, CLI source and `--help` output, public Rust modules, README/docs). Use `repo-registry.yml`'s `topics:` and `component-registry.yml`'s component map to focus on artifacts the affected page actually depends on.
-4. **Compare against the affected docs pages** and `skills/start/SKILL.md`. Identify any rendered claim, code sample, command, endpoint, type, field, or live-reference URL that no longer matches the pinned source.
+4. **Compare against the affected docs pages**. Identify any rendered claim, code sample, command, endpoint, type, field, or live-reference URL that no longer matches the pinned source.
 5. **Classify the record** as `metadata-only`, `prose`, or `ambiguous` (see prompt step 4.5 for criteria).
 6. **Apply the page batching rule** once every record is classified.
 7. **Write prose changes directly into the draft `claude/prose-*` PR** when the page is in the prose batch. Apply `CLAUDE.md`'s voice, terminology lockfile, page templates, and refusal rules. The PR diff must contain the prose edit, not merely a suggestion in the PR body.
-8. **Skill-aware prose**: if the audit finds skill impact, include both the docs change and the `SKILL.md` change in the same prose PR. If `SKILL.md` body changes, the same PR must include the linked patch release set per `## Prose PR envelope`.
-9. **Deferred-record self-check** (case 5 only — prose PR opened with proven-independent ambiguous records held back). For every deferred record, the routine confirms the entire `<!-- verification: ... -->` block on the prose-PR branch is byte-identical to base. Every byte from the opening `<!-- verification:` to the closing `-->` is checked, including `source_repo:`, `source_ref:`, `source_commit:`, `verified_date:`, `verification_mode:`, comments, and any other line. Checking only `source_commit:` and `verified_date:` is too narrow: the loop can edit `source_ref:`, change `verification_mode:`, or rewrite a comment inside the block without realising it crossed the deferred-record boundary. The routine also confirms the prose PR body contains a `Deferred ambiguous records:` section that links each open `upstream-sweep-manual-review` issue by number for those records. The guards cannot enforce this — they have no way to know which records were classified ambiguous — so the routine is the only thing that catches an accidental edit. **Fail closed on mismatch: do not open the prose PR.**
+8. **Deferred-record self-check** (case 5 only — prose PR opened with proven-independent ambiguous records held back). For every deferred record, the routine confirms the entire `<!-- verification: ... -->` block on the prose-PR branch is byte-identical to base. Every byte from the opening `<!-- verification:` to the closing `-->` is checked, including `source_repo:`, `source_ref:`, `source_commit:`, `verified_date:`, `verification_mode:`, comments, and any other line. Checking only `source_commit:` and `verified_date:` is too narrow: the loop can edit `source_ref:`, change `verification_mode:`, or rewrite a comment inside the block without realising it crossed the deferred-record boundary. The routine also confirms the prose PR body contains a `Deferred ambiguous records:` section that links each open `upstream-sweep-manual-review` issue by number for those records. The guards cannot enforce this — they have no way to know which records were classified ambiguous — so the routine is the only thing that catches an accidental edit. **Fail closed on mismatch: do not open the prose PR.**
 
-10. **Practical verification before opening a prose PR**, where available: lint/format checks; re-run `scripts/sweep_poll.py` and confirm `status: "ok"`; parse `SKILL.md` frontmatter and `version.json` to confirm the linked-release rule holds when the body changed; language-appropriate syntax checks for changed code samples; targeted re-grep against the pinned upstream checkout for endpoint/type claims. If a check cannot be run, state that explicitly in the PR body — never silently skip.
+9. **Practical verification before opening a prose PR**, where available: lint/format checks; re-run `scripts/sweep_poll.py` and confirm `status: "ok"`; language-appropriate syntax checks for changed code samples; targeted re-grep against the pinned upstream checkout for endpoint/type claims. If a check cannot be run, state that explicitly in the PR body — never silently skip.
 
 ## PR body format
 
@@ -222,7 +198,7 @@ Both sweep and prose PR bodies must include:
 - **Upstream**: repo name and SHA range checked, e.g. `ant-sdk: 1cbfb3e → d7652ec`.
 - **Source artifacts inspected**: short list, e.g. `antd/openapi.yaml`, `docs/sdk/reference/rest-api.md` upstream.
 - **Developer-facing change**: one or two sentences describing what changed for users of the documented surface, or "internal refactor; no developer-facing impact".
-- **Files changed in this PR**: bulleted list of docs pages and skill files.
+- **Files changed in this PR**: bulleted list of docs pages and any run summary.
 - **Why prose changed** (prose PR only): one or two sentences per page explaining the rendered-text edit and which upstream artifact it tracks.
 - **Verification run**: bulleted list of which practical checks ran and their result, or "skipped — <reason>" per check.
 - **Uncertainties**: one or two sentences calling out any judgment calls or partial evidence the human reviewer should re-check, or "none".
@@ -241,7 +217,7 @@ Read access uses a token tier that the prompt resolves at runtime, in order:
 1. `GITHUB_TOKEN` in the routine environment, when set. Recommended for the higher authenticated rate limit (5000 req/hour) and broadest cross-org access.
 2. `gh auth token`, when the routine sandbox carries a GitHub App installation token usable by the `gh` CLI. Provides the higher rate limit on repos covered by the installation; for orgs outside the installation, the scanner's authenticated-403-to-anonymous retry handles the lookup.
 3. Anonymous REST reads, as a fallback when the authenticated request 403s. Limited to 60 req/hour on the sandbox IP.
-4. Unauthenticated `git ls-remote` against the public clone URL, as a final fallback for HEAD-SHA and default-branch resolution. The git smart-HTTP protocol uses a separate code path from the REST API, so this bypasses both org-level fine-grained PAT restrictions and the REST anonymous rate limit. Only works for public repos.
+4. Unauthenticated `git ls-remote` against the public clone URL, as a final fallback for SHA resolution at the declared `source_ref`. The git smart-HTTP protocol uses a separate code path from the REST API, so this bypasses both org-level fine-grained PAT restrictions and the REST anonymous rate limit. Only works for public repos.
 
 Write access uses the `gh` CLI. `gh` respects `GITHUB_TOKEN` when set, so a configured `GITHUB_TOKEN` must include the docs-repo write scopes (`contents: write`, `pull-requests: write`, `issues: write`) — otherwise issue, label, and PR creation will fail at runtime. When `GITHUB_TOKEN` is unset, `gh` uses its stored auth context (typically a GitHub App installation token, which has the necessary scopes by design). The routine never writes against an upstream repo, only against `withautonomi/autonomi-developer-docs`.
 
@@ -260,12 +236,10 @@ SHAs are bumped only after the per-page audit step succeeds against the pinned u
 
 Scanner fail-closed (whole run aborts):
 
-- GitHub API 4xx/5xx on a HEAD or repo metadata lookup, after the resolver has exhausted its fallbacks. An authenticated 403 is retried once without the `Authorization` header, and a still-failing HEAD or default-branch lookup is then re-attempted via unauthenticated `git ls-remote` against the public clone URL. The run aborts only when every path fails. The diagnostic captures the response body, rate-limit state, `x-github-request-id`, and `retry-after` for each REST attempt, plus the `git ls-remote` outcome, so the status comment can distinguish org-policy refusal from anonymous-quota exhaustion from a transient outage.
+- GitHub API 4xx/5xx on a declared-ref SHA lookup, after the resolver has exhausted its fallbacks. An authenticated 403 is retried once without the `Authorization` header, and a still-failing lookup is then re-attempted via unauthenticated `git ls-remote` against the public clone URL using the same declared ref. The run aborts only when every path fails. The diagnostic captures the response body, rate-limit state, `x-github-request-id`, and `retry-after` for each REST attempt, plus the `git ls-remote` outcome, so the status comment can distinguish org-policy refusal from anonymous-quota exhaustion from a transient outage.
 - network timeout,
 - malformed `<!-- verification:` block (missing `source_repo`, `source_ref`, `source_commit`, or `verification_mode`),
-- missing or unknown file-level `verification_mode` on `version.json` or `SKILL.md` frontmatter,
 - unparseable `repo-registry.yml`,
-- unparseable `version.json` or `SKILL.md` frontmatter,
 - unknown `source_repo` not in the registry,
 - `verification_mode` set to a value other than `current-merged-truth` or `target-manifest`.
 

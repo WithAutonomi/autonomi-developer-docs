@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Deterministic upstream-drift scanner for the daily sweep routine.
 
-Walks every <!-- verification: ... --> block in docs/**/*.md, every entry in
-the verified_commits map of skills/start/version.json, and every entry in the
-verified_commits map of the YAML frontmatter of skills/start/SKILL.md.
+Walks every <!-- verification: ... --> block in docs/**/*.md.
 Resolves each (repo, ref) pair against repo-registry.yml plus a GitHub API
 HEAD lookup, and emits a per-record JSON drift report on stdout.
 
@@ -30,8 +28,6 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = REPO_ROOT / "repo-registry.yml"
 DOCS_DIR = REPO_ROOT / "docs"
-VERSION_JSON_PATH = REPO_ROOT / "skills" / "start" / "version.json"
-SKILL_MD_PATH = REPO_ROOT / "skills" / "start" / "SKILL.md"
 
 VERIFICATION_BLOCK_RE = re.compile(
     r"<!--\s*verification:(.*?)-->",
@@ -206,34 +202,6 @@ def git_ls_remote_sha(url: str, ref: str) -> tuple[str | None, str | None]:
     return None, f"git ls-remote {url} {ref}: no 40-hex SHA in output"
 
 
-def git_ls_remote_default_branch(url: str) -> tuple[str | None, str | None]:
-    """Resolve the remote's default branch via git ls-remote --symref HEAD."""
-    try:
-        result = subprocess.run(
-            ["git", "ls-remote", "--exit-code", "--symref", url, "HEAD"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        return None, f"git ls-remote --symref {url} HEAD: timeout after 30s"
-    except FileNotFoundError:
-        return None, "git ls-remote: 'git' executable not found on PATH"
-    if result.returncode != 0:
-        err = (result.stderr or result.stdout).strip()[:300]
-        return (
-            None,
-            f"git ls-remote --symref {url} HEAD: exit {result.returncode}: {err}",
-        )
-    for line in result.stdout.splitlines():
-        if line.startswith("ref: refs/heads/"):
-            branch = line.split("refs/heads/", 1)[1].split("\t", 1)[0].strip()
-            if branch:
-                return branch, None
-    return None, f"git ls-remote --symref {url} HEAD: no symbolic ref in output"
-
-
 def parse_owner_repo(url: str) -> tuple[str, str]:
     parsed = urllib.parse.urlparse(url)
     parts = [p for p in parsed.path.strip("/").split("/") if p]
@@ -370,297 +338,6 @@ def walk_docs(
             pair_set.add((repo_key, ref))
 
 
-def resolve_skill_default_branch(
-    repo_key: str,
-    registry: dict[str, dict[str, Any]],
-    token: str | None,
-    cache: dict[str, str],
-) -> str:
-    if repo_key in cache:
-        return cache[repo_key]
-    if repo_key not in registry:
-        raise FailClosed(
-            {
-                "kind": "skill_unknown_source_repo",
-                "source_repo": repo_key,
-                "message": (
-                    f"skill verified_commits references repo not in "
-                    f"repo-registry.yml: {repo_key}"
-                ),
-            }
-        )
-    owner, repo = parse_owner_repo(registry[repo_key]["url"])
-    try:
-        meta = github_request(f"/repos/{owner}/{repo}", token)
-    except FailClosed as rest_exc:
-        clone_url = f"https://github.com/{owner}/{repo}.git"
-        fallback_branch, fallback_err = git_ls_remote_default_branch(clone_url)
-        if fallback_branch:
-            cache[repo_key] = fallback_branch
-            return fallback_branch
-        diag = dict(rest_exc.diagnostic)
-        diag["git_ls_remote"] = {
-            "url": clone_url,
-            "error": fallback_err,
-        }
-        diag["message"] = (
-            f"{diag.get('message', '')}; ls-remote fallback also failed: "
-            f"{fallback_err}"
-        )
-        raise FailClosed(diag) from rest_exc
-    branch = meta.get("default_branch")
-    if not isinstance(branch, str) or not branch:
-        raise FailClosed(
-            {
-                "kind": "github_default_branch_missing",
-                "repo": repo_key,
-                "message": (
-                    f"GitHub /repos/{owner}/{repo} returned no default_branch"
-                ),
-            }
-        )
-    cache[repo_key] = branch
-    return branch
-
-
-def walk_version_json(
-    registry: dict[str, dict[str, Any]],
-    records: list[dict[str, Any]],
-    target_manifest_skipped: list[dict[str, Any]],
-    pair_set: set[tuple[str, str]],
-    default_branch_cache: dict[str, str],
-    token: str | None,
-) -> None:
-    if not VERSION_JSON_PATH.exists():
-        return
-    raw = VERSION_JSON_PATH.read_text(encoding="utf-8")
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise FailClosed(
-            {
-                "kind": "version_json_parse_error",
-                "path": str(VERSION_JSON_PATH.relative_to(REPO_ROOT)),
-                "message": f"JSON parse error in version.json: {exc}",
-            }
-        ) from exc
-    mode = data.get("verification_mode")
-    if mode not in ALLOWED_MODES:
-        raise FailClosed(
-            {
-                "kind": "version_json_unknown_verification_mode",
-                "path": str(VERSION_JSON_PATH.relative_to(REPO_ROOT)),
-                "verification_mode": mode,
-                "message": (
-                    f"version.json has missing or unknown verification_mode: "
-                    f"{mode!r}"
-                ),
-            }
-        )
-    if "verified_commits" not in data:
-        raise FailClosed(
-            {
-                "kind": "version_json_shape_error",
-                "path": str(VERSION_JSON_PATH.relative_to(REPO_ROOT)),
-                "message": "version.json: verified_commits is missing",
-            }
-        )
-    commits = data["verified_commits"]
-    if not isinstance(commits, dict):
-        raise FailClosed(
-            {
-                "kind": "version_json_shape_error",
-                "path": str(VERSION_JSON_PATH.relative_to(REPO_ROOT)),
-                "message": "version.json: verified_commits must be an object",
-            }
-        )
-    rel = str(VERSION_JSON_PATH.relative_to(REPO_ROOT))
-    for repo_key, recorded in sorted(commits.items()):
-        location = f"{rel}:verified_commits.{repo_key}"
-        if not isinstance(recorded, str) or not recorded:
-            raise FailClosed(
-                {
-                    "kind": "version_json_shape_error",
-                    "path": rel,
-                    "message": (
-                        f"version.json: verified_commits.{repo_key} "
-                        "is not a non-empty string"
-                    ),
-                }
-            )
-        if mode == "target-manifest":
-            target_manifest_skipped.append(
-                {
-                    "location": location,
-                    "repo": repo_key,
-                    "ref": None,
-                    "recorded_sha": recorded,
-                }
-            )
-            continue
-        ref = resolve_skill_default_branch(
-            repo_key, registry, token, default_branch_cache
-        )
-        records.append(
-            {
-                "location": location,
-                "scope": "skill_version_json",
-                "repo": repo_key,
-                "ref": ref,
-                "recorded_sha": recorded,
-                "head_sha": None,
-                "drifted": None,
-            }
-        )
-        pair_set.add((repo_key, ref))
-
-
-def parse_skill_md_frontmatter() -> dict[str, Any] | None:
-    """Return frontmatter as a dict, or None if SKILL.md does not exist.
-
-    A present-but-empty or shape-invalid SKILL.md raises FailClosed; only a
-    truly absent file is reported via the None sentinel so callers can
-    distinguish that from an empty mapping.
-    """
-    if not SKILL_MD_PATH.exists():
-        return None
-    text = SKILL_MD_PATH.read_text(encoding="utf-8")
-    if not text.startswith("---"):
-        raise FailClosed(
-            {
-                "kind": "skill_md_missing_frontmatter",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": "SKILL.md does not begin with YAML frontmatter",
-            }
-        )
-    closing = text.find("\n---", 3)
-    if closing < 0:
-        raise FailClosed(
-            {
-                "kind": "skill_md_unterminated_frontmatter",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": "SKILL.md frontmatter is not terminated by '---'",
-            }
-        )
-    raw = text[3:closing]
-    try:
-        loaded = yaml.safe_load(raw)
-    except yaml.YAMLError as exc:
-        raise FailClosed(
-            {
-                "kind": "skill_md_yaml_parse_error",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": f"YAML parse error in SKILL.md frontmatter: {exc}",
-            }
-        ) from exc
-    if loaded is None:
-        raise FailClosed(
-            {
-                "kind": "skill_md_frontmatter_empty",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": (
-                    "SKILL.md frontmatter is empty; verification metadata "
-                    "is required"
-                ),
-            }
-        )
-    if not isinstance(loaded, dict):
-        raise FailClosed(
-            {
-                "kind": "skill_md_frontmatter_shape_error",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": "SKILL.md frontmatter must be a YAML mapping",
-            }
-        )
-    return loaded
-
-
-def walk_skill_md(
-    registry: dict[str, dict[str, Any]],
-    records: list[dict[str, Any]],
-    target_manifest_skipped: list[dict[str, Any]],
-    pair_set: set[tuple[str, str]],
-    default_branch_cache: dict[str, str],
-    token: str | None,
-) -> None:
-    fm = parse_skill_md_frontmatter()
-    if fm is None:
-        return
-    mode = fm.get("verification_mode")
-    if mode not in ALLOWED_MODES:
-        raise FailClosed(
-            {
-                "kind": "skill_md_unknown_verification_mode",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "verification_mode": mode,
-                "message": (
-                    f"SKILL.md frontmatter has missing or unknown "
-                    f"verification_mode: {mode!r}"
-                ),
-            }
-        )
-    if "verified_commits" not in fm:
-        raise FailClosed(
-            {
-                "kind": "skill_md_shape_error",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": (
-                    "SKILL.md frontmatter: verified_commits is missing"
-                ),
-            }
-        )
-    commits = fm["verified_commits"]
-    if not isinstance(commits, dict):
-        raise FailClosed(
-            {
-                "kind": "skill_md_shape_error",
-                "path": str(SKILL_MD_PATH.relative_to(REPO_ROOT)),
-                "message": (
-                    "SKILL.md frontmatter: verified_commits must be a mapping"
-                ),
-            }
-        )
-    rel = str(SKILL_MD_PATH.relative_to(REPO_ROOT))
-    for repo_key, recorded in sorted(commits.items()):
-        location = f"{rel}:verified_commits.{repo_key}"
-        if not isinstance(recorded, str) or not recorded:
-            raise FailClosed(
-                {
-                    "kind": "skill_md_shape_error",
-                    "path": rel,
-                    "message": (
-                        f"SKILL.md frontmatter: verified_commits.{repo_key} "
-                        "is not a non-empty string"
-                    ),
-                }
-            )
-        if mode == "target-manifest":
-            target_manifest_skipped.append(
-                {
-                    "location": location,
-                    "repo": repo_key,
-                    "ref": None,
-                    "recorded_sha": recorded,
-                }
-            )
-            continue
-        ref = resolve_skill_default_branch(
-            repo_key, registry, token, default_branch_cache
-        )
-        records.append(
-            {
-                "location": location,
-                "scope": "skill_md",
-                "repo": repo_key,
-                "ref": ref,
-                "recorded_sha": recorded,
-                "head_sha": None,
-                "drifted": None,
-            }
-        )
-        pair_set.add((repo_key, ref))
-
-
 def resolve_head_shas(
     pair_set: set[tuple[str, str]],
     registry: dict[str, dict[str, Any]],
@@ -742,25 +419,8 @@ def main() -> int:
         records: list[dict[str, Any]] = []
         target_manifest_skipped: list[dict[str, Any]] = []
         pair_set: set[tuple[str, str]] = set()
-        default_branch_cache: dict[str, str] = {}
 
         walk_docs(registry, records, target_manifest_skipped, pair_set)
-        walk_version_json(
-            registry,
-            records,
-            target_manifest_skipped,
-            pair_set,
-            default_branch_cache,
-            token,
-        )
-        walk_skill_md(
-            registry,
-            records,
-            target_manifest_skipped,
-            pair_set,
-            default_branch_cache,
-            token,
-        )
 
         head_shas = resolve_head_shas(pair_set, registry, token)
         attach_drift(records, head_shas)

@@ -15,129 +15,189 @@
   verification_mode: current-merged-truth
 -->
 
-When you build on the Autonomi Network through the SDKs or MCP server, you use a local daemon called `antd`. It runs on your machine and gives your application a stable REST and gRPC interface to the network. This page shows you how to build it from source, start it in read-only mode, and then choose whether you need uploads or a local devnet.
-
-Use `antd` when you want:
-
-- SDKs in multiple languages
-- a local REST or gRPC gateway
-- one daemon process shared by applications, scripts, or tools
-
-## Prerequisites
-
-- Rust toolchain and `protoc` (Protocol Buffers compiler) to build `antd` from source
-- For paid uploads on the default network: access to wallet and payment configuration. See [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) and [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md).
-- For a fully local devnet: Python 3.10+, Foundry (provides `anvil`), and a sibling `ant-node` checkout if you plan to use `ant dev start`. See [Set Up a Local Network](../guides/set-up-a-local-network.md) for Foundry install steps and the rest of the local-devnet setup.
+Start a local daemon, a service that connects your applications to the Autonomi Network. Autonomi's daemon is called `antd`. Install it, keep it running in a terminal, and download a public image without setting up a wallet or making a payment.
 
 ## Steps
 
-### 1. Build `antd` from source
+### 1. Install the daemon
 
-Your application code does not need to be Rust, but the supported `antd` install method in these docs is to build the daemon from the `ant-sdk` repo:
+Choose your operating system. These commands download the executable into a new directory and check its checksum before running it; they do not install a system service or change your `PATH`.
 
-```bash
-git clone https://github.com/WithAutonomi/ant-sdk.git
-cd ant-sdk/antd
-cargo build --release
-```
-
-`antd` needs `protoc` during the build. On macOS, one working setup is:
+{% tabs %}
+{% tab title="macOS" %}
+Use Terminal on a Mac with Apple Silicon. The prebuilt macOS executable is ARM64; for an Intel Mac, see [Build from source](#build-from-source-instead).
 
 ```bash
-brew install protobuf
+set -euo pipefail
+mkdir antd-0.13.0
+cd antd-0.13.0
+curl --fail --location --show-error \
+  https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/antd-darwin-arm64 \
+  --output antd
+printf '2998b2e67f1d036b2d1307ec837f297c503f0303f37d7c5fbac82561b297c3cb  antd\n' | shasum -a 256 -c -
+chmod u+x antd
+./antd --version
 ```
 
-Verify the binary starts:
+{% endtab %}
+{% tab title="Linux" %}
+Run these commands in Bash with `curl` and `sha256sum` installed. The x64 and ARM64 executables require glibc 2.38 or later; check your version with `ldd --version`. The commands select the executable for your machine. For an older system, see [Build from source](#build-from-source-instead).
 
 ```bash
-./target/release/antd --help
+set -euo pipefail
+case "$(uname -m)" in
+  x86_64)
+    ASSET=antd-linux-amd64
+    SHA256=55c95f20e7ed75c82473e302d9cc85a69814eaa7ac30986a7e4f1ed4fb7909cd
+    ;;
+  aarch64|arm64)
+    ASSET=antd-linux-arm64
+    SHA256=4d76541eac3b2549fa6575a2075b5adcdb80531f12fea50c43e157a2d103da59
+    ;;
+  *) printf 'No prebuilt executable for this architecture.\n' >&2; exit 1 ;;
+esac
+mkdir antd-0.13.0
+cd antd-0.13.0
+curl --fail --location --show-error \
+  "https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/$ASSET" \
+  --output antd
+printf '%s  antd\n' "$SHA256" | sha256sum -c -
+chmod u+x antd
+./antd --version
 ```
 
-### 2. Start `antd` in read-only mode
+{% endtab %}
+{% tab title="Windows" %}
+Use PowerShell on Windows x64. The executable runs from the download directory, without an installer or administrator access.
 
-Start with the simplest mode first:
+```powershell
+$ErrorActionPreference = 'Stop'
+New-Item -ItemType Directory -Path antd-0.13.0 | Out-Null
+Set-Location antd-0.13.0
+Invoke-WebRequest -UseBasicParsing `
+  -Uri 'https://github.com/WithAutonomi/ant-sdk/releases/download/v0.13.0/antd-windows-amd64.exe' `
+  -OutFile antd.exe
+$hash = (Get-FileHash -Algorithm SHA256 .\antd.exe).Hash
+if ($hash -ne '30bc63b3c0cf52860c28d00ad9188dc8bac23e3f81c81241624ff33b2cbb4e7b') {
+  throw 'Checksum mismatch. Do not run the downloaded file.'
+}
+Write-Output 'antd.exe: OK'
+.\antd.exe --version
+if ($LASTEXITCODE -ne 0) { throw 'antd did not report its version successfully.' }
+```
 
+{% endtab %}
+{% endtabs %}
+
+Expect `antd: OK` (`antd.exe: OK` on Windows), followed by `antd 0.13.0 (build 6fe2b51105cd)`. The checksum checks the file's contents; it is not a separate signature verification.
+
+The [release page](https://github.com/WithAutonomi/ant-sdk/releases/tag/v0.13.0) also provides macOS and Windows installers, and Linux x64 Debian/RPM packages. The remaining steps use the local executable downloaded above.
+
+### 2. Start without a wallet
+
+Run the executable from the same directory. Clear any wallet key left in your shell environment so this process starts without one:
+
+{% tabs %}
+{% tab title="macOS / Linux" %}
 ```bash
-./target/release/antd
+unset AUTONOMI_WALLET_KEY
+./antd
 ```
 
-This gives you a local REST and gRPC gateway for health checks, reads, and SDK connectivity without upload payment setup.
+{% endtab %}
+{% tab title="Windows" %}
+```powershell
+$env:AUTONOMI_WALLET_KEY = $null
+.\antd.exe
+```
 
-### 3. Confirm the daemon is healthy
+{% endtab %}
+{% endtabs %}
 
-The default REST endpoint is `http://localhost:8082`:
+Wait until the output includes `REST server listening on 127.0.0.1:8082`, then leave this terminal open while your application uses the service. Startup connects to network peers before the API becomes available. Without wallet configuration, you can retrieve data but cannot use wallet-backed uploads.
 
+The APIs listen on your own computer by default. Keep that setting unless you add access controls: antd has no built-in authentication, and its API includes wallet and local-file operations.
+
+### 3. Check the connection
+
+Open another terminal and request the health endpoint:
+
+{% tabs %}
+{% tab title="macOS / Linux" %}
 ```bash
-curl http://localhost:8082/health
+curl --fail --show-error http://localhost:8082/health
 ```
 
-Expected response:
+{% endtab %}
+{% tab title="Windows" %}
+```powershell
+Invoke-RestMethod -Uri http://localhost:8082/health | ConvertTo-Json
+```
+
+{% endtab %}
+{% endtabs %}
+
+Look for these fields in the JSON response:
 
 ```json
 {
   "status": "ok",
-  "network": "default"
+  "version": "0.13.0"
 }
 ```
 
-On startup, `antd` also writes a `daemon.port` file. SDKs can use that file to discover non-default ports automatically.
+`status: "ok"` means the local API is responding. The other fields describe network connectivity and payment configuration; see the [health reference](reference/rest-api.md#health) when you need them.
 
-If you only need retrieval, continue to [Retrieve Data from the Network](retrieve-data-from-the-network.md) before you think about upload payment setup.
+### 4. Download your first file
 
-### 4. Enable uploads when you need them
+Keep the first terminal running. In the second terminal, download this public image to `downloaded.jpg` in your current directory. Use a different output name if you already have a file with that name.
 
-Skip this step if you are only building read-only features.
-
-To enable the regular write endpoints on the default network, restart `antd` with wallet and EVM settings:
-
+{% tabs %}
+{% tab title="macOS / Linux" %}
 ```bash
-AUTONOMI_WALLET_KEY="<hex_private_key>" \
-EVM_RPC_URL="https://your-rpc-endpoint" \
-EVM_PAYMENT_TOKEN_ADDRESS="0x..." \
-EVM_PAYMENT_VAULT_ADDRESS="0x..." \
-./target/release/antd
+curl --fail --show-error \
+  'http://localhost:8082/v1/data/public/711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a/stream' \
+  --output downloaded.jpg
 ```
 
-Use this mode for SDK calls and REST endpoints that upload data directly, such as `data_put_public` or `POST /v1/data/public`.
-
-If your application should keep the signing key outside `antd`, omit `AUTONOMI_WALLET_KEY` and keep the EVM settings instead:
-
-```bash
-EVM_RPC_URL="https://your-rpc-endpoint" \
-EVM_PAYMENT_TOKEN_ADDRESS="0x..." \
-EVM_PAYMENT_VAULT_ADDRESS="0x..." \
-./target/release/antd
+{% endtab %}
+{% tab title="Windows" %}
+```powershell
+Invoke-WebRequest -UseBasicParsing `
+  -Uri 'http://localhost:8082/v1/data/public/711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a/stream' `
+  -OutFile downloaded.jpg
 ```
 
-This mode is for the two-phase prepare and finalize upload flow described in [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md).
+{% endtab %}
+{% endtabs %}
 
-### 5. Start a local devnet when you need a full local stack
-
-If you want local services and test funds provisioned for you, run the helper from the `ant-sdk` repo root:
-
-```bash
-cd /path/to/ant-sdk
-pip install -e ant-dev/
-ant dev start --ant-node-dir ../ant-node
-```
-
-The `ant` command installed by `ant-dev` is separate from [the direct-network CLI](../cli/use-the-cli.md). Use a virtualenv, `pipx`, or a separate `PATH` setup if you need both workflows on the same machine.
-
-If you just built `antd` in `ant-sdk/antd`, `cd ..` first to get back to the repo root.
-
-If the two repos are already laid out as siblings and discovery works in your environment, you can omit `--ant-node-dir`.
-
-It starts `ant-devnet`, waits for the generated devnet manifest, and then launches `antd` with the bootstrap peers, wallet key, and local EVM payment settings from that manifest.
-
-On the first run, `ant dev start` can take longer than usual while local components compile in release mode. If it times out on a cold build, run it again after the initial compilation has completed.
+Open `downloaded.jpg` to see the image. It is a 138,931-byte JPEG. Your local service retrieved it from the Autonomi Network; no payment wallet was needed.
 
 ## What happened
 
-You built `antd` and started a local gateway for the Autonomi SDKs. The health check confirms that the daemon is reachable; you can keep it read-only, restart it with wallet-backed upload settings, or let a local devnet provision the upload configuration for you.
+You installed and started a local service, checked its API, and used it to retrieve a file. Applications can use the same service through a language client or its REST/gRPC API. Press Ctrl+C in the first terminal when you want to stop it.
+
+## Build from source instead
+
+As an alternative to the download, install [Rust](https://www.rust-lang.org/tools/install) (which includes Cargo) and [protoc](https://protobuf.dev/installation/) (the Protocol Buffers compiler), with both tools on your `PATH`. The following Bash commands are for macOS or Linux. Run them in a separate working directory, then continue with step 2 from the `ant-sdk/antd` directory containing the built executable:
+
+```bash
+git clone --depth 1 --branch v0.13.0 https://github.com/WithAutonomi/ant-sdk.git ant-sdk
+cd ant-sdk
+test "$(git rev-parse HEAD)" = "6fe2b51105cd10a4d2217068a066d3d3f505ddb6" || exit 1
+printf 'ant-sdk v0.13.0\n'
+cd antd
+cargo build --release --locked
+cp target/release/antd ./antd
+./antd --version
+```
+
+Expected version output: `antd 0.13.0 (build 6fe2b51105cd)`.
 
 ## Next steps
 
-- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
+- Use the service from [Python](reference/language-bindings/python.md), [JavaScript](reference/language-bindings/javascript.md), or [TypeScript](reference/language-bindings/typescript.md).
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md) when you already have a file address
 - [Store Data on the Network](store-data-on-the-network.md)
 - [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
 - [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md)

@@ -1,4 +1,4 @@
-# Self-Encryption
+# Self-encryption
 
 <!-- verification:
   source_repo: self_encryption
@@ -12,7 +12,7 @@ Self-encryption is the content-processing step that turns input bytes into a `Da
 
 ## Why it matters
 
-This is the layer that makes uploads content-addressed and client-side encrypted. Higher-level tools such as `antd` and `ant-core` rely on it to produce the `DataMap` and chunk layout used for later retrieval.
+This is the layer that makes data and file uploads content-addressed and client-side encrypted. Higher-level tools such as [`antd`](../sdk/use-antd.md) and [`ant-core`](../rust/README.md) rely on it to produce the `DataMap` and chunk layout used for later retrieval. Raw chunk operations bypass self-encryption and store the caller-supplied bytes directly.
 
 ## How it works
 
@@ -35,7 +35,7 @@ Important limits from the crate itself:
 - `MIN_ENCRYPTABLE_BYTES` is `3`
 - `MAX_CHUNK_SIZE` is `4_190_208` bytes
 
-The crate stores chunk metadata in a `DataMap`, and the `DataMap` can be shrunk recursively when it grows beyond the immediate chunk set. In the higher-level SDK and CLI workflows, that `DataMap` is what turns a set of encrypted chunks back into retrievable content.
+The crate stores chunk metadata in a `DataMap`, and the `DataMap` can be shrunk recursively when it grows beyond the immediate chunk set. In the higher-level [SDK](../sdk/install.md) and [CLI](../cli/use-the-cli.md) workflows, that `DataMap` is what turns a set of encrypted chunks back into retrievable content.
 
 ## Practical example
 
@@ -54,7 +54,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The crate does not store anything on the network for you. Persisting the encrypted chunks and keeping the `DataMap` somewhere safe is the caller's responsibility. That is why higher-level tools build on top of it: they handle payment, network storage, and the public/private retrieval choices around the `DataMap`.
+The crate does not store anything on the Autonomi Network for you. Persisting the encrypted chunks and keeping the `DataMap` somewhere safe is the caller's responsibility. That is why higher-level tools build on top of it: they handle payment, network storage, and the public/private retrieval choices around the `DataMap`.
 
 ## Upstream sources
 

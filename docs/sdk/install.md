@@ -8,62 +8,57 @@
   verification_mode: current-merged-truth
 -->
 
-Use the SDKs when you want a simpler application integration model on Autonomi.
+Build applications that store and retrieve data on the Autonomi Network. The software development kits (SDKs) provide language libraries and supporting tools; your application calls the library for your language.
 
-This approach combines:
+## Choose how your application connects
 
-- a local daemon called `antd`
-- REST and gRPC interfaces exposed by that daemon
-- language SDKs in Python, Node.js / TypeScript, Go, Rust, Java, C#, Kotlin, Swift, Ruby, PHP, Dart, Zig, and other supported languages
+Both kinds of library run inside your application. Choose whether the library manages the network connection there or calls a separately running service.
 
-## Why use the SDKs
+| Connection | Choose it when | Installation and usage |
+|------------|----------------|------------------------|
+| Direct from your application | You want a language library with no separate network service to start | [Direct-connection libraries](native/README.md) |
+| Through a local daemon | Several applications should share one service, or you prefer a local REST or gRPC API | [Local-daemon clients](use-antd.md) |
 
-Choose the SDKs if you want:
+The packages and APIs differ. Use the package for the connection arrangement you choose; a Python or Node.js library for one is not interchangeable with the other.
 
-- a local API between your application and the network
-- a stable local API instead of direct peer-to-peer networking in your app
-- one local daemon process that multiple apps, scripts, or tools can share
-- SDK support in the language you already work in
+## Libraries that connect directly
 
-## How the SDKs work
+The package manager installs the language library and its compiled network client together. Import the library into your application; there is no separate executable to start.
 
-`antd` runs on your machine and talks to the network for you. The SDKs, REST API, gRPC clients, and MCP server all build on that same local daemon.
+| Language reference | Package |
+|--------------------|---------|
+| [Python SDK](native/python.md) | `ant-sdk` on PyPI; import `ant_ffi` |
+| [Node.js SDK](native/nodejs.md), including TypeScript declarations | `@withautonomi/ant-sdk` on npm |
+| [.NET SDK](native/csharp.md) | `Autonomi.Ffi` on NuGet; namespace `AntFfi` |
 
-Your application code can still be Python, Node.js / TypeScript, Go, Rust, or another supported language. The supported `antd` install method in these docs is to build the daemon from the `ant-sdk` repo, then connect to it from the SDK language you choose.
+Each language reference covers installation and its API. Python and Node.js also include a complete public-file download example. For storage methods and payment setup, use the [Native SDK Reference](reference/native-sdks.md).
 
-If you would rather work directly from the terminal, use [the CLI](../cli/use-the-cli.md). If you want daemon-free Rust access, see [Build Directly in Rust](../rust/build-directly-in-rust.md).
+## Clients for a local daemon
 
-## What to do next
+A local daemon is a background service running separately on your computer. Autonomi's daemon, [antd](use-antd.md), manages the network connection and provides a local REST or gRPC API. Installing a client library does not install or start this service.
 
-### 1. Start the local daemon
+| Client | Package or setup |
+|--------|------------------|
+| cURL | Call the [REST API](reference/rest-api.md) without a language library |
+| [Python](reference/language-bindings/python.md) | `antd[rest]` on PyPI |
+| [JavaScript](reference/language-bindings/javascript.md) / [TypeScript](reference/language-bindings/typescript.md) | `@withautonomi/antd` on npm |
+| [Rust](reference/language-bindings/rust.md) | `antd-client` from the source checkout in its installation instructions |
+| Other languages | See [Language Bindings](reference/language-bindings/README.md) for package and source-install instructions |
 
-Start with [Start the Local Daemon](start-the-local-daemon.md) to build `antd` from source, run it in read-only mode, and verify that it is healthy.
+The walkthroughs include client installation in matching language tabs:
 
-### 2. Retrieve data from the network
+- [Start the Local Daemon](start-the-local-daemon.md): install and run the service for your operating system.
+- [Retrieve Data from the Network](retrieve-data-from-the-network.md): download a supplied public image without a wallet or payment.
+- [Store Data on the Network](store-data-on-the-network.md): configure upload payments, store a public payload, and read it back.
 
-If you only need read-only features, continue to [Retrieve Data from the Network](retrieve-data-from-the-network.md).
+## Public and private storage
 
-### 3. Choose how you want to handle writes
-
-If you need uploads after the read-only flow, choose one of these next steps:
-
-- [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md) for daemon-signed writes on the default network
-- [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md) when your app should keep the signing key outside `antd`
-- [Set Up a Local Network](../guides/set-up-a-local-network.md) if you want local services and test funds provisioned for you
-
-### 4. Store data on the network
-
-Once the daemon is running and you have set up writes, continue to [Store Data on the Network](store-data-on-the-network.md).
-
-### 5. Language-specific references
-
-If you already know your target language, use the [Language Bindings](../sdk/reference/language-bindings/overview.md) section for setup and API details.
+Uploads require a wallet and storage payment. Choose public storage when you want to share a file by its address, or private storage when you want to keep its access information secret. See [Keys, Addresses, and DataMaps](../core-concepts/keys-addresses-and-datamaps.md) for how you retain access to each.
 
 ## Related pages
 
-- [Start the Local Daemon](start-the-local-daemon.md)
-- [Retrieve Data from the Network](retrieve-data-from-the-network.md)
-- [Prepare a Wallet for Uploads](../guides/prepare-a-wallet-for-uploads.md)
-- [Use External Signers for Upload Payments](how-to-guides/use-external-signers-for-upload-payments.md)
-- [Store Data on the Network](store-data-on-the-network.md)
-- [SDK Overview](../sdk/reference/overview.md)
+- [SDK How-To Guides](how-to-guides/README.md)
+- [SDK Reference](reference/README.md)
+- [Use the CLI](../cli/use-the-cli.md) for command-line access
+- [Build Directly in Rust](../rust/build-directly-in-rust.md)
+- [Build with AI Tools](../mcp/use-mcp-with-ai-tools.md)
