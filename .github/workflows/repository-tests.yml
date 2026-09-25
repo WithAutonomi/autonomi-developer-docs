@@ -1,0 +1,36 @@
+name: Repository Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-tests:
+    name: Run repository tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        # Pinned literally rather than installed from scripts/requirements.txt,
+        # matching sweep-sha-reachability.yml: the requirements file is
+        # PR-controlled.
+        run: pip install 'PyYAML>=6,<7'
+
+      - name: Run governance, documentation-guard, and scanner tests
+        run: python3 -B -m unittest discover -s scripts/tests -p 'test_*.py'
