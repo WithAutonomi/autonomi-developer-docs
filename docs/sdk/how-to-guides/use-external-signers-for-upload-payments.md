@@ -53,7 +53,7 @@ From the directory containing the executable installed by [Start the Local Daemo
 
 From another directory, use the absolute path to that executable. A bare `antd` command is appropriate only if you deliberately installed the intended version on your `PATH`.
 
-On the default network, `antd v0.13.0` selects the Arbitrum One preset and returns its canonical RPC and payment contracts from the prepare endpoints. Do not set individual `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, or `EVM_PAYMENT_VAULT_ADDRESS` overrides; those activate custom payment handling that default-network storage nodes reject.
+On the default network, `antd v0.14.0` selects the Arbitrum One preset and returns its canonical RPC and payment contracts from the prepare endpoints. Do not set individual `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, or `EVM_PAYMENT_VAULT_ADDRESS` overrides; those activate custom payment handling that default-network storage nodes reject.
 
 ### 2. Prepare the upload
 
@@ -184,7 +184,7 @@ Each `pool_commitments` entry contains exactly 16 candidate payments. The sample
 
 `merkle_batches` lists one entry per on-chain payment. A single Merkle tree covers up to 256 fresh chunks (roughly 1 GiB), so an upload larger than that splits across several batches, and the external signer submits one `payForMerkleTree2()` transaction per entry. The top-level `depth`, `pool_commitments`, and `merkle_payment_timestamp` are legacy single-batch fields: `antd` populates them only when `merkle_batches` has exactly one entry, mirroring that entry. A multi-batch response omits them, so read the payment details from `merkle_batches` and treat the singular fields as a convenience for the single-batch case.
 
-Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Use the two counts to reconcile cost — the difference explains why a prepare can come back cheaper than the raw file size implies. Construct the payment itself from the returned `payments` or `merkle_batches` entries, never from the chunk counts.
+Both prepare shapes also return `total_chunks` and `already_stored_count`. `total_chunks` is the full chunk count for the upload, including chunks already on-network; `already_stored_count` is how many were already stored and so excluded from payment and the PUT. Use the two counts to reconcile cost — the difference explains why a prepare can come back cheaper than the raw file size implies. Construct the payment itself from the returned `payments` or `merkle_batches` entries, never from the chunk counts. The gRPC `PrepareUploadResponse` carries the same two counts.
 
 For file uploads, the equivalent is `POST /v1/upload/prepare` with a local `path` field instead of `data`. To make the upload publicly retrievable by address, add `"visibility":"public"` to the prepare request. `antd` bundles the serialized DataMap chunk into the same payment batch, and the finalize response includes a `data_map_address` field with its Autonomi Network address.
 
@@ -219,7 +219,7 @@ curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
   -d '{"upload_id":"<hex_id>","tx_hashes":{}}'
 ```
 
-The gRPC `FinalizeUpload` method also accepts an empty wave-batch `tx_hashes` map for this all-already-stored case. Both transports validate that every payment reported by prepare has a transaction hash before consuming the prepared state. Missing receipts return REST `400 BAD_REQUEST` or gRPC `INVALID_ARGUMENT`; correct the request and retry the same ID. After validation succeeds, a later network failure requires a new prepare call and payment reconciliation.
+The gRPC `FinalizeUpload` method also accepts an empty wave-batch `tx_hashes` map for this all-already-stored case. Both transports validate that every payment reported by prepare has a transaction hash before consuming the prepared state. Missing receipts return REST `400 BAD_REQUEST` or gRPC `INVALID_ARGUMENT`; correct the request and retry the same ID. After validation succeeds, a storage shortfall can be resumed under the same ID (see step 5). Any other later failure requires a new prepare call and payment reconciliation.
 
 Merkle finalize request. Pass `winner_pool_hashes` as an array holding one winner hash per entry in the prepare response's `merkle_batches`, in the same order:
 
@@ -231,7 +231,7 @@ curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
 
 When the prepared upload has exactly one batch, you can pass the single `winner_pool_hash` field instead. Do not combine the two fields in one request.
 
-Keep one slot per prepared batch, in the prepare response's order — do not compact or reorder the list. With REST, send an empty string or `null` when the signer skipped a batch. With gRPC, use an empty string because repeated string fields cannot carry `null`. The chunks that batch would have paid for surface as a partial upload rather than a stored result. If no batch was paid at all, finalize rejects the request with a `402` payment error instead — a partial upload is reported only when at least one batch was paid.
+Keep one slot per prepared batch, in the prepare response's order — do not compact or reorder the list. With REST, send an empty string or `null` when the signer skipped a batch. With gRPC, use an empty string because repeated string fields cannot carry `null`. The chunks that batch would have paid for surface as a partial upload with `retryable: false` rather than a stored result, because only a fully paid batch list can be resumed under the same ID. If no batch was paid at all, finalize rejects the request with a `402` payment error instead — a partial upload is reported only when at least one batch was paid.
 
 Single-batch uploads may still use the legacy field:
 
@@ -254,13 +254,43 @@ Expected response shape:
 
 In REST responses, `address` is omitted unless `store_data_map` is `true`; that path stores the DataMap through `antd`'s configured wallet. Use it only when `antd` has a wallet key. `data_map_address` is omitted unless the upload was prepared with `visibility:"public"`; it is the Autonomi Network address of the DataMap chunk whose payment was included in the same external-signer batch. The gRPC response uses empty strings instead of omitted fields.
 
-### 5. Use SDK helpers when available
+### 5. Recover from a partial store
 
-The REST endpoints shown above expose the complete multi-batch surface in `antd v0.13.0`. The Go convenience client also exposes `MerkleBatches` and `FinalizeMerkleUploadMulti` through REST and gRPC.
+If the payment landed but some chunks are still unstored after retries, REST finalize returns HTTP `502` with `code: "PARTIAL_UPLOAD"`. Branch on `code` rather than the status, because a network error also returns `502`:
+
+```json
+{
+  "error": "Partial upload: 200/256 chunks stored, 56 failed after retries: ...",
+  "code": "PARTIAL_UPLOAD",
+  "chunks_stored": 200,
+  "chunks_failed": 56,
+  "total_chunks": 256,
+  "retryable": true
+}
+```
+
+The stored chunks persist. What you do next depends on `retryable`:
+
+- `retryable: true`: `antd` kept the payment proofs and the unstored chunks under the same `upload_id`. Repeat the same finalize request with that `upload_id` to store the remainder against the same payment. Do not prepare again, sign again, or pay again; `antd` ignores the payment fields on this resume. Cap the number of retries, because a persistent failure returns `PARTIAL_UPLOAD` on every call. The retained attempt lives only in the running `antd` process and becomes eligible for cleanup one hour after the partial upload is reported.
+- `retryable: false`: nothing was retained. This happens for a Merkle finalize that left one or more batches unpaid. Prepare the same content again, pay for the new prepare response, and finalize to store only the remainder; chunks that are already stored are excluded from the new payment.
+
+For example, repeat a wave-batch finalize with the same request body:
+
+```bash
+curl --fail-with-body -X POST http://localhost:8082/v1/upload/finalize \
+  -H "Content-Type: application/json" \
+  -d '{"upload_id":"<hex_id>","tx_hashes":{"0xquote":"0xtx"}}'
+```
+
+With gRPC, `FinalizeUpload` returns `ABORTED` with a message that starts with `Partial upload:` and carries the counts. The message includes `paid attempt retained` when you can repeat the same call, and `re-prepare the same content` when nothing was retained.
+
+### 6. Use SDK helpers when available
+
+The REST endpoints shown above expose the complete multi-batch surface in `antd v0.14.0`. The Go convenience client also exposes `MerkleBatches` and `FinalizeMerkleUploadMulti` through REST and gRPC.
 
 For Python, use `pip install 'antd[rest]'` (see [Python installation](../reference/language-bindings/python.md#install)). For Node.js / TypeScript, use `npm install @withautonomi/antd` and import from `"@withautonomi/antd"` (see [TypeScript installation](../reference/language-bindings/typescript.md#install)). These clients are separate from the [native SDKs](../native/README.md), whose APIs do not use this REST workflow.
 
-The Python `antd 0.1.0`, Node.js / TypeScript `@withautonomi/antd 0.1.0`, and Rust `v0.12.1` convenience clients accept one winner-pool hash and therefore handle single-batch Merkle uploads at most. The Python REST parser also checks for `payment_type: "merkle_batch"` while `antd` returns `payment_type: "merkle"`, and its packaged gRPC messages do not include the multi-batch fields. Do not use the Python convenience client for Merkle preparation with this release. For multi-batch uploads in these languages, use the REST requests shown above. The `upload.proto` file defines `merkle_batches` and `winner_pool_hashes`, but generated binding files do not all expose them.
+The Python `antd` 0.2.0, Node.js / TypeScript `@withautonomi/antd` 0.2.0, and Rust `v0.12.1` convenience clients accept one winner-pool hash and therefore handle single-batch Merkle uploads at most. The Python REST parser also checks for `payment_type: "merkle_batch"` while `antd` returns `payment_type: "merkle"`. Do not use the Python convenience client for Merkle preparation with this release. For multi-batch uploads in these languages, use the REST requests shown above. The `upload.proto` file defines `merkle_batches` and `winner_pool_hashes`, but generated binding files do not all expose them.
 
 The OpenAPI schema also omits multi-batch Merkle fields and incorrectly rejects public in-memory preparation. Do not generate an external-signer client from that schema alone; use the [REST API](../reference/rest-api.md) fields for these operations.
 
@@ -274,13 +304,13 @@ Finalize succeeds when `antd` accepts the `upload_id` plus either the `tx_hashes
 
 ## Common errors
 
-**404 Not Found**: The `upload_id` is missing, expired, or already finalized.
+**404 Not Found**: The `upload_id` is missing, expired, or already finalized, or a retained partial upload expired or was lost when `antd` restarted.
 
 **400 Bad Request**: Check whether the prepared upload expects `tx_hashes`, `winner_pool_hash`, or `winner_pool_hashes`, validate the hex formatting of those values, and confirm the number of winner hashes matches the number of `merkle_batches`.
 
 **402 Payment Required**: No Merkle batch was paid — every `winner_pool_hashes` slot was empty. Pay at least one batch before finalizing.
 
-**502 Partial Upload**: The payment landed and some chunks stored, but others missed quorum after retries (or belonged to a batch the signer never paid). The response body carries the `PARTIAL_UPLOAD` code with `chunks_stored`, `chunks_failed`, and `total_chunks`. The stored chunks persist, so re-prepare the same content and finalize again to pay for and store only the remainder.
+**502 Partial Upload**: The payment landed and some chunks stored, but others are still unstored after retries (or belonged to a batch the signer never paid). The response body carries the `PARTIAL_UPLOAD` code with `chunks_stored`, `chunks_failed`, `total_chunks`, and `retryable`. The stored chunks persist. With `retryable: true`, repeat the same finalize call with the same `upload_id`; with `retryable: false`, re-prepare the same content and finalize again to pay for and store only the remainder.
 
 **503 Service Unavailable**: `antd` does not have an EVM network configured. On the default network, remove individual EVM overrides and restart `antd` so it selects the Arbitrum One preset. For a local network, use `ant dev start` to supply the matching local configuration.
 

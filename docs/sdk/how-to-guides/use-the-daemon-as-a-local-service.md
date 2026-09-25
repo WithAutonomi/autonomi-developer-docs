@@ -18,7 +18,7 @@ Use this setup if you want:
 
 ## Prerequisites
 
-- `antd v0.13.0` built on the target machine using the source-build instructions in [Start the Local Daemon](../start-the-local-daemon.md#build-from-source-instead)
+- `antd v0.14.0` built on the target machine using the source-build instructions in [Start the Local Daemon](../start-the-local-daemon.md#build-from-source-instead)
 - A Linux host with `systemd` for the service example below
 - An optional wallet key if `antd` will handle paid uploads directly
 
@@ -53,7 +53,7 @@ For a daemon that performs paid writes directly, add:
 AUTONOMI_WALLET_KEY="<hex_private_key>"
 ```
 
-Leave the file empty for read-only use or external-signer uploads. On the default network, `antd v0.13.0` selects the Arbitrum One preset and canonical payment contracts. Do not add individual `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, or `EVM_PAYMENT_VAULT_ADDRESS` overrides; those activate custom payment handling that default-network storage nodes reject.
+Leave the file empty for read-only use or external-signer uploads. On the default network, `antd v0.14.0` selects the Arbitrum One preset and canonical payment contracts. Do not add individual `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, or `EVM_PAYMENT_VAULT_ADDRESS` overrides; those activate custom payment handling that default-network storage nodes reject.
 
 ### 3. Create a systemd unit
 

@@ -134,7 +134,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `error.Internal` for this behavior. The client source is pinned independently to `v0.12.1`.
+`antd 0.14.0` reports a valid address with no stored data as not found. Handle `error.NotFound` for this case. The client source is pinned independently to `v0.12.1`.
 
 ```zig
 const std = @import("std");
@@ -150,8 +150,8 @@ pub fn main() !void {
 
     const missing_address = "0000000000000000000000000000000000000000000000000000000000000000";
     const data = client.dataGetPublic(missing_address) catch |err| switch (err) {
-        error.Internal => {
-            std.debug.print("Missing data returned an internal error\n", .{});
+        error.NotFound => {
+            std.debug.print("No data is stored at that address\n", .{});
             return;
         },
         else => return err,
@@ -164,7 +164,7 @@ pub fn main() !void {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
 
 ## Full API reference

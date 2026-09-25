@@ -114,7 +114,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client source is pinned independently to `v0.12.1`.
+`antd 0.14.0` reports a valid address with no stored data as not found. Handle `NotFoundError` for this case. The client source is pinned independently to `v0.12.1`.
 
 ```cpp
 #include "antd/antd.hpp"
@@ -127,8 +127,8 @@ int main() {
         const std::string missing_address(64, '0');
         const auto data = client.data_get_public(missing_address);
         std::cout << data.size() << '\n';
-    } catch (const antd::InternalError&) {
-        std::cout << "Missing data returned an internal error\n";
+    } catch (const antd::NotFoundError&) {
+        std::cout << "No data is stored at that address\n";
     } catch (const antd::AntdError& error) {
         std::cerr << error.what() << '\n';
         return 1;
@@ -140,7 +140,7 @@ int main() {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
 
 ## Full API reference

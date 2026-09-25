@@ -21,12 +21,12 @@ This guide covers read-only startup, wallet inspection, cost preflight, and opti
 
 ## Prerequisites
 
-- The `antd v0.13.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
+- The `antd v0.14.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
 - `curl`, Python 3, and a base64 command-line utility
 - A process supervisor that keeps `antd` bound to loopback or another protected interface
 - For wallet-backed `antd`: a low-value production wallet funded with ANT and gas
 
-The `antd` examples below use REST directly. If you use a [language client](../sdk/reference/language-bindings/overview.md), follow its setup instructions and check compatibility with `antd v0.13.0`.
+The `antd` examples below use REST directly. If you use a [language client](../sdk/reference/language-bindings/overview.md), follow its setup instructions and check compatibility with `antd v0.14.0`.
 
 For the local daemon commands, set its executable path from the directory where you installed it:
 
@@ -35,7 +35,7 @@ export ANTD_BIN="$(pwd)/antd"
 "$ANTD_BIN" --version
 ```
 
-Expect `antd 0.13.0 (build 6fe2b51105cd)`. Set the same absolute path as `ANTD_BIN` in your process supervisor's environment. The scripts below use it rather than selecting a possibly different executable from `PATH`.
+Expect `antd 0.14.0 (build dbf6a7d3d951)`. Set the same absolute path as `ANTD_BIN` in your process supervisor's environment. The scripts below use it rather than selecting a possibly different executable from `PATH`.
 
 ## Steps
 
@@ -59,7 +59,7 @@ Expected output:
 Using EVM preset: arbitrum-one
 ```
 
-Do not set any individual `EVM_*` override for public writes with `antd v0.13.0`. Any one of those variables creates a custom EVM network. Mainnet storage nodes can reject that payment encoding after the wallet has spent ANT. `antd v0.13.0` has no safe documented public-write interface using a custom RPC URL.
+Do not set any individual `EVM_*` override for public writes with `antd v0.14.0`. Any one of those variables creates a custom EVM network. Mainnet storage nodes can reject that payment encoding after the wallet has spent ANT. `antd v0.14.0` has no safe documented public-write interface using a custom RPC URL.
 
 ### 2. Start a read-only mainnet-facing daemon
 
@@ -79,7 +79,7 @@ exec "$ANTD_BIN" \
   --log-level info
 ```
 
-Expected startup output identifies REST port `8082`, gRPC port `50051`, and network mode `default`. `antd v0.13.0` loads public bootstrap peers from installed configuration or compiled-in defaults when no explicit peers are supplied.
+Expected startup output identifies REST port `8082`, gRPC port `50051`, and network mode `default`. `antd v0.14.0` loads public bootstrap peers from installed configuration, or from the bootstrap list bundled into the release, when no explicit peers are supplied.
 
 This process can serve reads without a wallet. Run it under your process supervisor rather than exposing its unauthenticated ports directly.
 
@@ -117,7 +117,7 @@ if missing:
 if (
     health["status"] != "ok"
     or health["network"] != "default"
-    or health["version"] != "0.13.0"
+    or health["version"] != "0.14.0"
 ):
     raise SystemExit(f"Unexpected health response: {health}")
 if health["evm_network"] != "arbitrum-one":

@@ -12,14 +12,16 @@ Use the Go SDK to store and retrieve data through a local daemon, a background s
 
 ## Install
 
-Use Go 1.25 or later and pin the module to `v0.12.1`.
+Use Go 1.25 or later. Create a module and add the client to it:
 
 ```bash
 mkdir antd-go-example
 cd antd-go-example
 go mod init example.com/antd-quickstart
-go get github.com/WithAutonomi/ant-sdk/antd-go@v0.12.1
+go get github.com/WithAutonomi/ant-sdk/antd-go
 ```
+
+Examples on this page use module v0.14.0 with antd 0.14.
 
 ## Connect to antd
 
@@ -131,7 +133,7 @@ Retrieved: Hello from Go!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client module is pinned independently to `v0.12.1`.
+An address with no stored data returns `*antd.NotFoundError`. Match typed errors with `errors.As`.
 
 ```go
 package main
@@ -149,9 +151,9 @@ func main() {
     missingAddress := "0000000000000000000000000000000000000000000000000000000000000000"
     _, err := client.DataGetPublic(context.Background(), missingAddress)
     if err != nil {
-        var internal *antd.InternalError
-        if errors.As(err, &internal) {
-            fmt.Println("Missing data returned an internal error")
+        var notFound *antd.NotFoundError
+        if errors.As(err, &notFound) {
+            fmt.Println("No data is stored at that address")
             return
         }
         fmt.Println(err)
@@ -162,8 +164,10 @@ func main() {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
+
+External-signer finalize methods return `*antd.PartialUploadError` when some chunks remain unstored; it carries `ChunksStored`, `ChunksFailed`, `TotalChunks`, `Retryable`, and `RetentionKnown`. When `Retryable` is `true`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Full API reference
 

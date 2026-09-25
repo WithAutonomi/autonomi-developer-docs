@@ -35,7 +35,7 @@ This keeps retrieval-only tools, dashboards, and content browsers separate from 
 ## Prerequisites
 
 - A 64-character public address, or a hex-encoded `DataMap` for private data
-- For REST: the `antd v0.13.0` binary running on `http://127.0.0.1:8082`
+- For REST: the `antd v0.14.0` binary running on `http://127.0.0.1:8082`
 - For CLI: [ant installed](../cli/use-the-cli.md#install-the-cli) using npm or your operating system's installer
 - A known copy of the expected content if you want to verify its bytes
 
@@ -163,7 +163,7 @@ Downloaded content matches the expected file
 
 **400 Bad Request**: A public address must be exactly 64 hexadecimal characters, and a private `DataMap` must be valid hex-encoded serialized data.
 
-**500 Internal Server Error for missing data**: `antd v0.13.0` reports an absent public `DataMap` as `INTERNAL_ERROR` instead of not found. Check that the address identifies stored public data before treating other 500 responses as retryable service failures.
+**404 Not Found for missing data**: `antd` returns `NOT_FOUND` when it finds no public `DataMap` at the address. Check that the address identifies stored public data. If `/health` shows no connected peers, a lookup can also report not found; restore connectivity before concluding that the data is absent.
 
 **Connection configuration errors**: Check custom bootstrap files or explicit peer settings first. Normal CLI use does not require a separate config file; if you selected a local-development manifest, follow that environment's setup instead.
 

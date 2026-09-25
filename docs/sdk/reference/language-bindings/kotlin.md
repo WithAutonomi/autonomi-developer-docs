@@ -41,7 +41,7 @@ No supported consumer setup is available for a runnable upload and download exam
 
 ## Error handling
 
-Kotlin error examples also depend on an installable consumer package, which is unavailable in the pinned `v0.12.1` source release. `antd` returns status 400 for malformed addresses. `antd v0.13.0` has a known error-mapping defect: retrieving a valid DataMap address that is not stored returns status 500 over REST or `INTERNAL` over gRPC instead of a not-found response.
+Kotlin error examples also depend on an installable consumer package, which is unavailable in the pinned `v0.12.1` source release. `antd` returns status 400 for malformed addresses. `antd 0.14.0` returns status 404 over REST, or `NOT_FOUND` over gRPC, for a valid address with no stored data; the binding raises `NotFoundException` for it.
 
 ## Full API reference
 

@@ -12,7 +12,7 @@ Use the Python client library in your application to store and retrieve data. It
 
 ## Install
 
-Use Python 3.10 or later. Install the [antd package](https://pypi.org/project/antd/0.1.0/) with its REST dependencies in your project's virtual environment. To create one:
+Use Python 3.10 or later. Install the [antd package](https://pypi.org/project/antd/) with its REST dependencies in your project's virtual environment. To create one:
 
 ```bash
 python3 -m venv .venv
@@ -20,7 +20,7 @@ python3 -m venv .venv
 python -m pip install 'antd[rest]'
 ```
 
-Check that `python3 --version` reports 3.10 or later before creating the environment. The `rest` extra supplies the HTTP dependency; `grpc` and `all` supply gRPC-only or combined dependencies. Installing the client does not install or start antd. Save each Python example as `app.py` and run it with `python app.py`.
+Check that `python3 --version` reports 3.10 or later before creating the environment. The `rest` extra supplies the HTTP dependency; `grpc` and `all` supply gRPC-only or combined dependencies. Installing the client does not install or start antd. Examples on this page use the `antd` package 0.2 with antd 0.14. Save each Python example as `app.py` and run it with `python app.py`.
 
 ## Connect to antd
 
@@ -119,17 +119,18 @@ The retrieval methods above return the complete content in memory. Keep private 
 
 ## Error handling
 
-antd can report a missing DataMap as an internal error instead of not found. Handle `InternalError`, but do not interpret every internal error as missing data. Confirm the address with its publisher and inspect the error message.
+An address with no stored data raises `NotFoundError`, a subclass of `AntdError`.
 
 ```python
-from antd import AntdClient, AntdError, InternalError
+from antd import AntdClient, AntdError, NotFoundError
+
 
 def main() -> None:
     client = AntdClient()
     try:
         client.data_get_public("0" * 64)
-    except InternalError as exc:
-        print(f"Internal error; confirm the address and inspect the cause: {exc}")
+    except NotFoundError:
+        print("No data is stored at that address")
     except AntdError as exc:
         print(f"antd request failed: {exc}")
     finally:
@@ -140,11 +141,13 @@ if __name__ == "__main__":
     main()
 ```
 
-Output shape for an internal error:
+Output when the valid address is not stored:
 
 ```text
-Internal error; confirm the address and inspect the cause: <error details>
+No data is stored at that address
 ```
+
+External-signer finalize methods raise `PartialUploadError`, a subclass of `NetworkError`, when some chunks remain unstored; it carries `chunks_stored`, `chunks_failed`, `total_chunks`, `retryable`, and `retention_known`. When `retryable` is `True`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Store and retrieve data
 
@@ -154,7 +157,7 @@ Uploads require a configured wallet and Ethereum Virtual Machine (EVM) payment s
 
 ### External-signer limitations
 
-REST and gRPC expose wallet operations and external-signer prepare/finalize methods, but their response fields are not identical. The Python REST parser expects `payment_type: "merkle_batch"`, while antd returns `payment_type: "merkle"`, so it drops Merkle pool commitments. Its generated gRPC messages also omit multi-batch fields, and its convenience methods do not support multi-batch Merkle finalization. Do not use the Python convenience client for Merkle preparation; use the raw [REST external-signer workflow](../../how-to-guides/use-external-signers-for-upload-payments.md) instead.
+REST and gRPC expose wallet operations and external-signer prepare/finalize methods, but their response fields are not identical. The Python REST parser expects `payment_type: "merkle_batch"`, while antd returns `payment_type: "merkle"`, so it drops Merkle pool commitments. Its gRPC convenience methods also omit multi-batch fields and do not support multi-batch Merkle finalization. Do not use the Python convenience client for Merkle preparation; use the raw [REST external-signer workflow](../../how-to-guides/use-external-signers-for-upload-payments.md) instead.
 
 ## Full API reference
 

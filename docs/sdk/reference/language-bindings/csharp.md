@@ -12,14 +12,15 @@ Use the C# SDK to store and retrieve data through a local daemon, a background s
 
 ## Install
 
-Use .NET 8 and reference the SDK project from the exact ant-sdk v0.12.1 release source. A separate [Autonomi.Antd 0.1.0 package](https://www.nuget.org/packages/Autonomi.Antd/0.1.0) is available on NuGet; the project-reference workflow below does not use that package.
+Use .NET 8. Create a console project and add the [Autonomi.Antd package](https://www.nuget.org/packages/Autonomi.Antd) from NuGet:
 
 ```bash
-git clone --branch v0.12.1 --depth 1 https://github.com/WithAutonomi/ant-sdk.git
-test "$(git -C ant-sdk rev-parse HEAD)" = "f9cd5c5fc08133847909e47e04af186593ccbaee"
 dotnet new console --framework net8.0 --name AutonomiExample
-dotnet add AutonomiExample/AutonomiExample.csproj reference ant-sdk/antd-csharp/Antd.Sdk/Antd.Sdk.csproj
+cd AutonomiExample
+dotnet add package Autonomi.Antd
 ```
+
+The package provides the `Antd.Sdk` namespace used below. Replace the contents of `Program.cs` with an example and run it with `dotnet run`. Examples on this page use `Autonomi.Antd` 0.2 with antd 0.14.
 
 ## Connect to antd
 
@@ -96,7 +97,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalException` for this behavior. The client source is pinned independently to `v0.12.1`.
+An address with no stored data throws `NotFoundException`, a subclass of `AntdException`.
 
 ```csharp
 using System;
@@ -108,9 +109,9 @@ try
     var missingAddress = new string('0', 64);
     await client.DataGetPublicAsync(missingAddress);
 }
-catch (InternalException)
+catch (NotFoundException)
 {
-    Console.WriteLine("Missing data returned an internal error");
+    Console.WriteLine("No data is stored at that address");
 }
 catch (AntdException ex)
 {
@@ -121,8 +122,10 @@ catch (AntdException ex)
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
+
+External-signer finalize methods throw `PartialUploadException`, a subclass of `NetworkException`, when some chunks remain unstored; it carries `ChunksStored`, `ChunksFailed`, `TotalChunks`, `Retryable`, and `RetentionKnown`. When `Retryable` is `true`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Full API reference
 

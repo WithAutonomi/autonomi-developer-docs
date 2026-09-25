@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-Command-line options for the local daemon, `antd 0.13.0`. This background service connects applications to the Autonomi Network through REST and gRPC APIs.
+Command-line options for the local daemon, `antd 0.14.0`. This background service connects applications to the Autonomi Network through REST and gRPC APIs.
 
 ## Usage
 
@@ -99,8 +99,8 @@ antd -V
 Expected output for the released binary:
 
 ```text
-antd 0.13.0 (build 6fe2b51105cd)
-antd 0.13.0
+antd 0.14.0 (build dbf6a7d3d951)
+antd 0.14.0
 ```
 
 ## Notes

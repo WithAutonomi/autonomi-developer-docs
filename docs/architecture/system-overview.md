@@ -64,8 +64,8 @@ When your application stores or retrieves data, a client connects it to the Auto
 ```text
 Application
   |
-  +-- REST or gRPC --> antd --> ant-core 0.8.0 --> client saorsa-core
-  |                                                + saorsa-transport --+
+  +-- REST or gRPC --> antd --> ant-core 0.10.0 --> client saorsa-core
+  |                                                 + saorsa-transport -+
   |                                                                      |
   +-- Native library --> bundled ant-core 0.8.1 --> client saorsa-core    |
   |                                                + saorsa-transport --+
@@ -97,7 +97,7 @@ The developer interfaces covered by these guides are:
 
 Both the `antd` client libraries and the native libraries run inside your application. An `antd` client library sends requests to a separate background service that handles the network connection; a native library handles that connection within your application. You can also call `antd` without a client library, for example by sending HTTP requests to its REST API.
 
-These interfaces target the same Autonomi Network. Native libraries, Direct Rust, and the CLI connect without `antd`; choose according to your application's requirements. `antd 0.13.0` ships `ant-core 0.8.0`; native SDK packages `0.0.9` use `ant-core 0.8.1`; `ant-cli 0.3.8` and the Direct Rust examples use `ant-core 0.10.0`.
+These interfaces target the same Autonomi Network. Native libraries, Direct Rust, and the CLI connect without `antd`; choose according to your application's requirements. `antd 0.14.0`, `ant-cli 0.3.8`, and the Direct Rust examples use `ant-core 0.10.0`; native SDK packages `0.0.9` use `ant-core 0.8.1`.
 
 The native libraries, `antd`, the CLI, and Direct Rust use `ant-core` on the client side. For normal data operations, `ant-core` runs a client-mode `saorsa-core` peer and connects to remote storage nodes over `saorsa-transport`; it does not route requests through a local `ant-node`. The optional `ant-core` devnet feature links `ant-node` only to run a local test network.
 
@@ -140,7 +140,7 @@ For data and file uploads, client-side self-encryption turns content into a `Dat
 - [ant-protocol](https://github.com/WithAutonomi/ant-protocol)
 - [self_encryption](https://github.com/WithAutonomi/self_encryption)
 
-Client and node releases have separate dependency graphs. `ant-cli 0.3.8` and `ant-node 0.20.0` share `saorsa-core 0.28.0`, `saorsa-transport 0.37.0`, and `ant-protocol 3.0.0`; `antd 0.13.0` uses older `ant-core`, `ant-protocol`, `saorsa-core`, and `saorsa-transport` versions. See [Source Repositories](../reference/source-repositories.md) for exact package identities and source-identity limitations.
+Client and node releases have separate dependency graphs. `antd 0.14.0`, `ant-cli 0.3.8`, and `ant-node 0.20.0` share `saorsa-core 0.28.0`, `saorsa-transport 0.37.0`, and `ant-protocol 3.0.0`; the native SDK packages use the older `ant-core 0.8.1`. See [Source Repositories](../reference/source-repositories.md) for exact package identities and source-identity limitations.
 
 ## Related pages
 

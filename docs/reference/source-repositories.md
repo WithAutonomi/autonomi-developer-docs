@@ -82,16 +82,16 @@ This page maps publicly obtainable releases for the Autonomi components covered 
 
 ## Developer products covered here
 
-- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) - [`v0.13.0`](https://github.com/WithAutonomi/ant-sdk/releases/tag/v0.13.0), source commit [`6fe2b51105cd10a4d2217068a066d3d3f505ddb6`](https://github.com/WithAutonomi/ant-sdk/commit/6fe2b51105cd10a4d2217068a066d3d3f505ddb6), publishes `antd` binaries and installers. The source tree also includes native SDKs, language clients, `ant-dev`, and `antd-mcp`. [Native SDKs](../sdk/native/README.md) and [antd clients](../sdk/reference/language-bindings/overview.md) have independently published package versions and source identities.
+- [`ant-sdk`](https://github.com/WithAutonomi/ant-sdk) - [`v0.14.0`](https://github.com/WithAutonomi/ant-sdk/releases/tag/v0.14.0), source commit [`dbf6a7d3d9511da6518ed369a2d1e4dba2c9ae51`](https://github.com/WithAutonomi/ant-sdk/commit/dbf6a7d3d9511da6518ed369a2d1e4dba2c9ae51), publishes `antd` binaries, installers, and the `ghcr.io/withautonomi/antd` container image. The source tree also includes native SDKs, language clients, `ant-dev`, and `antd-mcp`. The [antd clients](../sdk/reference/language-bindings/overview.md) for Python, JavaScript and TypeScript, C#, Ruby, PHP, and Dart are published as `0.2.0` packages on PyPI (`antd`), npm (`@withautonomi/antd`), NuGet (`Autonomi.Antd`), RubyGems (`antd`), Packagist (`autonomi/antd`), and pub.dev (`antd_client`), built from the `v0.14.0` source with a version bump at commit [`8481c6f82ef551089971fa712b8f76d0e3581eeb`](https://github.com/WithAutonomi/ant-sdk/commit/8481c6f82ef551089971fa712b8f76d0e3581eeb). The Go client is the module `github.com/WithAutonomi/ant-sdk/antd-go` at `v0.14.0`. [Native SDKs](../sdk/native/README.md) have independently published package versions.
 - [`ant-client`](https://github.com/WithAutonomi/ant-client) - [`ant-cli-v0.3.8`](https://github.com/WithAutonomi/ant-client/releases/tag/ant-cli-v0.3.8), source commit [`9112d683d8dbecffd8ad437546453f9f52310964`](https://github.com/WithAutonomi/ant-client/commit/9112d683d8dbecffd8ad437546453f9f52310964), publishes the `ant` CLI as release archives and [`@withautonomi/ant` on npm](https://www.npmjs.com/package/@withautonomi/ant). The npm package selects the platform binary and requires Node.js 18 or later. [`ant-core 0.10.0`](https://crates.io/crates/ant-core/0.10.0) comes from the same source commit and is used by the [Direct Rust examples](../rust/library-reference.md).
 - [`ant-node`](https://github.com/WithAutonomi/ant-node) - [`v0.20.0`](https://github.com/WithAutonomi/ant-node/releases/tag/v0.20.0), source commit [`2b4ab3c5c13617ca1fc01f9ab18457bcba369d85`](https://github.com/WithAutonomi/ant-node/commit/2b4ab3c5c13617ca1fc01f9ab18457bcba369d85), publishes `ant-node` archives and the [`ant-node 0.20.0`](https://crates.io/crates/ant-node/0.20.0) crate.
 - [`ant-keygen`](https://github.com/WithAutonomi/ant-keygen) — [`v0.1.0`](https://github.com/WithAutonomi/ant-keygen/releases/tag/v0.1.0), source commit [`3a2953f384a3b16391968de451b703843b98ed86`](https://github.com/WithAutonomi/ant-keygen/commit/3a2953f384a3b16391968de451b703843b98ed86), publishes the ML-DSA-65 release-signing utility.
 
 ## Shipped dependencies
 
-### CLI and node
+### CLI, daemon, and node
 
-The npm package and release archives for `ant-cli 0.3.8` contain the same platform executables. `ant-node 0.20.0` ships the same versions of these components, except `ant-core`, which the node does not use. Their dependencies include:
+The npm package and release archives for `ant-cli 0.3.8` contain the same platform executables. `antd 0.14.0` ships the same versions of these components. `ant-node 0.20.0` ships the same versions except `ant-core`, which the node does not use. Their dependencies include:
 
 | Component | Version and source |
 |-----------|--------------------|
@@ -104,30 +104,24 @@ The npm package and release archives for `ant-cli 0.3.8` contain the same platfo
 | self_encryption | [0.36.0](https://github.com/WithAutonomi/self_encryption/tree/0deb040084f94bea2ebb53bda20fa23464bbcfe0) |
 | ant-merkle | [1.5.1](https://github.com/WithAutonomi/ant-merkle/tree/80af80a5df1e26e3b6fb386d041178889c4ed993) |
 
-### Daemon and native SDKs
+### Native SDKs
 
-- `ant-core` - `antd 0.13.0` ships `ant-core 0.8.0` from [the CLI 0.3.5 source commit](https://github.com/WithAutonomi/ant-client/commit/ad09c57bcf30d5c575d5dd19a9b9b96b1f2a31a5). Native SDK packages `0.0.9` ship `ant-core 0.8.1` from [the CLI 0.3.6 source commit](https://github.com/WithAutonomi/ant-client/commit/dbc01ce8fdbdfe9ac4d064d35f36b4684bf6a616).
-- [`ant-protocol`](https://github.com/WithAutonomi/ant-protocol) - Chunk messages, payment proofs, and devnet manifests. `antd 0.13.0` ships [`2.3.4`](https://crates.io/crates/ant-protocol/2.3.4).
-- [`self_encryption`](https://github.com/WithAutonomi/self_encryption) — Client-side self-encryption used by data and file uploads. The daemon and native SDKs ship [`0.36.0`](https://crates.io/crates/self_encryption/0.36.0) from commit [`0deb040084f94bea2ebb53bda20fa23464bbcfe0`](https://github.com/WithAutonomi/self_encryption/commit/0deb040084f94bea2ebb53bda20fa23464bbcfe0).
-- [`evmlib`](https://github.com/WithAutonomi/evmlib) — Ethereum Virtual Machine (EVM) payment helpers used by `antd` and the native SDKs. These ship [`0.9.1`](https://crates.io/crates/evmlib/0.9.1) from commit [`fbf879b1f7068b5b072a936589721272c62f2ca0`](https://github.com/WithAutonomi/evmlib/commit/fbf879b1f7068b5b072a936589721272c62f2ca0).
+- `ant-core` - Native SDK packages `0.0.9` ship `ant-core 0.8.1` from [the CLI 0.3.6 source commit](https://github.com/WithAutonomi/ant-client/commit/dbc01ce8fdbdfe9ac4d064d35f36b4684bf6a616).
+- [`self_encryption`](https://github.com/WithAutonomi/self_encryption) — Client-side self-encryption used by data and file uploads. The native SDKs ship [`0.36.0`](https://crates.io/crates/self_encryption/0.36.0) from commit [`0deb040084f94bea2ebb53bda20fa23464bbcfe0`](https://github.com/WithAutonomi/self_encryption/commit/0deb040084f94bea2ebb53bda20fa23464bbcfe0).
+- [`evmlib`](https://github.com/WithAutonomi/evmlib) — Ethereum Virtual Machine (EVM) payment helpers. The native SDKs ship [`0.9.1`](https://crates.io/crates/evmlib/0.9.1) from commit [`fbf879b1f7068b5b072a936589721272c62f2ca0`](https://github.com/WithAutonomi/evmlib/commit/fbf879b1f7068b5b072a936589721272c62f2ca0).
 - [`ant-merkle`](https://github.com/WithAutonomi/ant-merkle) — Merkle batch payment contracts and proof structures. The released products ship [`1.5.1`](https://crates.io/crates/ant-merkle/1.5.1) from commit [`80af80a5df1e26e3b6fb386d041178889c4ed993`](https://github.com/WithAutonomi/ant-merkle/commit/80af80a5df1e26e3b6fb386d041178889c4ed993). The package has no matching source tag and contains older repository metadata.
-- [`saorsa-core`](https://github.com/saorsa-labs/saorsa-core) - Peer-to-peer routing and local trust scoring. `antd 0.13.0` ships [`0.27.3`](https://crates.io/crates/saorsa-core/0.27.3) from commit [`284bcd1a20547764e7d966c371d1a09de45f74e5`](https://github.com/saorsa-labs/saorsa-core/commit/284bcd1a20547764e7d966c371d1a09de45f74e5).
-- [`saorsa-transport`](https://github.com/saorsa-labs/saorsa-transport) - QUIC transport and NAT traversal. `antd 0.13.0` ships [`0.36.3`](https://crates.io/crates/saorsa-transport/0.36.3) from commit [`d9a7ddbc200c2873c32fdb77df8a7529b99a1576`](https://github.com/saorsa-labs/saorsa-transport/commit/d9a7ddbc200c2873c32fdb77df8a7529b99a1576).
-- [`saorsa-pqc`](https://github.com/saorsa-labs/saorsa-pqc) - Post-quantum cryptography package. `antd 0.13.0` ships [`0.5.1`](https://crates.io/crates/saorsa-pqc/0.5.1).
 
 These are the dependencies of the named product releases, not the newest standalone packages. Adding a library to your own Cargo project resolves dependencies separately; retain and review your application's `Cargo.lock` rather than assuming it reproduces a released binary's dependency graph.
 
 ## Source-only components
 
 - The daemon's Rust binding requires a pinned source checkout. Follow [Rust SDK](../sdk/reference/language-bindings/rust.md) rather than substituting the separate `ant-core` crate.
-- `ant-dev` and `antd-mcp` are source components. [Set Up a Local Network](../guides/set-up-a-local-network.md) pins `ant-sdk v0.12.0`; [How to Use the MCP Server](../mcp/use-the-autonomi-mcp-server.md) installs the MCP server and its Python client from `v0.13.0` with `antd 0.13.0`. These source installations are not automatically advanced with the antd executable; keep the versions specified in each guide together.
+- `ant-dev` and `antd-mcp` are source components. [Set Up a Local Network](../guides/set-up-a-local-network.md) pins `ant-sdk v0.12.0`; [How to Use the MCP Server](../mcp/use-the-autonomi-mcp-server.md) installs the MCP server and its Python client from `v0.14.0` with `antd 0.14.0`. These source installations are not automatically advanced with the antd executable; keep the versions specified in each guide together.
 - `ant-devnet` has no independent release. It is parent-bound to `ant-node 0.20.0` as a second binary in the crates.io source package and is not included in the `ant-node v0.20.0` binary archives. The local-network guide uses a separate, older pairing; keep its pinned versions together rather than substituting independently released components.
 
 ## Source identity limitations
 
 The source registry identifies the `saorsa-labs` repositories above as canonical. Some published package metadata points to older locations; use the registry links rather than those stale locations.
-
-The published [`saorsa-pqc 0.5.1`](https://crates.io/crates/saorsa-pqc/0.5.1) package records a dirty source tree and therefore does not establish an exact clean source commit. Use the versioned package to inspect the shipped contents without inferring a source revision.
 
 The `ant-node v0.20.0` archive signatures do not validate against `sign/release-signing-key.pub` at the release tag. Do not treat manual verification with that repository key as a valid installation route. A matching SHA-256 checksum alone does not resolve the signing-key mismatch.
 

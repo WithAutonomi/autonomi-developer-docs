@@ -12,14 +12,13 @@ Use the PHP SDK to store and retrieve data through a local daemon, a background 
 
 ## Install
 
-The `autonomi/antd` package is not published on Packagist for ant-sdk v0.12.1. Use PHP 8.1 or later and Composer inside the exact release source. Save the examples on this page in `ant-sdk/antd-php/` so they can load that source tree's generated autoloader.
+Use PHP 8.2 or later and Composer. In your project directory, add the [autonomi/antd package](https://packagist.org/packages/autonomi/antd) from Packagist:
 
 ```bash
-git clone --branch v0.12.1 --depth 1 https://github.com/WithAutonomi/ant-sdk.git
-test "$(git -C ant-sdk rev-parse HEAD)" = "f9cd5c5fc08133847909e47e04af186593ccbaee"
-cd ant-sdk/antd-php
-composer install --no-dev
+composer require autonomi/antd
 ```
+
+Composer writes `vendor/autoload.php` in your project directory. Save each example as `app.php` in that directory and run it with `php app.php`. Examples on this page use `autonomi/antd` 0.2 with antd 0.14.
 
 ## Connect to antd
 
@@ -95,7 +94,7 @@ Retrieved: Hello, Autonomi!
 
 ## Error handling
 
-`antd v0.13.0` reports a missing DataMap as an internal error instead of not found. Handle `InternalError` for this behavior. The client source is pinned independently to `v0.12.1`.
+An address with no stored data throws `NotFoundError`, a subclass of `AntdError`.
 
 ```php
 <?php
@@ -104,13 +103,13 @@ require_once 'vendor/autoload.php';
 
 use Autonomi\Antd\AntdClient;
 use Autonomi\Antd\Errors\AntdError;
-use Autonomi\Antd\Errors\InternalError;
+use Autonomi\Antd\Errors\NotFoundError;
 
 try {
     $client = new AntdClient();
     $client->dataGetPublic(str_repeat('0', 64));
-} catch (InternalError $e) {
-    echo "Missing data returned an internal error\n";
+} catch (NotFoundError $e) {
+    echo "No data is stored at that address" . PHP_EOL;
 } catch (AntdError $e) {
     echo $e->getMessage() . PHP_EOL;
 }
@@ -119,8 +118,10 @@ try {
 Output when the valid address is not stored:
 
 ```text
-Missing data returned an internal error
+No data is stored at that address
 ```
+
+External-signer finalize methods throw `Autonomi\Antd\Errors\PartialUploadError`, a subclass of `NetworkError`, when some chunks remain unstored; it carries `chunksStored`, `chunksFailed`, `totalChunks`, `retryable`, and `retentionKnown`. When `retryable` is `true`, repeating the same finalize call with the same upload ID stores the remainder without paying again; see the [external-signer guide](../../how-to-guides/use-external-signers-for-upload-payments.md) for the other cases.
 
 ## Full API reference
 

@@ -8,7 +8,7 @@
   verification_mode: current-merged-truth
 -->
 
-This page describes the gRPC surface exposed by `antd 0.13.0` on `127.0.0.1:50051` by default.
+This page describes the gRPC surface exposed by `antd 0.14.0` on `127.0.0.1:50051` by default.
 
 Unlike the REST API, the gRPC API carries raw bytes in protobuf fields rather than base64 strings in JSON.
 
@@ -17,6 +17,8 @@ Unlike the REST API, the gRPC API carries raw bytes in protobuf fields rather th
 ## Limits
 
 The gRPC server uses Tonic's default 4 MiB maximum inbound message size. Protobuf field encoding counts toward the limit, so a `bytes` field cannot carry a complete 4 MiB chunk. This limit applies to data puts, data cost requests, in-memory prepares, chunk puts, chunk prepares, and large caller-held DataMaps. The REST API accepts request bodies up to 100 MiB. File upload, file cost, and public file-download RPCs avoid transferring file bytes by passing paths on the `antd` host, but private file downloads still carry a caller-held DataMap in the request.
+
+The Verify Service is the exception: it accepts messages up to 32 MiB so that a batch of 1024 maximal entries fits.
 
 ## Health Service
 
@@ -32,7 +34,7 @@ Checks `antd` liveness, network selection, and live connectivity. `status: "ok"`
 |------|------|-------------|
 | `status` | string | Expected `ok` on success |
 | `network` | string | Value selected by `--network` or `ANTD_NETWORK`; documented modes are `default` and `local` |
-| `version` | string | `antd` crate version, `0.13.0` for this release |
+| `version` | string | `antd` crate version, `0.14.0` for this release |
 | `evm_network` | string | Selected EVM preset string. Recognized presets include `arbitrum-one`, `arbitrum-sepolia`, `arbitrum-sepolia-test`, and `local`; other values use local defaults unless individual EVM variables override them |
 | `uptime_seconds` | uint64 | Seconds since the `antd` process started |
 | `build_commit` | string | Short git SHA captured at build time, or empty if built outside a git checkout |
@@ -60,7 +62,7 @@ The response's `cost.atto_tokens` is an empty string and its other cost fields h
 
 Stores public data. The DataMap is stored on-network as an additional chunk.
 
-The response has the same empty `cost` behavior as `Put`. `chunks_stored` and `payment_mode_used` describe the data-chunk upload and exclude the separate DataMap store that produces `address`. Data and chunk addresses are 64 hexadecimal characters without a `0x` prefix.
+The response has the same empty `cost` behavior as `Put`. `chunks_stored` counts the data chunks plus the DataMap chunk that `antd` stores separately to produce `address`. `payment_mode_used` describes the data-chunk upload. Data and chunk addresses are 64 hexadecimal characters without a `0x` prefix.
 
 ### Get
 
@@ -74,7 +76,7 @@ Fetches private data using a caller-held `data_map` string.
 
 Fetches public data by address.
 
-Missing DataMaps, missing data chunks during buffered private retrieval, and missing wrapper chunks needed to resolve nested DataMaps can return `INTERNAL` rather than `NOT_FOUND`. Inspect the error message; do not treat every internal error as missing data.
+An address with no stored DataMap returns `NOT_FOUND`. Missing data chunks and missing wrapper chunks needed to resolve nested DataMaps also return `NOT_FOUND`. A lookup with no connected peers also returns `NOT_FOUND`, so check `connected_peers` from `Check` before treating the address as unused.
 
 ### Stream
 
@@ -118,7 +120,7 @@ Both streaming methods resolve nested DataMaps before opening the stream, then s
 
 **Signature:** `Cost(DataCostRequest) -> antd.v1.Cost`
 
-Returns an advisory storage and gas estimate for a byte payload. It samples up to five chunk addresses and extrapolates from the first sample with live quotes; gas is a fixed heuristic rather than a live gas-price query. The response does not expose confidence, so a zero estimate for more than five chunks means only that all samples were already stored. `payment_mode` in the response is the resolved `single` or `merkle` mode. The estimate excludes a separate public DataMap store.
+Returns an advisory storage and gas estimate for a byte payload. It samples up to five chunk addresses and extrapolates from the first sample with live quotes; gas is a fixed heuristic rather than a live gas-price query. The response does not expose confidence, so a zero estimate for more than five chunks means only that all samples were already stored. `payment_mode` in the response is the resolved `single` or `merkle` mode. The estimate excludes a separate public DataMap store, which `PutPublic` counts in `chunks_stored`.
 
 ## Chunk Service
 
@@ -193,7 +195,7 @@ The Upload Service handles external-signer file and in-memory data uploads. It m
 
 The flow is two-phase: submit a prepare request, receive payment details and an `upload_id`, submit the EVM payment externally, then call `FinalizeUpload` with the transaction hashes or winner pool hash. External signing is a request workflow, not an `antd` startup mode.
 
-Prepared state is process-local and is lost when `antd` restarts. It becomes eligible for cleanup after one hour, and cleanup runs every five minutes. `FinalizeUpload` validates payment fields before consuming state, so validation errors are retryable. Once validation succeeds, the call consumes the state before network storage; prepare again and reconcile payment after any later failure.
+Prepared state is process-local and is lost when `antd` restarts. It becomes eligible for cleanup after one hour, and cleanup runs every five minutes. `FinalizeUpload` validates payment fields before consuming state, so a bad request leaves the paid-for upload in place and validation errors are retryable. Once validation succeeds, the call consumes the prepared state and stores the chunks. A storage shortfall after payment can keep the paid attempt under the same `upload_id` for a repeat `FinalizeUpload`, as described under [FinalizeUpload](#finalizeupload). After any other later failure, prepare again and reconcile payment.
 
 - `payment_type = "wave_batch"` pays with `payForQuotes()`.
 - `payment_type = "merkle"` pays with `payForMerkleTree2()`.
@@ -246,8 +248,10 @@ Both prepare RPCs return `PrepareUploadResponse`:
 | `payment_token_address` | string | Payment token contract address (hex with `0x` prefix) |
 | `rpc_url` | string | EVM RPC URL for submitting transactions |
 | `signed_quotes` | repeated SignedQuoteEntry | Paid wave-batch quotes when requested; empty for Merkle, when not requested, or when no payment is needed |
+| `total_chunks` | uint64 | Full chunk count for the upload, including chunks already on-network |
+| `already_stored_count` | uint64 | How many of `total_chunks` were already stored and so excluded from payment and storage |
 
-Unlike the REST prepare response, this gRPC response does not include `total_chunks` or `already_stored_count`. A gRPC client cannot use those reconciliation counts.
+The external signer pays for `total_chunks - already_stored_count` chunks. Use the two counts for reconciliation only, and construct the payment from the returned `payments` or `merkle_batches` entries. These fields match the REST prepare response.
 
 ### FinalizeUpload
 
@@ -259,7 +263,7 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 
 | Name | Type | Description |
 |------|------|-------------|
-| `upload_id` | string | The `upload_id` returned from a prepare RPC |
+| `upload_id` | string | The `upload_id` returned from a prepare RPC, or the same value again after a retained partial upload |
 | `tx_hashes` | map\<string, string\> | Wave-batch: map of `quote_hash` (hex) to `tx_hash` (hex) from the on-chain payment. Must cover every payment reported by prepare; an empty map is accepted when prepare reported none. Must be empty for Merkle |
 | `winner_pool_hashes` | repeated string | Merkle: one winner pool hash (hex with `0x` prefix) per entry in `merkle_batches`, in the same order. An empty string marks a batch the signer did not pay; keep unpaid slots in place rather than compacting or reordering the list. Required over `winner_pool_hash` when the upload has more than one batch |
 | `winner_pool_hash` | string | Merkle, legacy single-batch: winner pool hash from the `MerklePaymentMade` event. Accepted only when the upload has exactly one batch; must be empty for wave-batch and must not be combined with `winner_pool_hashes` |
@@ -276,7 +280,12 @@ Phase 2 for both file and data uploads. Call after the external EVM payment land
 
 When prepare reports no `payments` because every chunk is already stored, `FinalizeUpload` accepts an empty wave-batch `tx_hashes` map without an on-chain payment. If payments are required, an empty map or missing quote receipt returns `INVALID_ARGUMENT` before the prepared state is consumed, so you can correct the request and retry the same ID.
 
-When the payment lands but some chunks miss quorum after retries (or belong to a batch the signer did not pay), `FinalizeUpload` returns the `ABORTED` status code with a message reporting how many chunks stored and failed. The stored chunks persist; re-prepare the same content and finalize again to store only the remainder. `ABORTED` is reported only when at least one Merkle batch was paid: when every `winner_pool_hashes` slot is empty, `FinalizeUpload` returns `FAILED_PRECONDITION` instead.
+When the payment lands but some chunks are still unstored after retries (or belong to a batch the signer did not pay), `FinalizeUpload` returns the `ABORTED` status code. The message starts with `Partial upload:` and reports how many chunks stored and failed, followed by a hint that says how to finish the upload. The stored chunks persist.
+
+- `paid attempt retained`: `antd` keeps the payment proofs and the unstored chunks under the same `upload_id`. Repeat the same `FinalizeUpload` call with that `upload_id` to store the remainder against the same on-chain payment, without preparing or paying again. The payment fields are ignored on this resume, but a field that belongs to the other payment type is still rejected. Bound the retry loop, because a persistent failure returns `ABORTED` on every call. The retained attempt is process-local: it becomes eligible for cleanup one hour after the partial upload is reported and is lost if `antd` restarts.
+- `re-prepare the same content`: nothing was retained. A Merkle finalize returns this when one or more `winner_pool_hashes` slots are empty, because only a fully paid batch list takes the resumable path. Prepare the same content again and finalize to pay for and store only the remainder.
+
+`ABORTED` is reported only when at least one Merkle batch was paid: when every `winner_pool_hashes` slot is empty, `FinalizeUpload` returns `FAILED_PRECONDITION` instead.
 
 ## Verify Service
 
@@ -288,7 +297,7 @@ When the payment lands but some chunks miss quorum after retries (or belong to a
 
 Verifies signed payment quotes on an `antd` instance you trust, not the counterparty's instance. The method is stateless: it does not contact the Autonomi Network, require a wallet, pay, store data, or consume preparation state.
 
-`VerifyQuotesRequest.entries` is a repeated `VerifyQuoteEntry` field with at most 1024 entries. The 4 MiB inbound message limit also applies; batches of large signed quotes can reach that limit before the entry-count cap.
+`VerifyQuotesRequest.entries` is a repeated `VerifyQuoteEntry` field with at most 1024 entries. The Verify Service accepts messages up to 32 MiB, so a full batch of maximal entries fits. Per entry, a `signed_quote` larger than 16 KiB or a `commitment_sidecar` larger than 8 KiB receives a `valid: false` verdict. The method has no authentication or rate limiting, so keep `antd` on loopback or behind your own access control.
 
 **Entry fields:**
 
@@ -324,9 +333,9 @@ Each `VerifyQuoteVerdict` contains:
 | `committed_key_count` | uint32 | Claimed storage-commitment key count; zero for a quote without a commitment |
 | `pinned` | bool | Whether the quote binds a storage commitment |
 
-An empty batch returns `valid: false` and no verdicts. Invalid quote bytes produce per-entry false verdicts rather than a failed RPC. More than 1024 entries returns `INVALID_ARGUMENT`; an oversized message is subject to the transport's size limit. Extracted fields can be populated even when a later verification check fails, so `quote_decoded: true` alone does not make them trustworthy.
+An empty batch returns `valid: false` and no verdicts. Invalid quote bytes produce per-entry false verdicts rather than a failed RPC. More than 1024 entries returns `INVALID_ARGUMENT`; a message larger than 32 MiB is rejected by the gRPC transport before verification runs. Extracted fields can be populated even when a later verification check fails, so `quote_decoded: true` alone does not make them trustworthy.
 
-Your application must enforce expiry, replay prevention, equality with the intended set of chunks, and limits on plausible key counts. Verification alone does not authorize payment. Merkle prepares do not expose signed quotes through `include_signed_quotes`. Older generated clients, including Python `antd 0.1.0`, do not gain this RPC by connecting to a newer `antd`.
+Your application must enforce expiry, replay prevention, equality with the intended set of chunks, and limits on plausible key counts. Verification alone does not authorize payment. Merkle prepares do not expose signed quotes through `include_signed_quotes`. Generated clients without Verify Service stubs, including the Python `antd` 0.2.0 package, do not gain this RPC by connecting to a newer `antd`.
 
 For examples of empty-batch and malformed-quote responses over HTTP, see [REST quote verification](rest-api.md#verify-quotes).
 
@@ -385,9 +394,9 @@ Uploads a local file privately. The DataMap is returned to the caller and is not
 
 **Signature:** `PutPublic(PutFileRequest) -> PutFilePublicResponse`
 
-Uploads a local file publicly. Also stores the DataMap on-network as an additional chunk.
+Uploads a local file publicly. The data chunks and the DataMap chunk are paid for in one batch and stored on-network.
 
-`PutFilePublicResponse` returns `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and `payment_mode_used`. The totals and resolved payment mode cover only the data-chunk upload; they exclude the separate DataMap store that produces `address`. The address has no `0x` prefix.
+`PutFilePublicResponse` returns `address`, `storage_cost_atto`, `gas_cost_wei`, `chunks_stored`, and `payment_mode_used`. `storage_cost_atto`, `gas_cost_wei`, and `chunks_stored` include the DataMap chunk, the same extra chunk that `Cost` adds with `is_public` set to `true`. `address` is the DataMap chunk's address, with no `0x` prefix.
 
 ### Get
 

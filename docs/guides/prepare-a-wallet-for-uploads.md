@@ -35,7 +35,7 @@ If you are only building read-only features, you do not need any of this wallet 
 
 ## Prerequisites
 
-- The `antd v0.13.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
+- The `antd v0.14.0` binary or [ant installed through npm or an operating-system installer](../cli/use-the-cli.md#install-the-cli)
 - A hex-encoded private key you control when you are not using a local devnet
 - A low-value wallet suitable for the environment you selected
 - `curl` for the `antd` wallet checks
@@ -48,7 +48,7 @@ export ANTD_BIN="$(pwd)/antd"
 "$ANTD_BIN" --version
 ```
 
-Expect `antd 0.13.0 (build 6fe2b51105cd)`. Keep that variable in the shell or process environment used for the startup scripts below.
+Expect `antd 0.14.0 (build dbf6a7d3d951)`. Keep that variable in the shell or process environment used for the startup scripts below.
 
 ## Steps
 
@@ -70,7 +70,7 @@ Use the external-signer flow when `antd` should not hold the private key.
 
 ### 2. Start antd with a built-in EVM preset
 
-Set `AUTONOMI_WALLET_KEY` outside your shell history, then select the built-in preset. `arbitrum-one` is also the `antd v0.13.0` default, but setting it explicitly makes the intended payment environment visible.
+Set `AUTONOMI_WALLET_KEY` outside your shell history, then select the built-in preset. `arbitrum-one` is also the `antd v0.14.0` default, but setting it explicitly makes the intended payment environment visible.
 
 ```bash
 #!/usr/bin/env bash
@@ -90,7 +90,7 @@ Expected startup output identifies REST port `8082`, gRPC port `50051`, and netw
 
 For testnet, replace `arbitrum-one` with `arbitrum-sepolia` and use a testnet-funded key.
 
-Do not set `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS` for a public-network write with `antd v0.13.0`. Any one of those variables switches `antd` to custom payment encoding. Mainnet storage nodes can reject that encoding after ANT has been spent. `antd v0.13.0` therefore has no safe documented interface for combining a custom RPC URL with public writes.
+Do not set `EVM_RPC_URL`, `EVM_PAYMENT_TOKEN_ADDRESS`, `EVM_PAYMENT_VAULT_ADDRESS`, or `EVM_DATA_PAYMENTS_ADDRESS` for a public-network write with `antd v0.14.0`. Any one of those variables switches `antd` to custom payment encoding. Mainnet storage nodes can reject that encoding after ANT has been spent. `antd v0.14.0` therefore has no safe documented interface for combining a custom RPC URL with public writes.
 
 ### 3. Inspect the antd wallet
 

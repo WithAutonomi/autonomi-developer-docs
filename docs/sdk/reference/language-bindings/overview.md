@@ -12,23 +12,23 @@ These language bindings are client libraries that your application imports and c
 
 ## Package availability
 
-The Python and JavaScript clients install from PyPI and npm. Other languages have their own package or source-install instructions, listed below. Follow the guide for your language: package versions and supported operations can differ.
+The Python, JavaScript, TypeScript, C#, Ruby, PHP, and Dart clients install from their language package registries, and the Go client installs as a public Go module. The Rust, Java, Kotlin, Swift, C++, and Zig clients build from source. The published packages are the 0.2.0 clients for `antd` 0.14.0, and the Go module version is `v0.14.0`. Follow the guide for your language: package versions and supported operations can differ.
 
 | Language | Installation used in this guide | Transport |
 |----------|---------------------|-----------|
-| [Go](go.md) | Public Go module pinned to `v0.12.1` | REST, gRPC |
+| [Go](go.md) | Public Go module `v0.14.0` | REST, gRPC |
 | [Rust](rust.md) | Local Cargo path dependency | REST, gRPC |
 | [Python](python.md) | PyPI `antd[rest]`; gRPC extra available separately | REST, gRPC |
 | [JavaScript](javascript.md) | npm `@withautonomi/antd` | REST |
 | [TypeScript](typescript.md) | npm `@withautonomi/antd` with type declarations | REST |
 | [Java](java.md) | Local Maven publication built from source | REST, gRPC |
-| [C#](csharp.md) | Local .NET project reference | REST, gRPC |
+| [C#](csharp.md) | NuGet `Autonomi.Antd` | REST, gRPC |
 | [Kotlin](kotlin.md) | Unavailable for supported consumer installation | REST, gRPC source implementation |
 | [Swift](swift.md) | Local Swift package path | REST, gRPC |
-| [Ruby](ruby.md) | Locally built gem | REST, gRPC |
-| [PHP](php.md) | Release-source Composer project | REST |
+| [Ruby](ruby.md) | RubyGems `antd` | REST, gRPC |
+| [PHP](php.md) | Packagist `autonomi/antd` | REST |
 | [C++](cpp.md) | Local CMake subdirectory | REST, optional gRPC |
-| [Dart](dart.md) | Local Dart path dependency | REST, gRPC |
+| [Dart](dart.md) | pub.dev `antd_client`, not the unrelated pub.dev `antd` package | REST, gRPC |
 | [Zig](zig.md) | Local Zig path dependency | REST |
 
 ## How it connects
@@ -73,14 +73,16 @@ The bindings map service failures to language-specific error types:
 |--------|---------|
 | 400 | Invalid request parameters |
 | 402 | Payment required or insufficient funds |
-| 404 | Prepared upload or in-memory chunk not found |
+| 404 | Data, DataMap, prepared upload, or in-memory chunk not found |
 | 409 | Data already exists or version conflict |
 | 413 | Upload too large |
-| 500 | Internal service error; `antd v0.13.0` also reports a missing DataMap this way |
-| 502 | Network communication failure |
+| 500 | Internal service error |
+| 502 | Network communication failure, or a partial upload with code `PARTIAL_UPLOAD` |
 | 503 | Service unavailable, such as an unconfigured wallet |
 
-A malformed address is an invalid request and returns status 400. `antd v0.13.0` has a known error-mapping defect: retrieving a valid DataMap address that is not stored returns status 500 over REST or `INTERNAL` over gRPC instead of a not-found response. Do not interpret every internal error as missing data; inspect the message and confirm the address.
+A malformed address is an invalid request and returns status 400. A valid address with no stored DataMap returns status 404 over REST or `NOT_FOUND` over gRPC, and the bindings raise their not-found error type. A lookup also reports not found when `antd` has no connected peers, so check connectivity with `health` before treating data as absent. REST error bodies carry a machine-readable `code` alongside the `error` message; prefer `code` where it differs from the status, because a partial upload and a network failure both arrive as 502.
+
+The 0.2.0 packages and the Go module `v0.14.0` raise a typed partial-upload error, such as `PartialUploadError` in Python and JavaScript or `PartialUploadException` in C#, that carries the chunk counts and whether the same finalize call can be repeated.
 
 ## Related pages
 
