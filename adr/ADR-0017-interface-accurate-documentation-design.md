@@ -1,9 +1,10 @@
 # ADR-0017: Documentation information architecture and content design — route-first navigation with Diátaxis, dual-audience pages
 
-- **Status:** Proposed
-- **Acceptance:** Pending human review; no acceptance recorded.
+- **Status:** Accepted
+- **Acceptance:** Prospective — accepted by Jim Collinson as decision owner after review of PR #102 on 2026-09-25.
 - **Date:** 2026-09-16
 - **Decision owners:** Jim Collinson
+- **Reviewers:** Jim Collinson
 - **Supersedes:** ADR-0011
 - **Superseded by:** none
 - **Related:** ADR-0003 (verification trails per page), ADR-0008 (platform & dual audience), ADR-0010 (CLAUDE.md enforces this design operationally); `planning/information-architecture.md` (historical design context and per-page briefs); the route-first IA implementation arc (2026-04-17 → 04-21, PR #9 `ia/route-first-docs`)
@@ -76,4 +77,4 @@ This ADR is the decision and its invariants. Concrete navigation, page names, an
 
 ## Notes for AI-assisted work
 
-AI tools may help draft this ADR, but **must not mark it Accepted without human review**. Accepted ADRs are immutable: create a new superseding ADR rather than editing an Accepted ADR.
+AI tools helped draft this ADR. Jim Collinson accepted it through PR #102 on 2026-09-25. Accepted ADRs are immutable: create a new superseding ADR rather than editing an Accepted ADR.

@@ -1,9 +1,10 @@
 # ADR-0018: Retire the beta developer skill and its distribution
 
-- **Status:** Proposed
-- **Acceptance:** Pending human review; no acceptance recorded.
+- **Status:** Accepted
+- **Acceptance:** Prospective — accepted by Jim Collinson as decision owner after review of PR #102 on 2026-09-25.
 - **Date:** 2026-09-22
 - **Decision owners:** Jim Collinson
+- **Reviewers:** Jim Collinson
 - **Supersedes:** ADR-0012; ADR-0013; ADR-0014; ADR-0003 (skill metadata obligations and retirement-notice block requirement only); ADR-0004 (skill scanning and validation only); ADR-0006 (skill maintenance and release coherence only); ADR-0010 (retirement-notice verification-block requirement only)
 - **Superseded by:** none
 - **Related:** ADR-0017 (documentation information architecture and content design)
@@ -59,4 +60,4 @@ Confirm withdrawn distribution, notice continuity, absence of skill-only mainten
 
 ## Notes for AI-assisted work
 
-Agents may draft this proposal but must not accept it. Supersession is recorded here; Accepted originals remain immutable.
+AI tools helped draft this ADR. Jim Collinson accepted it through PR #102 on 2026-09-25. Supersession is recorded here; Accepted originals remain immutable, and later changes require a superseding ADR.
