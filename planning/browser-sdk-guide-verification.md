@@ -2,7 +2,7 @@
 
 Date: 2026-10-16
 Scope: `docs/sdk/build-in-browser.md`, `docs/sdk/how-to-guides/retrieve-data-in-browser.md`, SDK chooser/index links, source enrollment and scoped browser release pins.
-Status: Authorized draft PR preparation. Earlier 53-test pass, browser exercises and scoped reviews are retained below. CI pending. Required clean-context review and additional failure/retry exercise blocked by current tool permissions; no merge-readiness or publication claim.
+Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open; implementation CI passed 53 tests and GitBook preview succeeded. Earlier browser exercises and scoped reviews are retained below. Required clean-context review and additional failure/retry exercise are blocked by current tool permissions; no merge-readiness or publication claim.
 
 ## Approved scope and policy
 
@@ -104,7 +104,7 @@ try {
 
 No Safari/iOS/Firefox or cross-platform support claim, paid upload, self-hosted-node pairing, live HTTPS deployment or browser-wide certification. The actual public nodes' software versions were not independently inventoried. Both successful reads used the package's bundled mainnet defaults. The guide remains explicitly experimental.
 
-No clean-context launch has run; CI is pending the authorized draft PR. The code examples, pin and this evidence are included together in the review candidate. Existing metadata debt remains tracked in issues #103/#104; targeted discovery links do not restamp the older pages.
+No clean-context launch has run; implementation CI evidence is recorded below. The code examples, pin and this evidence are included together in the review candidate. Existing metadata debt remains tracked in issues #103/#104; targeted discovery links do not restamp the older pages.
 
 ## Owner-requested overview/tutorial split — 2026-10-16
 
@@ -125,3 +125,11 @@ The controlled fresh-context lane could not verify its launcher revision because
 The planned failure/retry exercise would block the first WASM response, check the visible error and restored button, then restore the response and retry the real download in the same browser page. Creating that temporary check was denied, so it was not executed or counted as a pass. Prior successful reads remain historical observations from this work, not a replacement for the missing check.
 
 Final source/link checks passed on the complete review candidate: 12 changed public Markdown files, 212 relative file targets, unchanged pre-existing verification blocks, six consistent browser-source pins/component mappings, unique navigation targets and clean whitespace. ADR governance passed with zero ADR files changed. The 53-test local pass remains the earlier documented run; CI must independently exercise the committed candidate after the draft PR opens.
+
+## Draft PR and CI evidence
+
+- Browser implementation commit: `0e8516fbb984b966341dd41a0e5a6e4a1f8dd0c5`; [draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106), base `295695745e38c4b17d619ed8f7c5fea17f0cefb1`.
+- [Repository Tests run 38904119556](https://github.com/WithAutonomi/autonomi-developer-docs/actions/runs/38904119556) is associated with that implementation head and executed on clean synthetic PR merge commit `91a47b45afabad63c1bddf04a0f481f39963fd57`. Python 3.12.15/PyYAML 6.0.3; all **53 tests passed**, with setup and the full suite executed. This is CI evidence, not another local run.
+- ADR Governance passed. The three branch-scoped prose/sweep/SHA guards passed their scope gates but skipped substantive validation on this ordinary documentation branch; their green statuses are not additional source-verification evidence.
+- Both GitBook statuses passed and produced a [documentation preview](https://docs.autonomi.com/developers/~/revisions/mdSGBOYtLgsOlHuA2LPg/). Preview generation does not verify example runtime or authorize publication to the default site.
+- Recording this handoff changes planning records only after the implementation commit. The [PR checks](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106/checks) are the authority for its latest head. Fresh-context and failure/retry requirements remain outstanding; keep the PR draft.

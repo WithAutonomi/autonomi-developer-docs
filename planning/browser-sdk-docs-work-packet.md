@@ -3,7 +3,7 @@
 Updated: 2026-10-16
 Stage: Implementation — source audit, isolated browser exercise, guide and checks
 Role: Coordinator / documentation planner
-Status: Preparing the authorized draft PR. Earlier local tests and reviews are recorded; CI pending and fresh-context review blocked. Not merge-ready.
+Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Implementation CI passed all 53 tests and GitBook generated a preview; required fresh-context review remains blocked. Not merge-ready.
 Unattended mode: No
 Repository base: `295695745e38c4b17d619ed8f7c5fea17f0cefb1`
 Working branch: `docs/browser-sdk-guides`
@@ -109,7 +109,7 @@ Stop if public-read verification requires paid operations, product fixes, unavai
 
 ## Verification and reviews
 
-Source identification and a successful example are separate requirements. The approved browser exercise checked real public retrieval, expected bytes and image rendering. All 53 repository tests pass with the declared dependency in a disposable Python 3.12 environment; Jim separately approved that setup after baseline reproductions of the default-Python prerequisite failures. CI remains the authoritative automated result and has not run for this uncommitted change.
+Source identification and a successful example are separate requirements. The approved browser exercise checked real public retrieval, expected bytes and image rendering. All 53 repository tests passed locally with the declared dependency in a disposable Python 3.12 environment and independently in [implementation CI](https://github.com/WithAutonomi/autonomi-developer-docs/actions/runs/38904119556). Jim approved the local setup after baseline reproductions of prerequisite failures. CI remains the authoritative automated result; consult the draft PR for checks on subsequent planning-only commits.
 
 | Review | Requirement and selection | Due point | Disposition at packet creation |
 |---|---|---|---|
@@ -117,11 +117,11 @@ Source identification and a successful example are separate requirements. The ap
 | Adversarial | Required; requested | Completed local content milestone | Split READY-WITH-NITS, session `ses_ebba50f65ffeSk3cMsJ5s28Ilr`; two LOW observations addressed afterward; no second pass |
 | Clean-context | Required for public onboarding; requested | Due for the committed review candidate before merge-readiness | Not run: launcher verification denied before preparation/authentication/inference. Requirement retained; unavailable lane is not an approved waiver. |
 
-The earlier packet checkpoint had no product-runtime evidence. The evidence file records the actual browser exercises separately. CI is pending the authorized push/PR; clean-context is blocked as recorded above. The candidate is not publication-ready. Prior permission limits below describe the historical planning stage, not the current draft-PR authorization.
+The earlier packet checkpoint had no product-runtime evidence. The evidence file records the actual browser exercises and implementation CI separately; clean-context is blocked as recorded above. The candidate is not publication-ready. Prior permission limits below describe the historical planning stage, not the current draft-PR authorization.
 
 ### Planning review checkpoint
 
-Fresh Craft session `ses_ec5d6f814ffe03xTSRv70y01VH` reported PASS with no findings. Fresh adversarial session `ses_ec5d6f7fbffeILIAnrC8G9Crfj` reported READY-WITH-NITS with no planning blockers: make the browser lead identifiable (MEDIUM) and separate the small recording prerequisite from completion of CLI automation (LOW). The additions above address those two handoff concerns; no second adversarial pass was run. Cross-model independence is not established. Packets remain uncommitted, so checking out this branch alone cannot reproduce them yet.
+Fresh Craft session `ses_ec5d6f814ffe03xTSRv70y01VH` reported PASS with no findings. Fresh adversarial session `ses_ec5d6f7fbffeILIAnrC8G9Crfj` reported READY-WITH-NITS with no planning blockers: make the browser lead identifiable (MEDIUM) and separate the small recording prerequisite from completion of CLI automation (LOW). The additions above address those two handoff concerns; no second adversarial pass was run. Cross-model independence is not established. Those packets were uncommitted at the planning checkpoint; this browser packet and its evidence are now included in the draft PR.
 
 The subsequent source-answer update was not covered by those earlier planning reviews. It records read-only findings and a narrower open question; no implementation or publication approval is inferred.
 
