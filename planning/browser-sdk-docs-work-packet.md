@@ -3,7 +3,7 @@
 Updated: 2026-10-16
 Stage: Implementation — source audit, isolated browser exercise, guide and checks
 Role: Coordinator / documentation planner
-Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Implementation CI passed all 53 tests and GitBook generated a preview; required fresh-context review remains blocked. Not merge-ready.
+Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Jim resolved the ADR-0016 interpretation for this case. Repository CI and Hermes's failure/retry exercise passed on the reviewed candidate; configured clean-context and latest-head GitBook completion remain outstanding. Not merge-ready.
 Unattended mode: No
 Repository base: `295695745e38c4b17d619ed8f7c5fea17f0cefb1`
 Working branch: `docs/browser-sdk-guides`
@@ -14,7 +14,15 @@ Jim explicitly authorized committing and pushing this browser-documentation chan
 
 The required fresh-context lane is now due for the review candidate. Launcher verification was blocked by denied access to the GSD repository before preparation, authentication or inference. Record `clean-context deferred: configured lane unavailable or unverified`; no substitute, retry through another access route, or pass is inferred. The authorized draft may be opened with this outstanding requirement, but is not merge-ready.
 
-Writing the additional temporary failure/retry browser check was also denied in this session. That scenario remains unexecuted. Do not substitute successful earlier reads for this missing exercise or retry the denied access through another tool/path.
+Writing the additional temporary failure/retry browser check was also denied in the author session. That author attempt remains NOT RUN. Do not reinterpret it as executed or retry the denied access through another tool/path; the subsequent independent result is attributed below.
+
+Subsequent Hermes [advisory review](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106#pullrequestreview-5548683685) independently completed the same-page WASM-failure/retry exercise successfully at `2fcaddf`. Attribute that result to Hermes, not the denied author attempt. The review also identified a disputed interpretation of ADR-0016's separation requirement, resolved by Jim's explicit disposition below rather than an inferred waiver. Configured clean-context and latest-head GitBook checks remain outstanding.
+
+## Owner policy disposition — 2026-10-16
+
+Jim explicitly confirmed the proposed treatment: “Keep the current arrangement: dedicated pages, prominent banners, and experimental descriptions in the chooser provide sufficient separation,” replying “yes, this is fine by me in this case.”
+
+For the Browser SDK overview and retrieval tutorial in PR #106, Jim considers that page-level separation sufficient under [ADR-0016: Public documentation describes obtainable releases — documentation repository](../adr/ADR-0016-released-truth-for-public-developer-docs.md), while retaining ordinary titles and SDK navigation. This is a case-specific interpretation, not a general exception or a claim that the SDK is stable. The Accepted ADR is unchanged. It does not waive remaining review requirements or authorize merge/publication.
 
 ## Goal and reason
 

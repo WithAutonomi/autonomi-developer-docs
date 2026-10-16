@@ -2,7 +2,9 @@
 
 Date: 2026-10-16
 Scope: `docs/sdk/build-in-browser.md`, `docs/sdk/how-to-guides/retrieve-data-in-browser.md`, SDK chooser/index links, source enrollment and scoped browser release pins.
-Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open; implementation CI passed 53 tests and GitBook preview succeeded. Earlier browser exercises and scoped reviews are retained below. Required clean-context review and additional failure/retry exercise are blocked by current tool permissions; no merge-readiness or publication claim.
+Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Repository CI passed 53 tests; Hermes independently completed failure/retry. Jim confirmed the ADR-0016 classification for this case; configured clean-context remains blocked and latest-head GitBook statuses need completion. Earlier implementation-preview success is recorded separately. No merge-readiness or publication claim.
+
+Latest review update: Hermes independently exercised the failure/retry case at `2fcaddf` and reported success. That evidence is recorded below with its source; the author's blocked attempt is still historical NOT RUN. Jim explicitly resolved the ADR-0016 classification below; configured clean-context and latest-head GitBook checks remain outstanding.
 
 ## Approved scope and policy
 
@@ -133,3 +135,25 @@ Final source/link checks passed on the complete review candidate: 12 changed pub
 - ADR Governance passed. The three branch-scoped prose/sweep/SHA guards passed their scope gates but skipped substantive validation on this ordinary documentation branch; their green statuses are not additional source-verification evidence.
 - Both GitBook statuses passed and produced a [documentation preview](https://docs.autonomi.com/developers/~/revisions/mdSGBOYtLgsOlHuA2LPg/). Preview generation does not verify example runtime or authorize publication to the default site.
 - Recording this handoff changes planning records only after the implementation commit. The [PR checks](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106/checks) are the authority for its latest head. Fresh-context and failure/retry requirements remain outstanding; keep the PR draft.
+
+## Hermes advisory review — 2026-10-16
+
+Source: [review recorded on PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106#pullrequestreview-5548683685), submitted under `dirvine`, reviewed head `2fcaddfad98b5abde3df286a404f50f4be11e772` against base `295695745e38c4b17d619ed8f7c5fea17f0cefb1`. This is a COMMENTED advisory review, not formal approval. The following commands/results are reviewer-reported, not a new author rerun.
+
+- The literal tutorial worked with browser SDK 0.1.2 and Vite 8.2.0. Chromium 153.0.8010.12, Node v25.9.0, macOS ARM64.
+- Blocking the first WASM request produced `Download failed: Could not initialize the Autonomi WASM core` and restored the button. Restoring the request and retrying in the same page succeeded. Production-build preview also succeeded.
+- Successful reads returned 138931 bytes, decoded a 782×1600 JPEG, and matched SHA-256 `98f657d987d339c302295e79907e7a4abc1564bd6b42300ea8d59ccd2148fd17`.
+- Independently reported 53 passing repository tests and 212 resolving local link occurrences across 12 changed public files. No confirmed new API/example defect.
+- Coverage was 7/12 role reviews: GLM 5.3 and Qwen 3.8 responded; DS4 and one GLM planning slot remained incomplete. Provisional, not full consensus. This evidence does not establish that the configured clean-context lane ran.
+
+Remaining decisions/checks:
+
+1. GLM questioned whether normal SDK navigation plus dedicated experimental pages/banners satisfies ADR-0016's separation rule; Qwen accepted it. A read-only ADR consultation found page-level separation defensible but requiring an explicit owner decision. Jim subsequently confirmed it for this case, as recorded below. Neither model's opinion was treated as a policy waiver or autonomous acceptance.
+2. The required configured clean-context route remains Not run and blocked by the recorded launcher-access denial.
+3. Both latest-head GitBook statuses remain pending. The latest revision URL returned HTTP 200, but that does not make the statuses pass. Author inspection confirmed identical docs trees at `0e8516f` and `2fcaddf`: `5c5eb58da42072cf20b46417e3348435218a5bcd`. Earlier successful GitBook evidence remains scoped to `0e8516f`.
+
+Keep the PR draft; no merge or publication authorization follows from this review.
+
+### Owner disposition
+
+On 2026-10-16 Jim accepted the current arrangement of dedicated pages, prominent experimental banners and experimental chooser descriptions, saying “yes, this is fine by me in this case.” This resolves the classification question for the browser overview/tutorial in PR #106 only. Ordinary titles/navigation do not designate stable support. No Accepted ADR was edited, no general exception was established, and configured clean-context, CI/status completion and merge authorization remain separate.
