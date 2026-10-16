@@ -141,6 +141,19 @@ repos:
   # === SPECIALIST ===
   # Only relevant for certain docs areas. Used only for explicitly related pages.
 
+  ant-browser-sdk:
+    class: specialist
+    org: WithAutonomi
+    url: https://github.com/WithAutonomi/ant-browser-sdk
+    watch_mode: manual
+    default_for_drafting: false
+    topics:
+      - browser-sdk
+      - wasm
+      - webrtc
+    on_change: review-if-docs-exist
+    notes: "Published browser SDK; experimental status must remain visible. Verify against the scoped target manifest, not unreleased main."
+
   ant-keygen:
     class: specialist
     org: WithAutonomi

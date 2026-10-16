@@ -5,6 +5,25 @@
 
 components:
 
+  # === ant-browser-sdk ===
+
+  ant-browser-sdk:
+    repo: ant-browser-sdk
+    kind: npm-package
+    path: src/
+    topics:
+      - browser-sdk
+      - wasm
+      - webrtc
+      - public-retrieval
+    feeds_pages:
+      - sdk/build-in-browser.md
+      - sdk/how-to-guides/retrieve-data-in-browser.md
+      - sdk/install.md
+      - sdk/how-to-guides/README.md
+      - sdk/reference/overview.md
+      - sdk/reference/README.md
+
   # === ant-sdk ===
 
   antd:

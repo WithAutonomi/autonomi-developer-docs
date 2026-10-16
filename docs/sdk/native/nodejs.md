@@ -15,6 +15,8 @@ npm install @withautonomi/ant-sdk
 
 npm installs the JavaScript interface and the native binary for your platform. Keep optional dependencies enabled. This package runs in Node.js, not browser code.
 
+For a browser application, see [Browser SDK](../build-in-browser.md), which explains the separate experimental browser package and what you can build with it.
+
 ## Connection and retrieval API
 
 The default import in the example exposes `sdk.Client`. Connection and retrieval methods return promises; await them before using the client or content.

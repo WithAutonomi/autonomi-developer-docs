@@ -292,7 +292,16 @@ class SweepPollTest(unittest.TestCase):
         current = yaml.safe_load(
             (SCRIPT.parent.parent / "component-registry.yml").read_text(encoding="utf-8")
         )
-        self.assertEqual(current, original)
+        # Retiring the skill must not alter existing component data. New
+        # components can be enrolled without rewriting this historical check.
+        self.assertEqual(
+            {key: value for key, value in current.items() if key != "components"},
+            {key: value for key, value in original.items() if key != "components"},
+        )
+        for name, component in original["components"].items():
+            with self.subTest(component=name):
+                self.assertIn(name, current["components"])
+                self.assertEqual(current["components"][name], component)
 
 
 if __name__ == "__main__":

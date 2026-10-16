@@ -8,20 +8,29 @@
   verification_mode: current-merged-truth
 -->
 
+<!-- verification:
+  source_repo: ant-browser-sdk
+  source_ref: v0.1.2
+  source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
+  verified_date: 2026-10-16
+  verification_mode: target-manifest
+-->
+
 Build applications that store and retrieve data on the Autonomi Network. The software development kits (SDKs) provide language libraries and supporting tools; your application calls the library for your language.
 
 ## Choose how your application connects
 
-Both kinds of library run inside your application. Choose whether the library manages the network connection there or calls a separately running service.
+Choose based on where your application runs and whether you want it to manage its own network connection or share a local service. Native applications and browser applications can both connect directly, using different SDK packages.
 
 | Connection | Choose it when | Installation and usage |
 |------------|----------------|------------------------|
-| Direct from your application | You want a language library with no separate network service to start | [Direct-connection libraries](native/README.md) |
-| Through a local daemon | Several applications should share one service, or you prefer a local REST or gRPC API | [Local-daemon clients](use-antd.md) |
+| Direct from a native application | You are building in Python, Node.js or .NET and want no separate network service to start | [Native SDKs](native/README.md) |
+| Direct from the browser using WebAssembly (WASM) | You are building a web application that accesses data through the experimental browser SDK | [Browser SDK](build-in-browser.md) |
+| Through a local daemon | Several applications should share one service, or you prefer a local REST or gRPC API | [Local-Daemon Clients](use-antd.md) |
 
 The packages and APIs differ. Use the package for the connection arrangement you choose; a Python or Node.js library for one is not interchangeable with the other.
 
-## Libraries that connect directly
+## Libraries for native applications
 
 The package manager installs the language library and its compiled network client together. Import the library into your application; there is no separate executable to start.
 
@@ -32,6 +41,12 @@ The package manager installs the language library and its compiled network clien
 | [.NET SDK](native/csharp.md) | `Autonomi.Ffi` on NuGet; namespace `AntFfi` |
 
 Each language reference covers installation and its API. Python and Node.js also include a complete public-file download example. For storage methods and payment setup, use the [Native SDK Reference](reference/native-sdks.md).
+
+## Browser applications
+
+Use `@withautonomi/ant-browser-sdk` to connect directly from JavaScript or TypeScript running in a browser. WebAssembly runs the network client; WebRTC carries its connections to nodes. Visitors do not need a local daemon.
+
+The browser SDK is experimental. Read the [Browser SDK overview](build-in-browser.md) for capabilities and application ideas, then follow [Retrieve Data in the Browser](how-to-guides/retrieve-data-in-browser.md) for a complete public-image example.
 
 ## Clients for a local daemon
 
@@ -57,6 +72,7 @@ Uploads require a wallet and storage payment. Choose public storage when you wan
 
 ## Related pages
 
+- [Browser SDK](build-in-browser.md): build web applications with direct access to stored data.
 - [SDK How-To Guides](how-to-guides/README.md)
 - [SDK Reference](reference/README.md)
 - [Use the CLI](../cli/use-the-cli.md) for command-line access

@@ -1,4 +1,4 @@
-# Connect from Your Application
+# Native SDKs
 
 Connect directly to the Autonomi Network using a Python, Node.js, or .NET library. Install the package for your language, import it into your application, and create a client to retrieve or store data.
 
@@ -28,4 +28,4 @@ If several applications should share a background service, use a client library 
 - [Node.js SDK](nodejs.md)
 - [.NET SDK](csharp.md)
 - [Build with the SDKs](../install.md)
-- [Use a Local Daemon](../use-antd.md)
+- [Local-Daemon Clients](../use-antd.md)
