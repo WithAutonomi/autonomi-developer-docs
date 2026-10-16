@@ -168,7 +168,7 @@ The browser retrieves the data directly from Autonomi nodes. Vite serves your ap
 
 **WASM initialization fails:** open the app through the development server rather than opening `index.html` as a local file. In a deployed build, check that the `.wasm` request returns the generated binary, not an HTML fallback page.
 
-**Browser protocol mismatch:** if a connection error reports an incompatible browser protocol or version, check the [browser SDK releases](https://github.com/WithAutonomi/ant-browser-sdk/releases) for a compatible update. The version used by this tutorial does not guarantee compatibility with future protocol changes.
+**Node protocol not supported:** an error saying `upgrade ant-node to a version advertising chunk_protocol` means the contacted node lacks a capability this SDK needs. On the public Autonomi Network, updating those nodes is not something your application controls. Check the [browser SDK release notes](https://github.com/WithAutonomi/ant-browser-sdk/releases) for compatibility guidance; if they do not resolve the problem, report the full error to the SDK maintainers.
 
 **Connection failure or timeout:** check whether your connection permits WebRTC traffic. A failure to reach nodes or retrieve the file does not establish that the file is missing. Inspect the browser console for the original error, then retry when connectivity is available.
 
