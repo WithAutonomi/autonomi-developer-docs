@@ -123,6 +123,8 @@ button.addEventListener("click", async () => {
 
 The connection uses the SDK's bundled mainnet addresses. The capability check reports missing browser APIs; it does not test whether your connection can reach the nodes.
 
+This example connects for each download to keep cleanup simple. An application that reads multiple files would usually connect once and reuse the client, then call `close()` when it is no longer needed.
+
 The image's public address identifies its data, not its original filename or media type. The example supplies `image/jpeg` because this particular file is a JPEG.
 
 ### 4. Run the app
@@ -165,6 +167,8 @@ The browser retrieves the data directly from Autonomi nodes. Vite serves your ap
 **Missing browser features:** use a Chromium-based browser with WebAssembly and WebRTC enabled. The message lists the missing APIs.
 
 **WASM initialization fails:** open the app through the development server rather than opening `index.html` as a local file. In a deployed build, check that the `.wasm` request returns the generated binary, not an HTML fallback page.
+
+**Browser protocol mismatch:** if a connection error reports an incompatible browser protocol or version, check the [browser SDK releases](https://github.com/WithAutonomi/ant-browser-sdk/releases) for a compatible update. The version used by this tutorial does not guarantee compatibility with future protocol changes.
 
 **Connection failure or timeout:** check whether your connection permits WebRTC traffic. A failure to reach nodes or retrieve the file does not establish that the file is missing. Inspect the browser console for the original error, then retry when connectivity is available.
 

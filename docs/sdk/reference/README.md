@@ -33,6 +33,7 @@ The APIs are not interchangeable. Each reference describes its own constructors,
 - [Node.js SDK](../native/nodejs.md): installation, a public-read example, types, and errors.
 - [.NET SDK](../native/csharp.md): installation, methods, types, and errors.
 - [Native SDK Reference](native-sdks.md): data, file, wallet, and external-signer APIs.
+- [Browser SDK](../build-in-browser.md): the experimental browser package and links to its API documentation.
 
 ## Local service and clients
 

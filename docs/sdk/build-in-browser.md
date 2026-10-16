@@ -67,9 +67,9 @@ You do not have to load every file into memory before using it. The SDK provides
 
 For seekable audio and video, the SDK provides a service worker: a browser-managed script that connects a media element's requests to the SDK's file reader. This setup requires HTTPS or localhost and the application's page to remain open. Applications with an existing service worker must integrate the media handling with it.
 
-The media integration supports files up to 1 GB (1,000,000,000 bytes).
+Browser SDK 0.1.2 supports files from 3 bytes up to 1 GB (1,000,000,000 bytes). This limit applies to uploads, reads and media, not only streaming.
 
-Whole-file downloads still use browser memory. Choose range reads or the media integration when loading the whole file would be unsuitable. The [browser SDK API documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.2#random-access-reads) covers range reads, media setup and file-size limits.
+Whole-file downloads and in-memory uploads may run out of browser memory well before that limit. Choose range reads or the media integration when loading the whole file would be unsuitable. The [browser SDK API documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.2#random-access-reads) covers range reads, media setup and file-size limits.
 
 ## Uploading from a browser
 
@@ -78,6 +78,8 @@ The SDK also accepts browser files and byte arrays for public or private uploads
 File uploads have additional browser requirements, including a worker for file processing and IndexedDB for temporary storage. Use the [browser SDK's upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.2#upload-files) when adding uploads and payment handling.
 
 ## Browser compatibility
+
+While browser support is experimental, changes to the browser protocol—the rules used by the SDK and nodes to communicate—may require an SDK update. Keep your application's SDK version compatible with the nodes it connects to.
 
 The application needs a browser with the APIs used by its features, including WebAssembly and WebRTC. Media playback and file uploads need additional browser capabilities. The SDK provides a capability check, but available APIs alone do not guarantee that a browser can reach the nodes or has enough memory or storage for the operation.
 
