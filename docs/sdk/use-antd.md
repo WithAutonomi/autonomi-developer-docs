@@ -1,4 +1,4 @@
-# Use a Local Daemon
+# Local-Daemon Clients
 
 A local daemon is a background service that connects your applications to the Autonomi Network. Autonomi's daemon is called `antd`. Start it once, then call it from your application through a client library or its REST/gRPC API.
 
@@ -36,5 +36,5 @@ For local development with test funds, use the component versions in [Set Up a L
 - [Start the Local Daemon](start-the-local-daemon.md)
 - [SDK How-To Guides](how-to-guides/README.md)
 - [SDK Reference](reference/README.md)
-- [Connect from Your Application](native/README.md) for libraries that connect directly without a separate background service
+- [Native SDKs](native/README.md) for libraries that connect directly without a separate background service
 - [Build with AI Tools](../mcp/use-mcp-with-ai-tools.md)

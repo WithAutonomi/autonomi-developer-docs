@@ -88,4 +88,4 @@ The 0.2.0 packages and the Go module `v0.14.0` raise a typed partial-upload erro
 
 - [Choose a language binding](README.md)
 - [REST API Reference](../rest-api.md)
-- [Connect from Your Application](../../native/README.md) for SDKs that do not need a local daemon
+- [Native SDKs](../../native/README.md) for SDKs that do not need a local daemon

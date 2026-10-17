@@ -18,7 +18,7 @@ This guide uses `ant-core 0.10.0` with its `devnet` feature for local developmen
 - [Foundry](https://book.getfoundry.sh/getting-started/installation) with `anvil` available on `PATH`
 - A new or existing Rust application
 
-To connect through a local background service instead, see [Use a Local Daemon](../sdk/use-antd.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md). For shell access instead of writing Rust code, see [Use the CLI](../cli/use-the-cli.md).
+To connect through a local background service instead, see [Local-Daemon Clients](../sdk/use-antd.md) and [Start the Local Daemon](../sdk/start-the-local-daemon.md). For shell access instead of writing Rust code, see [Use the CLI](../cli/use-the-cli.md).
 
 ## Steps
 

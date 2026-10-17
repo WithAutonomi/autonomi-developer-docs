@@ -1,0 +1,28 @@
+# Scoped manual verification for browser SDK content only.
+# On shared landing pages, this covers only the new browser-source block.
+# This does not promote other sources or implement issue #103's automated contract.
+scope:
+  pages:
+    - docs/sdk/build-in-browser.md
+    - docs/sdk/how-to-guides/retrieve-data-in-browser.md
+    - docs/sdk/install.md
+    - docs/sdk/how-to-guides/README.md
+    - docs/sdk/reference/overview.md
+    - docs/sdk/reference/README.md
+
+sources:
+  ant-browser-sdk:
+    source_ref: v0.1.2
+    source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
+    release_url: https://github.com/WithAutonomi/ant-browser-sdk/releases/tag/v0.1.2
+    support_status: experimental
+    package:
+      name: "@withautonomi/ant-browser-sdk"
+      version: 0.1.2
+      metadata_url: https://registry.npmjs.org/@withautonomi/ant-browser-sdk/0.1.2
+      integrity: sha512-uVnIVmuJjyTs1yHyRTNJof2tGIMf2STkRhi8iEGQqaNnizZFKZ6qElZlCIttGBdXwn10TRaERhniRGAeOQa3rg==
+    shipped_wasm:
+      source_repo: ant-client
+      source_commit: 9858af5dbbb2caf090e20db67ac62aa4bd100c81
+      sha256: ab58bd3e331436d22acfe3d08b384992be9addec52145fa0325468c27b6da70a
+      evidence_url: https://github.com/WithAutonomi/ant-browser-sdk/blob/a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0/src/wasm/source.json

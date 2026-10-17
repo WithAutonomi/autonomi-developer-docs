@@ -8,20 +8,29 @@
   verification_mode: current-merged-truth
 -->
 
+<!-- verification:
+  source_repo: ant-browser-sdk
+  source_ref: v0.1.2
+  source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
+  verified_date: 2026-10-16
+  verification_mode: target-manifest
+-->
+
 A software development kit (SDK) brings together libraries, tools, and examples for building applications. To store or retrieve data, your application usually imports a language library and calls its methods. Supporting tools, such as a local daemon, are separate programs you start when your integration needs them.
 
 ## What your application calls
 
-Autonomi provides libraries for two connection arrangements. Both kinds of library run inside your application; the difference is where the connection to the Autonomi Network is managed.
+Your application can connect directly through a native or browser library, or call a separately running local daemon. The library runs inside your application; the difference is how it manages the connection to the Autonomi Network.
 
 | Library | How it works | Reference |
 |---------|--------------|-----------|
-| Direct-connection library | Includes a compiled network client that your application loads | [Native SDK Reference](native-sdks.md) |
+| Native direct-connection library | Includes a compiled network client that your application loads | [Native SDK Reference](native-sdks.md) |
+| Browser direct-connection library | Runs a WebAssembly client in the browser and connects over WebRTC; this SDK is experimental | [Browser SDK](../build-in-browser.md) |
 | Client library for a local daemon | Sends requests to a separately running background service called `antd` | [Language Bindings](language-bindings/README.md) |
 
 The packages and APIs differ. Use the installation instructions for the library you choose; installing a client library does not start a daemon.
 
-## Connecting directly
+## Connecting directly from a native application
 
 ```text
 Your application
@@ -34,6 +43,10 @@ Autonomi Network
 ```
 
 The compiled library is loaded by your application, not run as a separate command. Use the [Python SDK](../native/python.md), [Node.js SDK](../native/nodejs.md), or [.NET SDK](../native/csharp.md) reference for installation and language-specific usage.
+
+## Connecting directly from a browser
+
+The browser SDK includes a network client compiled to WebAssembly (WASM). Your web application calls it from JavaScript or TypeScript, and WebRTC connects it directly to nodes. There is no local daemon to start. See [Browser SDK](../build-in-browser.md) for capabilities and [Retrieve Data in the Browser](../how-to-guides/retrieve-data-in-browser.md) for a complete example.
 
 ## Connecting through a local daemon
 
