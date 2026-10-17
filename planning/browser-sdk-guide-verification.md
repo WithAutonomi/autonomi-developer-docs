@@ -1,10 +1,16 @@
 # Browser overview and tutorial — source and runtime evidence
 
-Date: 2026-10-16
+Updated: 2026-10-17
 Scope: `docs/sdk/build-in-browser.md`, `docs/sdk/how-to-guides/retrieve-data-in-browser.md`, SDK chooser/index links, source enrollment and scoped browser release pins.
-Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Repository CI passed 53 tests; Hermes independently completed failure/retry. Jim confirmed the ADR-0016 classification for this case; configured clean-context remains blocked and latest-head GitBook statuses need completion. Earlier implementation-preview success is recorded separately. No merge-readiness or publication claim.
+Status: Jim accepted the manually completed independent review and authorized the final checked merge of [PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) on October 17. All checks passed at content head `ee37b7a`; recheck the final head after this evidence-only update. Local launcher Not run; no automated-review pass is claimed.
 
-Latest review update: Hermes independently exercised the failure/retry case at `2fcaddf` and reported success. That evidence is recorded below with its source; the author's blocked attempt is still historical NOT RUN. Jim explicitly resolved the ADR-0016 classification below; configured clean-context and latest-head GitBook checks remain outstanding.
+Latest review update: Hermes independently exercised the failure/retry case at `2fcaddf` and reported success. The author's blocked attempt remains historical NOT RUN. Jim confirmed the separate Claude review as his manual clean-context exercise and explicitly waived the local-launcher requirement for this PR; review provenance and limits remain distinct.
+
+## Final owner acceptance — 2026-10-17
+
+Jim explicitly instructed that the local-launcher requirement could be ignored for this case, confirming: “I've done it manually. Can we merge?” He accepted the supplied Claude review as the clean-context review and authorized merge subject to final green checks. This is human acceptance of external review evidence, not a claim that the configured v3 launcher ran. Its result remains **Not run, owner-waived for this PR**. Claude's reported source/install/build coverage, lack of a live browser in that environment, and Hermes's separate Chromium/failure-retry evidence remain accurately attributed below.
+
+The public code examples and package pins did not change through the subsequent prose corrections. At the final pre-recording check, PR head `ee37b7a79b1046cec3027ac02e959c2c409829a6` was mergeable and all repository/GitBook checks passed. This update changes planning records only; the final PR head must be checked again before merge. Historical no-merge and blocked-launcher statements below describe earlier checkpoints and are superseded by this explicit owner disposition.
 
 ## Approved scope and policy
 

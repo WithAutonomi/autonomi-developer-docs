@@ -1,12 +1,20 @@
 # Browser SDK documentation — work packet
 
-Updated: 2026-10-16
+Updated: 2026-10-17
 Stage: Implementation — source audit, isolated browser exercise, guide and checks
 Role: Coordinator / documentation planner
-Status: [Draft PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) open. Jim resolved the ADR-0016 interpretation for this case. Repository CI and Hermes's failure/retry exercise passed on the reviewed candidate; configured clean-context and latest-head GitBook completion remain outstanding. Not merge-ready.
+Status: [PR #106](https://github.com/WithAutonomi/autonomi-developer-docs/pull/106) awaiting final checked merge under Jim's authorization. Manual independent review is owner-confirmed; the local launcher remains Not run. Final-head checks must pass before merging.
 Unattended mode: No
 Repository base: `295695745e38c4b17d619ed8f7c5fea17f0cefb1`
 Working branch: `docs/browser-sdk-guides`
+
+## Manual review acceptance and merge authorization — 2026-10-17
+
+Jim confirmed that the supplied Claude review was his manually completed clean-context review. After the distinction between that review and the blocked local launcher was explained, he instructed that the launcher requirement could be ignored for this case, confirming: “I've done it manually. Can we merge?” This records his case-specific acceptance of the external review and waiver of the local-launcher execution requirement for PR #106, together with authorization to merge once final checks are green.
+
+Independent review remains required; its accepted evidence is the owner-confirmed Claude source/install/build review and follow-up corrections, alongside Hermes's independently recorded browser execution and failure/retry exercise. The supplied reports retain their coverage limits. The local v3 launcher is **Not run, owner-waived for this PR**, never Pass. No v3 result, authenticated session, runtime model line or launch evidence is invented. This does not change GSD tooling, other projects' review requirements, or the product's Accepted ADRs.
+
+This live disposition supersedes the historical draft-only restrictions and launcher blocker below. Merging publishes the documentation through GitBook. Schedule activation, unrelated release-updater work and other repositories remain outside scope.
 
 ## Draft PR authorization — 2026-10-16
 
@@ -111,7 +119,7 @@ The separate release-following work under [issue #103](https://github.com/WithAu
 - Runnable media-streaming/upload examples, service-worker playback tests, broad browser matrices or a complete browser API reference. The requested conceptual overview describes these source-backed capabilities without claiming they were exercised.
 - Changes to native SDKs, antd, Inventory, pricing or release tooling.
 - Global installations, personal browser profiles, or hidden local setup needed to make the example work.
-- Merge, publication, deployment, scheduler activation, additional PRs or autonomous ADR acceptance. Only the commit/push and single draft PR named above are authorized.
+- Scheduler activation, additional PRs, unrelated deployments or autonomous ADR acceptance. Commit/push and the final checked merge of PR #106, including its normal GitBook publication, are authorized by the October 17 disposition above.
 
 Stop if public-read verification requires paid operations, product fixes, unavailable infrastructure, an unapproved package/dependency, or a policy exception. Record the blocker rather than broadening the example or weakening the checks.
 
@@ -123,9 +131,9 @@ Source identification and a successful example are separate requirements. The ap
 |---|---|---|---|
 | Craft | Required; requested | Packet and meaningful content checkpoints | Overview/tutorial split PASS, session `ses_ebba50fa6ffepJwY7YFkhsxURI`; earlier single-guide verdict retained in evidence |
 | Adversarial | Required; requested | Completed local content milestone | Split READY-WITH-NITS, session `ses_ebba50f65ffeSk3cMsJ5s28Ilr`; two LOW observations addressed afterward; no second pass |
-| Clean-context | Required for public onboarding; requested | Due for the committed review candidate before merge-readiness | Not run: launcher verification denied before preparation/authentication/inference. Requirement retained; unavailable lane is not an approved waiver. |
+| Clean-context | Required for public onboarding; requested | Before merge | Owner-confirmed external Claude review accepted on October 17, with Hermes runtime evidence recorded separately. Local launcher Not run; its execution requirement explicitly waived for this PR only. |
 
-The earlier packet checkpoint had no product-runtime evidence. The evidence file records the actual browser exercises and implementation CI separately; clean-context is blocked as recorded above. The candidate is not publication-ready. Prior permission limits below describe the historical planning stage, not the current draft-PR authorization.
+The evidence file records actual browser exercises, external reviews and CI separately. Earlier blocked/uncommitted statuses describe their historical checkpoints; the October 17 owner disposition controls review acceptance and merge authorization. A final check of the exact PR head remains required before merge.
 
 ### Planning review checkpoint
 
