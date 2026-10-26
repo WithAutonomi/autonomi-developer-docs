@@ -20,27 +20,27 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$HEAD_REF" == claude/sweep-* ]]; then
-            echo "in_scope=true" >> "$GITHUB_OUTPUT"
+            echo "family=sweep" >> "$GITHUB_OUTPUT"
             echo "In scope: head ref is $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$HEAD_REF" == claude/prose-* ]]; then
+            echo "family=prose" >> "$GITHUB_OUTPUT"
+            echo "Protected-change scan only; prose-guard owns $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "in_scope=false" >> "$GITHUB_OUTPUT"
-            echo "Out of scope (head ref is not claude/sweep-): $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
+            echo "family=other" >> "$GITHUB_OUTPUT"
+            echo "Protected-change scan: $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Checkout PR head
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Validate metadata-only envelope
-        if: steps.scope.outputs.in_scope == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -67,6 +67,10 @@ jobs:
           VERIFICATION_BLOCK_RE = re.compile(r"<!--\s*verification:(.*?)-->", re.DOTALL)
           BLOCK_KEY_VALUE_RE = re.compile(r"^\s*([a-z_]+)\s*:\s*(\S.*?)\s*$")
           ALLOWED_DOC_KEYS = ("source_commit:", "verified_date:")
+          PROMOTION_DOC_KEYS = (
+              "source_ref:", "source_commit:", "verified_date:",
+              "verification_mode:",
+          )
 
           violations: list[str] = []
 
@@ -110,17 +114,8 @@ jobs:
                   changes.append((status, tokens[i + 1]))
                   i += 2
 
-          # Branch date suffix dictates the expected sweep file.
-          branch_match = BRANCH_DATE_RE.match(HEAD_REF)
-          expected_sweep_path = (
-              f"planning/sweeps/{branch_match.group(1)}.md" if branch_match else None
-          )
-          if not branch_match:
-              fail(
-                  HEAD_REF,
-                  "branch name does not match claude/sweep-YYYY-MM-DD[-slug]; "
-                  "the guard cannot verify the new sweep summary file",
-              )
+          changed_paths = sorted({path for _status, path in changes})
+          manifest_changed = "target-manifest.yml" in changed_paths
 
           # Guard: every changed file must fit one allowlist slot.
           seen_paths: set[str] = set()
@@ -160,20 +155,19 @@ jobs:
           def validate_docs_md(path: str) -> None:
               base_text = show(BASE, path) or ""
               head_text = show(HEAD, path) or ""
-              # Target-manifest protection: a sweep PR must never touch a
-              # target-manifest block. Multiset of literal block bodies on
-              # each side must match. The line-prefix check below would
-              # already permit source_commit:/verified_date: edits inside a
-              # target-manifest block; this is the rule that closes that
-              # gap.
+              # Target-manifest protection: literal block bodies may differ
+              # only when target-manifest.yml also changes. The strict
+              # validator step then proves the atomic entry/page/record
+              # correspondence and preserves unrelated pins byte-for-byte.
               base_tm = sorted(target_manifest_block_bodies(base_text))
               head_tm = sorted(target_manifest_block_bodies(head_text))
               if base_tm != head_tm:
-                  fail(
-                      path,
-                      "target-manifest verification block changed; "
-                      "sweep PRs must not touch target-manifest blocks",
-                  )
+                  if not manifest_changed:
+                      fail(
+                          path,
+                          "target-manifest verification block changed without "
+                          "an atomic target-manifest.yml promotion",
+                      )
                   # Continue with the line-prefix scan so that any
                   # additional envelope violations on the same file also
                   # surface in the same run, but the target-manifest
@@ -204,11 +198,17 @@ jobs:
                           )
                           continue
                       stripped = base_line.lstrip()
-                      if not stripped.startswith(ALLOWED_DOC_KEYS):
+                      allowed_keys = PROMOTION_DOC_KEYS if manifest_changed else ALLOWED_DOC_KEYS
+                      if not stripped.startswith(allowed_keys):
+                          message = (
+                              "removed line is outside the allowed verification "
+                              "fields for this promotion"
+                              if manifest_changed
+                              else "removed line is not a source_commit: or verified_date: line"
+                          )
                           fail(
                               f"{path}:{base_line_num}",
-                              "removed line is not a source_commit: or "
-                              "verified_date: line",
+                              message,
                           )
                   # Added lines (head side)
                   for offset, head_line in enumerate(head_lines[j1:j2]):
@@ -221,15 +221,73 @@ jobs:
                           )
                           continue
                       stripped = head_line.lstrip()
-                      if not stripped.startswith(ALLOWED_DOC_KEYS):
+                      allowed_keys = PROMOTION_DOC_KEYS if manifest_changed else ALLOWED_DOC_KEYS
+                      if not stripped.startswith(allowed_keys):
+                          message = (
+                              "added line is outside the allowed verification "
+                              "fields for this promotion"
+                              if manifest_changed
+                              else "added line is not a source_commit: or verified_date: line"
+                          )
                           fail(
                               f"{path}:{head_line_num}",
-                              "added line is not a source_commit: or "
-                              "verified_date: line",
+                              message,
                           )
 
           FORBIDDEN_PATH_PREFIXES = ("scripts/", ".github/")
           FORBIDDEN_EXACT_PATHS = {"repo-registry.yml", "component-registry.yml"}
+
+          if not HEAD_REF.startswith(("claude/sweep-", "claude/prose-")):
+              protected = []
+              for path in changed_paths:
+                  if path == "target-manifest.yml" or path.startswith(SWEEPS_PREFIX):
+                      protected.append(path)
+                      continue
+                  if path.startswith(DOCS_PREFIX) and path.endswith(".md"):
+                      base_tm = sorted(target_manifest_block_bodies(show(BASE, path) or ""))
+                      head_tm = sorted(target_manifest_block_bodies(show(HEAD, path) or ""))
+                      if base_tm != head_tm:
+                          protected.append(path)
+              if protected:
+                  fail(
+                      HEAD_REF,
+                      "release-sensitive changes are branch-protected; use "
+                      "claude/sweep-* for metadata-only promotion or "
+                      "claude/prose-* when rendered documentation changes "
+                      f"(protected paths: {', '.join(sorted(protected))})",
+                  )
+              if violations:
+                  if SUMMARY_PATH:
+                      with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                          out.write("## sweep-guard failures\n\n")
+                          for v in violations:
+                              out.write(f"- `{v}`\n")
+                  for v in violations:
+                      print(v, file=sys.stderr)
+                  sys.exit(1)
+              if SUMMARY_PATH:
+                  with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                      out.write("sweep-guard: protected-change scan clean.\n")
+              sys.exit(0)
+
+          if HEAD_REF.startswith("claude/prose-"):
+              if SUMMARY_PATH:
+                  with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                      out.write("sweep-guard: prose branch delegated after protected-change scan.\n")
+              sys.exit(0)
+
+          # Branch date suffix dictates the expected sweep file once this
+          # guard's updater family has actually been selected.
+          branch_match = BRANCH_DATE_RE.match(HEAD_REF)
+          expected_sweep_path = (
+              f"planning/sweeps/{branch_match.group(1)}.md" if branch_match else None
+          )
+          if not branch_match:
+              fail(
+                  HEAD_REF,
+                  "branch name does not match claude/sweep-YYYY-MM-DD[-slug]; "
+                  "the guard cannot verify the new sweep summary file",
+              )
 
           for status, path in changes:
               if path in seen_paths:
@@ -250,6 +308,9 @@ jobs:
                       fail(path, f"unexpected diff status {status} for docs file")
                       continue
                   validate_docs_md(path)
+              elif path == "target-manifest.yml":
+                  if status != "M":
+                      fail(path, f"target manifest must be modified (M), got {status}")
               elif path.startswith(SWEEPS_PREFIX):
                   match = SWEEP_FILE_RE.match(path)
                   if not match:
@@ -292,3 +353,18 @@ jobs:
               with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
                   out.write("sweep-guard: clean envelope.\n")
           PY
+
+      - name: Install strict validator dependency
+        if: steps.scope.outputs.family == 'sweep'
+        run: pip install 'PyYAML>=6,<7'
+
+      - name: Validate atomic release promotion
+        if: steps.scope.outputs.family == 'sweep'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          python3 -I scripts/validate_release_baselines.py \
+            --base-ref "$BASE_SHA" --head-ref "$HEAD_SHA" --branch "$HEAD_REF"

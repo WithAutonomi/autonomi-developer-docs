@@ -19,9 +19,10 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 
 1. Run the open-PR collision check. If a prior `claude/sweep-*` or `claude/prose-*` PR is still open, exit silently. The open PR is itself the signal that drift is pending review; drift is re-detected on the next run.
 2. Run `scripts/sweep_poll.py`. If the JSON status is `error`, open a fresh issue (best-effort labelled `upstream-sweep-failure` — see `## GitHub artifacts the routine produces` for the label-fallback rule) with the JSON diagnostics and a brief cause prose in the body, and exit. A human triages the issue and closes it manually when the underlying cause is understood; the routine never auto-closes failure issues.
-3. If `records` is empty or every record has `drifted: false`, exit silently. No GitHub artifact is produced for the happy no-drift path; the routine session log preserves the trace for debugging.
-4. For each drifted record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
-5. Open at most two PRs (one sweep, one prose draft) plus zero or more issues (best-effort labelled `upstream-sweep-manual-review`) per the topology in `## Page batching rule`, `## Manual-review issue format`, `## Manual-review issue de-duplication`, and `## PR body format`. Manual-review issues are opened **before** PRs so PR bodies can reference issue numbers; a `Tracked in <PR URL>.` comment is posted on each issue once the corresponding PR exists. The PR bodies carry the run summary; no separate aggregated comment is posted anywhere.
+3. Process every `release_manual_review` notice through the existing per-record ambiguity route. Process every `release_candidates` item through the release audit in `## Release candidate audit and promotion`. A release notice or candidate bypasses the ordinary no-drift short-circuit because its synthesized SHA pair may be equal while installer or publication evidence still needs review.
+4. If there is no release candidate or release manual review and `records` is empty or every record has `drifted: false`, exit silently. No GitHub artifact is produced for the happy no-drift path; the routine session log preserves the trace for debugging.
+5. For each ordinary drifted record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
+6. Open at most two PRs (one sweep, one prose draft) plus zero or more issues (best-effort labelled `upstream-sweep-manual-review`) per the topology in `## Page batching rule`, `## Manual-review issue format`, `## Manual-review issue de-duplication`, and `## PR body format`. Manual-review issues are opened **before** PRs so PR bodies can reference issue numbers; a `Tracked in <PR URL>.` comment is posted on each issue once the corresponding PR exists. The PR bodies carry the run summary; no separate aggregated comment is posted anywhere.
 
 ## Branch convention
 
@@ -39,7 +40,7 @@ Issues are reserved for things a human needs to address. Successful runs and rou
 | No drift | None. Routine exits silently. |
 | Drift found, all clean | Sweep PR (and prose draft PR if prose changed). The PR bodies are the run summary. |
 | Drift + ambiguity | PRs plus one issue per deferred record, best-effort labelled `upstream-sweep-manual-review`. |
-| Scanner error or mid-step error in step 5 (whole-run fail-closed) | One fresh issue per occurrence, best-effort labelled `upstream-sweep-failure`. The body carries the JSON diagnostic plus a brief cause prose. |
+| Scanner error or mid-artifact error in step 6 (whole-run fail-closed) | One fresh issue per occurrence, best-effort labelled `upstream-sweep-failure`. The body carries the JSON diagnostic plus a brief cause prose. |
 | Open-PR collision (prior `claude/sweep-*` or `claude/prose-*` still open) | None. The open PR is itself the signal. |
 
 The two issue classes are kept distinct because the response differs:
@@ -136,7 +137,24 @@ The label filter is deliberately omitted. Label attach is best-effort: a previou
 
 `gh issue search` is not used: GitHub issue search tokenization does not reliably match a pipe-heavy fingerprint embedded in the body. The match is performed by walking each candidate issue's `body` field and looking for a line that, after stripping leading and trailing whitespace, equals the fingerprint string verbatim — not a substring match.
 
-On a fingerprint match, the routine reuses the existing issue: it skips `gh issue create`, captures the existing issue's number for the prose PR body, and posts a `Tracked in <PR URL>. (Run date <today>.)` comment on the issue once the PR exists. The original issue body is not edited, so reused issues accumulate a chronological trail of every run that re-encountered them. With no fingerprint match, a new issue is created with the fingerprint embedded in the body.
+On a fingerprint match, the routine reuses the existing issue: it skips `gh issue create`, captures the existing issue's number for the prose PR body, and leaves the original issue body byte-for-byte unchanged. For a `release_manual_review` notice, immediately post a dated comment containing the notice's reason and canonical sorted current/baseline GitHub, npm, and installer evidence, including every available tag, commit, asset ID/digest, package version/integrity/`gitHead`, and installer URL/path/source commit/blob/evidence URL. Post this evidence comment on a reused or newly created issue even when no PR will open. If a PR later exists, also post the unchanged `Tracked in <PR URL>. (Run date <today>.)` comment. This preserves the Accepted fingerprint and body while leaving a chronological evidence trail. With no fingerprint match, a new issue is created with the fingerprint embedded in the body.
+
+## Release candidate audit and promotion
+
+A `release_candidates` item is audit input, never permission to edit. Keep the existing collision check, manual-review fingerprint/body, issue outcomes, and two branch families; do not create a release or installer fingerprint.
+
+For each candidate:
+
+1. Confirm its records and mapped pages against `component-registry.yml`. Audit all mapped pages for contradictions. In the first CLI unit, only `docs/cli/use-the-cli.md` and `docs/cli/command-reference.md` may be promoted; list the seven shared/unmigrated pages and leave every byte of their verification blocks unchanged.
+2. Fetch the exact tagged source commit. Require the GitHub tag to peel to the candidate commit and every npm `gitHead` to equal it. Never replace release-tag provenance with moving-ref ancestry.
+3. In an isolated temporary directory, download the candidate checksum, all five archives, and all five advertised signatures by exact release asset ID. Compare each file's computed SHA-256 with its provider digest. Parse the checksum file strictly, require exactly one matching entry per archive, then verify every signature against its archive with the release workflow's source-audited public key, immutable key identity, tool/version, and signing context. Use explicit paths and no ambient key selection. Record asset IDs, provider and computed hashes, checksum entries, key source/fingerprint, tool/version/context, complete commands, exits, and limitations in the new dated promotion record. Missing or contradictory key/tool/context evidence, or any failed digest, checksum, or signature, blocks promotion.
+4. Fetch each already observed immutable installer blob into an isolated environment, inspect or execute only as authorized, and require its selected CLI version to equal the reconciled GitHub/npm version. Record both installer URL/path/source-commit/blob identities and the result. Do not use a moving installer URL as audit evidence after observation.
+5. Audit the two CLI pages against the released binary/source, assets, npm packages, installers, shipped `ant-core`, commands, flags, examples, output claims, limitations, and relevant platform behavior. If runtime evidence is unavailable, keep the affected page unpromoted and use existing per-record manual review.
+6. If neither page's rendered content changes, use `claude/sweep-*`. If any rendered content changes, put the baseline, both audited blocks, promotion record, and all rendered edits together on one draft `claude/prose-*` branch. Never split one page between tracks.
+7. Add or advance one `release_baselines.entries` record, the two exact target-manifest blocks, and its newly added dated promotion record atomically. Keep `target-manifest.yml` `scope` and `sources`, browser target-manifest blocks, and every unmigrated block byte-identical. Run `python3 -I scripts/validate_release_baselines.py` plus the repository checks before opening a PR.
+8. Stop after opening the reviewed proposal. A human reviews the evidence and PR; merge is the only promotion action. Discovery and the routine never make a baseline authoritative by themselves.
+
+Provider access, parsing, or shape failure remains a whole-run scanner error. Complete responses that disagree, lack required evidence, show same/lower-version mutation, or show installer drift use the existing per-record manual-review path and exact fingerprint/body. No candidate, partial audit, or closed PR creates suppression state or permits fallback to merged source.
 
 ## Sweep PR envelope (claude/sweep-*)
 
@@ -146,14 +164,15 @@ Allowed:
 
 - verification-block lines (`source_commit:`, `verified_date:`) in `docs/**/*.md`,
 - one new `planning/sweeps/<YYYY-MM-DD>.md` whose date suffix matches the head-branch date suffix.
+- for one coordinated release promotion: `target-manifest.yml` plus `source_ref:`, `source_commit:`, `verified_date:`, and `verification_mode:` in the promoted blocks, but only when the strict release validator proves exact entry/block/page/record correspondence and preserves the browser pin bytes.
 
 Forbidden:
 
 - any change to docs prose (`docs/**/*.md` outside an `<!-- verification: -->` block),
 - any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`, or any other path outside the allowed set,
-- any change inside a `verification_mode: target-manifest` block.
+- any target-manifest block change outside a strictly validated release promotion.
 
-`sweep-guard` enforces this envelope. It runs on `claude/sweep-*` only and green-skips on every other branch.
+`sweep-guard` enforces this envelope. It applies the full envelope on `claude/sweep-*` and performs branch-independent protected-change detection everywhere else; a release-sensitive change on another branch fails with the applicable existing branch-family route rather than green-skipping.
 
 ## Prose PR envelope (claude/prose-*)
 
@@ -163,14 +182,15 @@ Allowed:
 
 - `docs/**/*.md` — prose and verification changes, subject to target-manifest and deferred-record protection.
 - `planning/sweeps/<branch-date>.md` — optional add; date suffix matches `claude/prose-<YYYY-MM-DD>-<slug>`.
+- for one coordinated release promotion: `target-manifest.yml` and the promoted target-manifest blocks, subject to the same strict validator and browser-pin preservation as the metadata-only track.
 
 Forbidden:
 
 - any change to `scripts/**`, `.github/**`, `repo-registry.yml`, `component-registry.yml`, or any other path outside the allowed set (byte-identical to base),
-- any change, addition, or removal of a `target-manifest` verification block,
+- any target-manifest block change outside a strictly validated release promotion,
 - any change inside a deferred record's verification block.
 
-`prose-guard` enforces the path, summary-date, and target-manifest restrictions in this envelope. Deferred-record protection requires the routine's self-check below; the guard does not know which records were deferred. It runs on `claude/prose-*` only and green-skips on every other branch.
+`prose-guard` enforces the path, summary-date, and target-manifest restrictions in this envelope. Deferred-record protection requires the routine's self-check below; the guard does not know which records were deferred. It applies the full envelope on `claude/prose-*` and performs branch-independent protected-change detection everywhere else.
 
 Both envelopes use positive path allowlists: anything not explicitly allowed is forbidden. Check both the old and new paths of renames and copies; moving a forbidden file into `docs/` does not bring it inside the envelope. Run summaries must be newly added files, not modifications of existing summaries, and their date must match the branch date.
 
@@ -251,7 +271,7 @@ Per-record fail-closed (one page deferred, rest of run continues):
 
 That page is held back as a `manual review needed` issue.
 
-`target-manifest` blocks are deliberately skipped by the scanner and listed in a separate `target_manifest_skipped` array in the JSON output. When the run opens a sweep PR, the PR body and the per-run `planning/sweeps/<YYYY-MM-DD>.md` summary file note any target-manifest entries as "pinned by target-manifest, not bumped" so a human can confirm those pins remain intentional during review. The routine must never bump a `target-manifest` block against a moving HEAD; doing so would silently overwrite a launch-hardening pin.
+`target-manifest` blocks remain listed in the scanner's separate `target_manifest_skipped` array because they are skipped from moving-ref resolution. Enrolled release entries are evaluated separately against public release evidence and synthesize release-driven records. When the run opens a sweep PR, its body and dated record note unchanged manual pins as "pinned by target-manifest, not bumped". A release block moves only through the atomic candidate audit and exact release-tag checks above; the routine never bumps it against a moving HEAD.
 
 ## Failure modes
 

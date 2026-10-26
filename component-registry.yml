@@ -272,6 +272,37 @@ components:
     topics:
       - cli
       - node-management
+    release_discovery:
+      stable:
+        github:
+          tag_pattern: '^ant-cli-v(?P<version>(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*))$'
+          reject_drafts: true
+          reject_prereleases: true
+          checksum_asset: SHA256SUMS.txt
+          platforms:
+            aarch64-apple-darwin: tar.gz
+            aarch64-unknown-linux-musl: tar.gz
+            x86_64-apple-darwin: tar.gz
+            x86_64-pc-windows-msvc: zip
+            x86_64-unknown-linux-musl: tar.gz
+        npm:
+          package: '@withautonomi/ant'
+          dist_tag: latest
+          platform_packages:
+            aarch64-apple-darwin: '@withautonomi/ant-darwin-arm64'
+            aarch64-unknown-linux-musl: '@withautonomi/ant-linux-arm64'
+            x86_64-apple-darwin: '@withautonomi/ant-darwin-x64'
+            x86_64-pc-windows-msvc: '@withautonomi/ant-win32-x64'
+            x86_64-unknown-linux-musl: '@withautonomi/ant-linux-x64'
+        installers:
+          - platform: linux-macos
+            ref: main
+            path: install.sh
+            url: https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh
+          - platform: windows
+            ref: main
+            path: install.ps1
+            url: https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.ps1
     feeds_pages:
       - index.md
       - cli/use-the-cli.md
