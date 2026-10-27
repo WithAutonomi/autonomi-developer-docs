@@ -47,6 +47,9 @@ class SweepPollTest(unittest.TestCase):
             "repos:\n  example:\n    url: https://github.com/example/source.git\n",
             encoding="utf-8",
         )
+        (self.repo / "component-registry.yml").write_text(
+            "components: {}\n", encoding="utf-8"
+        )
         self.page = self.repo / "docs" / "example.md"
         self.page.write_text(BLOCK.format(sha=RECORDED), encoding="utf-8")
 
@@ -58,6 +61,9 @@ class SweepPollTest(unittest.TestCase):
             "DOCS_DIR": self.repo / "docs",
             "REGISTRY_PATH": self.repo / "repo-registry.yml",
         }
+        if hasattr(module, "COMPONENT_REGISTRY_PATH"):
+            paths["COMPONENT_REGISTRY_PATH"] = self.repo / "component-registry.yml"
+            paths["TARGET_MANIFEST_PATH"] = self.repo / "target-manifest.yml"
         # Only the historical scanner has these paths; point it at the fixture too.
         if hasattr(module, "VERSION_JSON_PATH"):
             paths["VERSION_JSON_PATH"] = self.repo / "skills/start/version.json"
@@ -74,9 +80,10 @@ class SweepPollTest(unittest.TestCase):
         ):
             code = module.main()
         report = json.loads(output.getvalue())
+        report.setdefault("release_candidates", [])
         self.assertEqual(set(report), {
             "status", "generated_at", "records", "target_manifest_skipped",
-            "notices", "errors",
+            "release_candidates", "notices", "errors",
         })
         self.assertTrue(report.pop("generated_at"))
         return code, report, http.call_args_list, git.call_args_list
@@ -116,6 +123,18 @@ class SweepPollTest(unittest.TestCase):
         self.assertEqual(git, [])
         self.assertEqual(report["errors"], [])
         self.assertEqual(report["notices"], [])
+
+    def test_missing_component_registry_fails_closed_before_legacy_lookup(self) -> None:
+        (self.repo / "component-registry.yml").unlink()
+
+        code, report, http, git = self.run_scanner()
+
+        self.assertEqual(code, 2)
+        self.assertEqual(report["status"], "error")
+        self.assertEqual(report["records"], [])
+        self.assertEqual(report["release_candidates"], [])
+        self.assertEqual(report["errors"][0]["kind"], "component_registry_missing")
+        self.assertEqual((http, git), ([], []))
 
     def test_target_manifest_is_reported_without_upstream_lookup(self) -> None:
         self.page.write_text(
@@ -237,16 +256,9 @@ class SweepPollTest(unittest.TestCase):
         baseline = types.ModuleType("baseline_sweep_poll")
         baseline.__file__ = str(SCRIPT)
         exec(compile(result.stdout, str(SCRIPT), "exec"), baseline.__dict__)
-        original_functions = {
-            node.name: ast.get_source_segment(result.stdout, node)
-            for node in ast.parse(result.stdout).body
-            if isinstance(node, (ast.FunctionDef, ast.ClassDef))
-        }
-        current = SCRIPT.read_text(encoding="utf-8")
-        for node in ast.parse(current).body:
-            if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name != "main":
-                self.assertEqual(ast.get_source_segment(current, node),
-                                 original_functions[node.name], node.name)
+        # Release following adds provider and page-selection behavior to the
+        # scanner. Compare the legacy report behavior directly rather than
+        # requiring every historical function body to remain byte-identical.
         valid = BLOCK.format(sha=RECORDED)
         for content in (
             valid + BLOCK.format(sha=HEAD),
@@ -301,7 +313,11 @@ class SweepPollTest(unittest.TestCase):
         for name, component in original["components"].items():
             with self.subTest(component=name):
                 self.assertIn(name, current["components"])
-                self.assertEqual(current["components"][name], component)
+                current_component = dict(current["components"][name])
+                if name == "ant-cli":
+                    self.assertIn("release_discovery", current_component)
+                    del current_component["release_discovery"]
+                self.assertEqual(current_component, component)
 
 
 if __name__ == "__main__":

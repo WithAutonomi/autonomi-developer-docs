@@ -21,6 +21,8 @@ from unittest.mock import patch
 
 import yaml
 
+import test_release_following as release_fixtures
+
 
 ROOT = Path(__file__).resolve().parents[2]
 # Committed pre-retirement workflows, not a copy of their implementation.
@@ -29,6 +31,16 @@ GUARDS = ("sweep-guard", "prose-guard", "sweep-sha-reachability")
 OLD_SHA = "a" * 40
 NEW_SHA = "b" * 40
 SUMMARY = "planning/sweeps/2026-09-22.md"
+BROWSER_MANIFEST = """# Browser pin fixture.
+scope:
+  pages:
+    - docs/pinned.md
+
+sources:
+  browser:
+    source_ref: v1
+    source_commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+"""
 DOC = f"""# Store data
 
 <!-- verification:
@@ -109,6 +121,10 @@ class DocGuardTest(unittest.TestCase):
             "scripts/protected.md": "Protected script fixture.\n",
             ".github/protected.md": "Protected workflow fixture.\n",
             "planning/sweeps/2026-09-21.md": "Previous summary.\n",
+            "target-manifest.yml": BROWSER_MANIFEST,
+            "scripts/validate_release_baselines.py": (
+                ROOT / "scripts/validate_release_baselines.py"
+            ).read_text(encoding="utf-8"),
         }
         if legacy:
             # Keep valid legacy files unchanged on BOTH sides for fair parity.
@@ -156,8 +172,8 @@ class DocGuardTest(unittest.TestCase):
         self.git("commit", "-q", "--allow-empty", "-m", "Disposable guard fixture")
         return self.git("rev-parse", "HEAD")
 
-    def run_guard(self, name: str, *, baseline=False, suffix="2026-09-22"):
-        self.env["HEAD_REF"] = f"claude/{name.removesuffix('-guard')}-{suffix}"
+    def run_guard(self, name: str, *, baseline=False, suffix="2026-09-22", branch=None):
+        self.env["HEAD_REF"] = branch or f"claude/{name.removesuffix('-guard')}-{suffix}"
         Path(self.env["GITHUB_STEP_SUMMARY"]).write_text("", encoding="utf-8")
         workflow = (self.baseline if baseline else self.current)[name]
         result = subprocess.run(
@@ -165,6 +181,61 @@ class DocGuardTest(unittest.TestCase):
             cwd=self.repo, env=self.env, text=True, capture_output=True,
         )
         return result, Path(self.env["GITHUB_STEP_SUMMARY"]).read_text(encoding="utf-8")
+
+    def run_validator(self, branch="claude/sweep-2026-09-22"):
+        return subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                "scripts/validate_release_baselines.py",
+                "--base-ref",
+                self.env["BASE_SHA"],
+                "--head-ref",
+                self.env["HEAD_SHA"],
+                "--branch",
+                branch,
+            ],
+            cwd=self.repo,
+            env=self.env,
+            text=True,
+            capture_output=True,
+        )
+
+    def promotion_history(self, *, prose=False, browser_manifest=BROWSER_MANIFEST,
+                          page_overrides=None, manifest_override=None,
+                          record=True) -> dict:
+        entry = release_fixtures.valid_entry(Path("."))
+        entry["promotion"]["record"] = SUMMARY
+        release_section = yaml.safe_dump(
+            {"release_baselines": {"schema_version": 1, "entries": {"ant-cli/stable": entry}}},
+            sort_keys=False,
+        )
+        head_manifest = browser_manifest + "\n" + release_section
+        current = release_fixtures.verification_block()
+        promoted = release_fixtures.verification_block(
+            release_fixtures.COMMIT, "ant-cli-v0.3.12", "target-manifest"
+        )
+        base_extra = {
+            "target-manifest.yml": BROWSER_MANIFEST,
+            "component-registry.yml": yaml.safe_dump(
+                {"components": release_fixtures.components()}, sort_keys=False
+            ),
+            "repo-registry.yml": yaml.safe_dump(
+                {"repos": release_fixtures.repos()}, sort_keys=False
+            ),
+            "docs/cli/command-reference.md": current,
+            "docs/cli/use-the-cli.md": current,
+        }
+        changes = {
+            "target-manifest.yml": manifest_override or head_manifest,
+            "docs/cli/command-reference.md": promoted,
+            "docs/cli/use-the-cli.md": promoted,
+        }
+        if prose:
+            changes["docs/cli/use-the-cli.md"] += "\nRendered CLI guidance.\n"
+        changes.update(page_overrides or {})
+        self.history(changes, base_extra=base_extra, legacy=False, summary=record)
+        return entry
 
     def assert_envelopes(self, sweep: bool, prose: bool, *, suffix="2026-09-22",
                          compare=True, diagnostic="") -> None:
@@ -183,40 +254,46 @@ class DocGuardTest(unittest.TestCase):
     def test_workflow_contract_and_removed_skill_code(self) -> None:
         for name in GUARDS:
             with self.subTest(guard=name):
-                current, old = self.current[name], self.baseline[name]
-                self.assertEqual({k: v for k, v in current.items() if k != "jobs"},
-                                 {k: v for k, v in old.items() if k != "jobs"})
-                self.assertEqual(list(current["jobs"]), list(old["jobs"]))
-                current_job = next(iter(current["jobs"].values()))
-                old_job = next(iter(old["jobs"].values()))
-                self.assertEqual({k: v for k, v in current_job.items() if k != "steps"},
-                                 {k: v for k, v in old_job.items() if k != "steps"})
-                self.assertEqual(steps(current)[:3], steps(old)[:3])
-                self.assertEqual({k: v for k, v in steps(current)[-1].items()
-                                  if k not in ("run", "name")},
-                                 {k: v for k, v in steps(old)[-1].items()
-                                  if k not in ("run", "name")})
+                current = self.current[name]
+                self.assertEqual(current["name"], name)
+                self.assertIn("pull_request", current[True])
+                self.assertNotIn("if", steps(current)[1])
+                self.assertNotIn("if", steps(current)[2])
                 code = embedded_python(current)
                 compile(code, name, "exec")
                 for retired in ("skills/start", "verified_commits", "frontmatter",
                                 "resolve_default_branch", "default_branch_cache", "linked-release"):
                     self.assertNotIn(retired, code)
                 if name == "sweep-sha-reachability":
-                    self.assertEqual(steps(current)[3], steps(old)[3])
                     self.assertIn("import yaml", code)
                     self.assertIn("import json", code)
+                    self.assertIn("validate_release_tag", code)
+                    self.assertIn("show(BASE, REGISTRY_PATH)", code)
+                    self.assertNotIn("show(HEAD, REGISTRY_PATH)", code)
+                    self.assertNotIn("skipped (target-manifest pin)", code)
                 else:
-                    self.assertEqual(len(steps(current)), 4)
                     self.assertNotIn("import yaml", code)
                     self.assertNotIn("import json", code)
+                    self.assertIn("release-sensitive changes are branch-protected", code)
+                    self.assertTrue(any(
+                        step.get("name") == "Validate atomic release promotion"
+                        for step in steps(current)
+                    ))
+        repository_tests = load_workflow("repository-tests")
+        repository_runs = [
+            step.get("run", "") for step in steps(repository_tests)
+        ]
+        self.assertIn(
+            "python3 -I scripts/validate_release_baselines.py", repository_runs
+        )
 
     def test_actual_branch_scope_shell(self) -> None:
         self.history(legacy=False)
         for name in GUARDS:
             for branch, expected in (
-                ("claude/sweep-2026-09-22", name != "prose-guard"),
-                ("claude/prose-2026-09-22", name != "sweep-guard"),
-                ("feature/retirement", False),
+                ("claude/sweep-2026-09-22", "updater" if name == "sweep-sha-reachability" else "sweep"),
+                ("claude/prose-2026-09-22", "updater" if name == "sweep-sha-reachability" else "prose"),
+                ("feature/retirement", "other"),
             ):
                 with self.subTest(guard=name, branch=branch):
                     output = self.root / "output"
@@ -227,7 +304,7 @@ class DocGuardTest(unittest.TestCase):
                         cwd=self.repo, capture_output=True, text=True,
                     )
                     self.assertEqual(result.returncode, 0, result.stderr)
-                    self.assertEqual(output.read_text(), f"in_scope={str(expected).lower()}\n")
+                    self.assertEqual(output.read_text(), f"family={expected}\n")
 
     def test_valid_refresh_without_retired_skill(self) -> None:
         self.history({"docs/page.md": REFRESHED}, legacy=False)
@@ -269,9 +346,9 @@ class DocGuardTest(unittest.TestCase):
                      "# Removed pin\n", PINNED + PINNED, None):
             with self.subTest(text=text):
                 self.history({"docs/pinned.md": text})
-                self.assert_envelopes(False, False)
+                self.assert_envelopes(False, False, compare=False)
         self.history({"docs/page.md": DOC + PINNED})
-        self.assert_envelopes(False, False, diagnostic="target-manifest")
+        self.assert_envelopes(False, False, diagnostic="target-manifest", compare=False)
 
     def test_unchanged_pin_alongside_refresh_or_prose_parity(self) -> None:
         for text, sweep in ((REFRESHED + PINNED, True),
@@ -279,6 +356,155 @@ class DocGuardTest(unittest.TestCase):
             with self.subTest(text=text):
                 self.history({"docs/page.md": text}, base_extra={"docs/page.md": DOC + PINNED})
                 self.assert_envelopes(sweep, True)
+
+    def test_valid_atomic_release_promotion_and_metadata_prose_separation(self) -> None:
+        self.promotion_history()
+        sweep, _ = self.run_guard("sweep-guard")
+        prose_delegate, _ = self.run_guard("prose-guard", branch="claude/sweep-2026-09-22")
+        strict = self.run_validator()
+        self.assertEqual(sweep.returncode, 0, sweep.stderr)
+        self.assertEqual(prose_delegate.returncode, 0, prose_delegate.stderr)
+        self.assertEqual(strict.returncode, 0, strict.stderr)
+        self.assertIn("atomic promotion", strict.stdout)
+
+        self.promotion_history(prose=True)
+        sweep, _ = self.run_guard("sweep-guard")
+        prose, _ = self.run_guard("prose-guard")
+        strict = self.run_validator("claude/prose-2026-09-22")
+        self.assertEqual(sweep.returncode, 1)
+        self.assertIn("outside any", sweep.stderr)
+        self.assertEqual(prose.returncode, 0, prose.stderr)
+        self.assertEqual(strict.returncode, 0, strict.stderr)
+
+    def test_release_promotion_preserves_browser_manifest_and_blocks_byte_for_byte(self) -> None:
+        mutated_browser = BROWSER_MANIFEST.replace("source_ref: v1", "source_ref: v2")
+        self.promotion_history(browser_manifest=mutated_browser)
+        result = self.run_validator()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("sources subtree changed", result.stderr)
+
+        changed_browser_block = PINNED.replace(OLD_SHA, NEW_SHA)
+        self.promotion_history(page_overrides={"docs/pinned.md": changed_browser_block})
+        result = self.run_validator()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("scoped_pages", result.stderr)
+
+    def test_release_promotion_requires_exact_block_entry_and_record_correspondence(self) -> None:
+        wrong = release_fixtures.verification_block(
+            "f" * 40, "ant-cli-v0.3.12", "target-manifest"
+        )
+        self.promotion_history(
+            page_overrides={"docs/cli/use-the-cli.md": wrong}
+        )
+        result = self.run_validator()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("does not match release baseline", result.stderr)
+
+        self.promotion_history(record=False)
+        result = self.run_validator()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("promotion.record", result.stderr)
+
+    def test_first_cli_promotion_requires_ant_core_dependency_evidence(self) -> None:
+        entry = release_fixtures.valid_entry(Path("."))
+        entry["promotion"]["record"] = SUMMARY
+        del entry["shipped_dependencies"]
+        release_section = yaml.safe_dump(
+            {
+                "release_baselines": {
+                    "schema_version": 1,
+                    "entries": {"ant-cli/stable": entry},
+                }
+            },
+            sort_keys=False,
+        )
+        self.promotion_history(
+            manifest_override=BROWSER_MANIFEST + "\n" + release_section
+        )
+
+        result = self.run_validator()
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("shipped_dependencies", result.stderr)
+
+    def test_unrelated_branch_rejects_every_release_sensitive_change(self) -> None:
+        cases = (
+            {"target-manifest.yml": BROWSER_MANIFEST + "\nrelease_baselines: {}\n"},
+            {"docs/pinned.md": PINNED.replace(OLD_SHA, NEW_SHA)},
+            {"planning/sweeps/2026-09-21.md": "Changed promotion evidence.\n"},
+        )
+        for changes in cases:
+            with self.subTest(changes=changes):
+                self.history(changes, legacy=False, summary=False)
+                for name in GUARDS[:2]:
+                    result, _ = self.run_guard(name, branch="feature/release-change")
+                    self.assertEqual(result.returncode, 1, result.stderr)
+                    self.assertIn("claude/sweep-*", result.stderr)
+                    self.assertIn("claude/prose-*", result.stderr)
+
+    def test_unrelated_branch_rejects_registry_and_verification_change_pair(self) -> None:
+        untrusted_registry = REGISTRY.replace(
+            "https://github.com/WithAutonomi/ant-sdk",
+            "https://github.com/attacker/untrusted",
+        )
+        self.history(
+            {
+                "docs/page.md": REFRESHED,
+                "repo-registry.yml": untrusted_registry,
+            },
+            legacy=False,
+            summary=False,
+        )
+        for name in GUARDS[:2]:
+            with self.subTest(guard=name):
+                result, _ = self.run_guard(
+                    name, branch="feature/registry-and-verification-change"
+                )
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("repo-registry.yml", result.stderr)
+
+        calls = self.assert_reachability(
+            {COMMIT_URL: {}, COMPARE_URL: {"status": "ahead"}},
+            True,
+            compare=False,
+        )
+        self.assertEqual(calls, [COMMIT_URL, COMPARE_URL])
+
+    def test_unrelated_branch_passes_without_release_sensitive_changes(self) -> None:
+        self.history({"README.md": "Ordinary branch change.\n"}, legacy=False, summary=False)
+        for name in GUARDS[:2]:
+            with self.subTest(guard=name):
+                result, summary = self.run_guard(name, branch="feature/ordinary-change")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("protected-change scan clean", summary)
+
+    def test_release_promotion_block_rejects_an_added_field(self) -> None:
+        promoted = release_fixtures.verification_block(
+            release_fixtures.COMMIT, "ant-cli-v0.3.12", "target-manifest"
+        ).replace("  source_repo:", "  component: ant-cli\n  source_repo:")
+        self.promotion_history(
+            page_overrides={"docs/cli/use-the-cli.md": promoted}
+        )
+        sweep, _ = self.run_guard("sweep-guard")
+        strict = self.run_validator()
+        self.assertEqual(sweep.returncode, 1)
+        self.assertIn("outside the allowed verification fields", sweep.stderr)
+        self.assertEqual(strict.returncode, 1)
+        self.assertIn("unknown fields: component", strict.stderr)
+
+    def test_routine_contract_keeps_collision_and_manual_review_identity(self) -> None:
+        policy = (ROOT / "planning/routines/upstream-sweep.md").read_text(encoding="utf-8")
+        prompt = (ROOT / "planning/routines/upstream-sweep-prompt.md").read_text(encoding="utf-8")
+        for text in (policy, prompt):
+            self.assertIn('startswith("claude/sweep-")', text)
+            self.assertIn('startswith("claude/prose-")', text)
+            self.assertIn("Fingerprint:", text)
+            self.assertIn("recorded_sha", text)
+            self.assertIn("head_sha", text)
+            self.assertIn("issue body", text)
+            self.assertIn("dated", text)
+            self.assertNotIn("Release Fingerprint:", text)
+            self.assertNotIn("Installer Fingerprint:", text)
 
     def test_summary_required_only_for_sweep_parity(self) -> None:
         self.history({"docs/page.md": REFRESHED}, summary=False)
@@ -307,11 +533,16 @@ class DocGuardTest(unittest.TestCase):
 
     def test_protected_and_outside_paths_parity(self) -> None:
         for path in ("scripts/protected.md", ".github/protected.md", "repo-registry.yml",
-                     "component-registry.yml", "target-manifest.yml", "README.md",
+                     "component-registry.yml", "README.md",
                      "docs/image.svg", "planning/outside.md"):
             with self.subTest(path=path):
                 self.history({path: "Changed.\n"})
                 self.assert_envelopes(False, False)
+
+        self.history({"target-manifest.yml": "Changed.\n"})
+        self.assertEqual(self.run_guard("sweep-guard")[0].returncode, 0)
+        self.assertEqual(self.run_guard("prose-guard")[0].returncode, 0)
+        self.assertEqual(self.run_validator().returncode, 1)
 
     def test_rename_both_sides_protected_parity(self) -> None:
         for protected in ("scripts/protected.md", ".github/protected.md", "repo-registry.yml",
@@ -401,6 +632,27 @@ class DocGuardTest(unittest.TestCase):
                 )
                 self.assertEqual(calls, [COMMIT_URL, COMPARE_URL])
 
+    def test_mocked_reachability_peels_release_tag_to_exact_manifest_commit(self) -> None:
+        self.promotion_history()
+        api = "https://api.github.com/repos/WithAutonomi/ant-client"
+        ref_url = f"{api}/git/ref/tags/ant-cli-v0.3.12"
+        tag_url = f"{api}/git/tags/{'a' * 40}"
+        responses = {
+            ref_url: {"object": {"type": "tag", "sha": "a" * 40}},
+            tag_url: {
+                "object": {"type": "commit", "sha": release_fixtures.COMMIT}
+            },
+        }
+        calls = self.assert_reachability(
+            responses, True, diagnostic="exact release tags validated", compare=False
+        )
+        self.assertEqual(calls, [ref_url, tag_url, ref_url, tag_url])
+
+        responses[tag_url] = {"object": {"type": "commit", "sha": "f" * 40}}
+        self.assert_reachability(
+            responses, False, diagnostic="not recorded commit", compare=False
+        )
+
     def test_mocked_reachability_http_and_network_errors(self) -> None:
         self.history({"docs/page.md": REFRESHED})
         for url in (COMMIT_URL, COMPARE_URL):
@@ -427,23 +679,27 @@ class DocGuardTest(unittest.TestCase):
                 self.history({"docs/page.md": text}, base_extra={"repo-registry.yml": registry})
                 self.assertEqual(self.assert_reachability({}, False, diagnostic=diagnostic), [])
 
-    def test_mocked_reachability_skips_pins_and_unchanged_blocks(self) -> None:
-        for changes, diagnostic in (
-            ({"docs/pinned.md": PINNED.replace(OLD_SHA, NEW_SHA)}, "skipped (target-manifest pin)"),
-            ({"docs/page.md": DOC.replace("Store your data.", "Read data.")}, ""),
-        ):
-            with self.subTest(changes=changes):
-                self.history(changes, legacy=False)
-                self.assertEqual(self.assert_reachability({}, True, diagnostic=diagnostic), [])
+    def test_mocked_reachability_rejects_unenrolled_pin_and_ignores_unchanged_blocks(self) -> None:
+        self.history({"docs/pinned.md": PINNED.replace(OLD_SHA, NEW_SHA)}, legacy=False)
+        self.assertEqual(
+            self.assert_reachability(
+                {}, False, diagnostic="correspond to exactly one release baseline", compare=False
+            ),
+            [],
+        )
+        self.history({"docs/page.md": DOC.replace("Store your data.", "Read data.")}, legacy=False)
+        self.assertEqual(self.assert_reachability({}, True, compare=False), [])
 
     def test_mocked_reachability_pin_still_requires_keys(self) -> None:
         self.history({"docs/pinned.md": PINNED.replace("  source_ref: release/v1\n", "")})
         self.assert_reachability({}, False, diagnostic="missing required keys")
 
-    def test_mocked_reachability_reports_skip_alongside_failure(self) -> None:
+    def test_mocked_reachability_reports_release_provenance_failure_alongside_failure(self) -> None:
         self.history({"docs/page.md": REFRESHED.replace("ant-sdk", "unknown"),
                       "docs/pinned.md": PINNED.replace(OLD_SHA, NEW_SHA)})
-        self.assert_reachability({}, False, diagnostic="skipped (target-manifest pin)")
+        self.assert_reachability(
+            {}, False, diagnostic="correspond to exactly one release baseline", compare=False
+        )
 
     def test_mocked_reachability_checks_new_and_renamed_docs(self) -> None:
         for changes, renames in (({"docs/new.md": REFRESHED}, ()),

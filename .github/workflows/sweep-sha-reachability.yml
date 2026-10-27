@@ -20,27 +20,24 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$HEAD_REF" == claude/sweep-* || "$HEAD_REF" == claude/prose-* ]]; then
-            echo "in_scope=true" >> "$GITHUB_OUTPUT"
+            echo "family=updater" >> "$GITHUB_OUTPUT"
             echo "In scope: head ref is $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "in_scope=false" >> "$GITHUB_OUTPUT"
-            echo "Out of scope: $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
+            echo "family=other" >> "$GITHUB_OUTPUT"
+            echo "Branch-independent changed-provenance scan: $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Checkout PR head
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install scanner dependencies
-        if: steps.scope.outputs.in_scope == 'true'
         # Pinned literally rather than installed from scripts/requirements.txt:
         # the requirements file is PR-controlled and could be swapped for a
         # hostile package on a malicious sweep PR. Workflow YAMLs require
@@ -49,7 +46,6 @@ jobs:
         run: pip install 'PyYAML>=6,<7'
 
       - name: Validate SHA reachability
-        if: steps.scope.outputs.in_scope == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -74,6 +70,7 @@ jobs:
           TOKEN = os.environ["GITHUB_TOKEN"]
           SUMMARY_PATH = os.environ.get("GITHUB_STEP_SUMMARY")
           REGISTRY_PATH = "repo-registry.yml"
+          MANIFEST_PATH = "target-manifest.yml"
           DOCS_PREFIX = "docs/"
           VERIFICATION_BLOCK_RE = re.compile(
               r"<!--\s*verification:(.*?)-->", re.DOTALL
@@ -81,16 +78,10 @@ jobs:
           KEY_VALUE_RE = re.compile(r"^\s*([a-z_]+)\s*:\s*(\S.*?)\s*$")
 
           violations: list[str] = []
-          skipped_target_manifest: list[str] = []
+          validated_release_tags: list[str] = []
 
           def fail(loc: str, msg: str) -> None:
               violations.append(f"{loc}: {msg}")
-
-          def skip_tm(loc: str) -> None:
-              # Ancestry against a moving HEAD is not meaningful for
-              # target-manifest pins; record an informational summary line
-              # rather than failing or silently dropping the record.
-              skipped_target_manifest.append(f"{loc}: skipped (target-manifest pin)")
 
           def show(ref: str, path: str) -> str | None:
               try:
@@ -133,7 +124,7 @@ jobs:
               return owner, repo
 
           def load_registry() -> dict:
-              text = show(HEAD, REGISTRY_PATH) or ""
+              text = show(BASE, REGISTRY_PATH) or ""
               try:
                   data = yaml.safe_load(text) or {}
               except yaml.YAMLError as exc:
@@ -142,6 +133,22 @@ jobs:
               return (data or {}).get("repos") or {}
 
           REGISTRY = load_registry()
+
+          def load_release_entries() -> dict:
+              text = show(HEAD, MANIFEST_PATH) or ""
+              try:
+                  data = yaml.safe_load(text) or {}
+              except yaml.YAMLError as exc:
+                  fail(MANIFEST_PATH, f"YAML parse error: {exc}")
+                  return {}
+              release = data.get("release_baselines") or {}
+              entries = release.get("entries") or {} if isinstance(release, dict) else {}
+              if not isinstance(entries, dict):
+                  fail(MANIFEST_PATH, "release_baselines.entries must be a map")
+                  return {}
+              return entries
+
+          RELEASE_ENTRIES = load_release_entries()
 
           def validate_sha(
               loc: str, repo_key: str, ref: str, sha: str
@@ -189,6 +196,77 @@ jobs:
                       f"ancestor of {ref} (compare status: {compare_state}); "
                       "force-push or ref-rewrite suspected",
                   )
+
+          def validate_release_tag(
+              loc: str, path: str, repo_key: str, tag: str, sha: str
+          ) -> None:
+              matches = []
+              for entry_key, entry in RELEASE_ENTRIES.items():
+                  if not isinstance(entry, dict) or not isinstance(entry.get("source"), dict):
+                      continue
+                  source = entry["source"]
+                  if (
+                      path in entry.get("scoped_pages", [])
+                      and source.get("repo") == repo_key
+                      and source.get("tag") == tag
+                      and source.get("commit") == sha
+                  ):
+                      matches.append(entry_key)
+              if len(matches) != 1:
+                  fail(
+                      loc,
+                      "changed target-manifest block must correspond to exactly "
+                      "one release baseline entry",
+                  )
+                  return
+              entry = REGISTRY.get(repo_key)
+              if not entry:
+                  fail(loc, f"repo not in repo-registry.yml: {repo_key}")
+                  return
+              parsed = parse_owner_repo(entry["url"])
+              if not parsed:
+                  fail(loc, f"unparseable url: {entry['url']}")
+                  return
+              owner, repo = parsed
+              encoded_tag = urllib.parse.quote(tag, safe="")
+              status, body = github_get(
+                  f"/repos/{owner}/{repo}/git/ref/tags/{encoded_tag}"
+              )
+              if status != 200 or not isinstance(body, dict) or not isinstance(body.get("object"), dict):
+                  fail(loc, f"release tag {tag!r} could not be resolved exactly")
+                  return
+              target = body["object"]
+              seen = set()
+              while True:
+                  target_type = target.get("type")
+                  target_sha = target.get("sha")
+                  if not isinstance(target_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", target_sha):
+                      fail(loc, f"release tag {tag!r} has malformed target metadata")
+                      return
+                  if target_type == "commit":
+                      if target_sha != sha:
+                          fail(
+                              loc,
+                              f"release tag {tag!r} peels to {target_sha}, not recorded commit {sha}",
+                          )
+                          return
+                      validated_release_tags.append(f"{loc}: {tag} -> {sha}")
+                      return
+                  if target_type != "tag" or target_sha in seen:
+                      fail(loc, f"release tag {tag!r} does not peel to a commit")
+                      return
+                  seen.add(target_sha)
+                  status, tag_object = github_get(
+                      f"/repos/{owner}/{repo}/git/tags/{target_sha}"
+                  )
+                  if (
+                      status != 200
+                      or not isinstance(tag_object, dict)
+                      or not isinstance(tag_object.get("object"), dict)
+                  ):
+                      fail(loc, f"annotated release tag {tag!r} could not be peeled")
+                      return
+                  target = tag_object["object"]
 
           def parse_block_fields(body: str) -> dict[str, str]:
               fields: dict[str, str] = {}
@@ -262,10 +340,13 @@ jobs:
                       fail(loc, "verification block missing required keys")
                       continue
                   if fields.get("verification_mode") == "target-manifest":
-                      # SHA reachability against a moving HEAD is not
-                      # meaningful for target-manifest pins. They were
-                      # validated by hand at pin time.
-                      skip_tm(loc)
+                      validate_release_tag(
+                          loc,
+                          path,
+                          fields["source_repo"],
+                          fields["source_ref"],
+                          fields["source_commit"],
+                      )
                       continue
                   validate_sha(
                       loc,
@@ -280,9 +361,9 @@ jobs:
                       out.write("## sweep-sha-reachability failures\n\n")
                       for v in violations:
                           out.write(f"- `{v}`\n")
-                      if skipped_target_manifest:
-                          out.write("\n## skipped (target-manifest)\n\n")
-                          for note in skipped_target_manifest:
+                      if validated_release_tags:
+                          out.write("\n## exact release tags validated\n\n")
+                          for note in validated_release_tags:
                               out.write(f"- `{note}`\n")
               for v in violations:
                   print(v, file=sys.stderr)
@@ -291,8 +372,8 @@ jobs:
           if SUMMARY_PATH:
               with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
                   out.write("sweep-sha-reachability: all SHAs reachable.\n")
-                  if skipped_target_manifest:
-                      out.write("\n## skipped (target-manifest)\n\n")
-                      for note in skipped_target_manifest:
+                  if validated_release_tags:
+                      out.write("\n## exact release tags validated\n\n")
+                      for note in validated_release_tags:
                           out.write(f"- `{note}`\n")
           PY

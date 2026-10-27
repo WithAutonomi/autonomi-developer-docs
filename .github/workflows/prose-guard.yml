@@ -20,27 +20,27 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$HEAD_REF" == claude/prose-* ]]; then
-            echo "in_scope=true" >> "$GITHUB_OUTPUT"
+            echo "family=prose" >> "$GITHUB_OUTPUT"
             echo "In scope: head ref is $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$HEAD_REF" == claude/sweep-* ]]; then
+            echo "family=sweep" >> "$GITHUB_OUTPUT"
+            echo "Protected-change scan only; sweep-guard owns $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "in_scope=false" >> "$GITHUB_OUTPUT"
-            echo "Out of scope (head ref is not claude/prose-): $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
+            echo "family=other" >> "$GITHUB_OUTPUT"
+            echo "Protected-change scan: $HEAD_REF" >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Checkout PR head
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        if: steps.scope.outputs.in_scope == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Validate prose envelope
-        if: steps.scope.outputs.in_scope == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -116,6 +116,66 @@ jobs:
                   changes.append((status, tokens[i + 1]))
                   i += 2
 
+          changed_paths = sorted({path for _status, path in changes})
+          manifest_changed = "target-manifest.yml" in changed_paths
+
+          def block_body_is_target_manifest(body: str) -> bool:
+              for raw in body.splitlines():
+                  match = BLOCK_KEY_VALUE_RE.match(raw.strip())
+                  if match and match.group(1) == "verification_mode":
+                      return match.group(2) == "target-manifest"
+              return False
+
+          def target_manifest_block_bodies(text: str) -> list[str]:
+              out: list[str] = []
+              for match in VERIFICATION_BLOCK_RE.finditer(text):
+                  body = match.group(1)
+                  if block_body_is_target_manifest(body):
+                      out.append(body)
+              return out
+
+          if not HEAD_REF.startswith(("claude/sweep-", "claude/prose-")):
+              protected = []
+              for path in changed_paths:
+                  if (
+                      path in {"target-manifest.yml", "repo-registry.yml"}
+                      or path.startswith(SWEEPS_PREFIX)
+                  ):
+                      protected.append(path)
+                      continue
+                  if path.startswith(DOCS_PREFIX) and path.endswith(".md"):
+                      base_tm = sorted(target_manifest_block_bodies(show(BASE, path) or ""))
+                      head_tm = sorted(target_manifest_block_bodies(show(HEAD, path) or ""))
+                      if base_tm != head_tm:
+                          protected.append(path)
+              if protected:
+                  fail(
+                      HEAD_REF,
+                      "release-sensitive changes are branch-protected; use "
+                      "claude/sweep-* for metadata-only promotion or "
+                      "claude/prose-* when rendered documentation changes "
+                      f"(protected paths: {', '.join(sorted(protected))})",
+                  )
+              if violations:
+                  if SUMMARY_PATH:
+                      with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                          out.write("## prose-guard failures\n\n")
+                          for v in violations:
+                              out.write(f"- `{v}`\n")
+                  for v in violations:
+                      print(v, file=sys.stderr)
+                  sys.exit(1)
+              if SUMMARY_PATH:
+                  with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                      out.write("prose-guard: protected-change scan clean.\n")
+              sys.exit(0)
+
+          if HEAD_REF.startswith("claude/sweep-"):
+              if SUMMARY_PATH:
+                  with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
+                      out.write("prose-guard: sweep branch delegated after protected-change scan.\n")
+              sys.exit(0)
+
           branch_match = BRANCH_DATE_RE.match(HEAD_REF)
           if not branch_match:
               fail(
@@ -127,8 +187,6 @@ jobs:
           expected_sweep_path = (
               f"planning/sweeps/{branch_date}.md" if branch_date else None
           )
-
-          changed_paths = sorted({path for _status, path in changes})
 
           # Positive path allowlist: every changed path must match one of
           # docs/**/*.md or planning/sweeps/<branch-date>.md.
@@ -152,32 +210,14 @@ jobs:
               elif path.startswith(SWEEPS_PREFIX):
                   # Sweep summary path validated below; just permit here.
                   allowed = True
+              elif path == "target-manifest.yml" and manifest_changed:
+                  allowed = True
               if not allowed:
                   fail(path, "path outside the prose envelope")
 
-          def block_body_is_target_manifest(body: str) -> bool:
-              for raw in body.splitlines():
-                  match = BLOCK_KEY_VALUE_RE.match(raw.strip())
-                  if match and match.group(1) == "verification_mode":
-                      return match.group(2) == "target-manifest"
-              return False
-
-          def target_manifest_block_bodies(text: str) -> list[str]:
-              # Each entry is the literal byte content between the opening
-              # "<!-- verification:" and the closing "-->" (group 1 of the
-              # regex). Multiset comparison on this raw form catches any
-              # byte-level edit, including comments and future fields.
-              out: list[str] = []
-              for match in VERIFICATION_BLOCK_RE.finditer(text):
-                  body = match.group(1)
-                  if block_body_is_target_manifest(body):
-                      out.append(body)
-              return out
-
-          # Target-manifest docs blocks must be unchanged. Multiset of
-          # block bodies on each side must match. Any byte-level diff inside
-          # a target-manifest block, any flip of verification_mode, or any
-          # add/remove of a target-manifest block fails closed.
+          # Target-manifest block changes require a manifest change here;
+          # the strict validator step then proves exact entry/page/record
+          # correspondence and byte-preservation of every unrelated pin.
           for path in changed_paths:
               if not (path.startswith(DOCS_PREFIX) and path.endswith(".md")):
                   continue
@@ -186,11 +226,12 @@ jobs:
               base_tm = sorted(target_manifest_block_bodies(base_text))
               head_tm = sorted(target_manifest_block_bodies(head_text))
               if base_tm != head_tm:
-                  fail(
-                      path,
-                      "target-manifest verification block changed; "
-                      "manual override required",
-                  )
+                  if not manifest_changed:
+                      fail(
+                          path,
+                          "target-manifest verification block changed without "
+                          "an atomic target-manifest.yml promotion",
+                      )
 
           # Sweep summary file: optional, but if present must be ADDED
           # (not modified), and must match the branch date.
@@ -217,6 +258,14 @@ jobs:
                           f"expected {expected_sweep_path}",
                       )
 
+          if manifest_changed:
+              status = status_by_path.get("target-manifest.yml")
+              if status != "M":
+                  fail(
+                      "target-manifest.yml",
+                      f"target manifest must be modified (M), got {status or '?'}",
+                  )
+
           if violations:
               if SUMMARY_PATH:
                   with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
@@ -231,3 +280,18 @@ jobs:
               with open(SUMMARY_PATH, "a", encoding="utf-8") as out:
                   out.write("prose-guard: clean envelope.\n")
           PY
+
+      - name: Install strict validator dependency
+        if: steps.scope.outputs.family == 'prose'
+        run: pip install 'PyYAML>=6,<7'
+
+      - name: Validate atomic release promotion
+        if: steps.scope.outputs.family == 'prose'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          python3 -I scripts/validate_release_baselines.py \
+            --base-ref "$BASE_SHA" --head-ref "$HEAD_SHA" --branch "$HEAD_REF"
