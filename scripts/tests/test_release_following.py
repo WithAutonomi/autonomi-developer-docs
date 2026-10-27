@@ -413,6 +413,25 @@ class ReleaseBaselineValidatorTest(FixtureRepo):
                 ):
                     self.validate(manifest)
 
+    def test_shipped_dependency_evidence_requires_exact_github_host(self) -> None:
+        broken = valid_entry(self.root)
+        broken["shipped_dependencies"]["ant-core"]["evidence_url"] = (
+            f"https://example.com/WithAutonomi/ant-client/blob/{COMMIT}/ant-core/Cargo.toml"
+        )
+        manifest = {
+            "scope": {},
+            "sources": {},
+            "release_baselines": {
+                "schema_version": 1,
+                "entries": {"ant-cli/stable": broken},
+            },
+        }
+        with self.assertRaisesRegex(
+            validator.ValidationError,
+            r"evidence_url: must identify the immutable source commit",
+        ):
+            self.validate(manifest)
+
     def test_promoted_blocks_require_exact_five_field_schema(self) -> None:
         entry = valid_entry(self.root)
         manifest = {

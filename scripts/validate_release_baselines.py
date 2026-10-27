@@ -187,7 +187,8 @@ def _immutable_github_source_url(
     parts = parsed.path.strip("/").split("/")
     expected = [owner, repo, "blob", commit]
     if (
-        parsed.params
+        parsed.netloc != "github.com"
+        or parsed.params
         or parsed.query
         or len(parts) < 5
         or parts[:4] != expected
