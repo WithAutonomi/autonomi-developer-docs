@@ -1022,6 +1022,7 @@ def _validate_browser_git_promotion(
             )
         if base_own[0][1].get("verified_date") == branch_date:
             raise ValidationError(f"{page}: Browser SDK verified_date did not advance")
+        # Freeze non-Browser blocks until their separate migration debt is resolved.
         base_other = sorted(
             raw for raw, fields in base_all if fields.get("source_repo") != "ant-browser-sdk"
         )

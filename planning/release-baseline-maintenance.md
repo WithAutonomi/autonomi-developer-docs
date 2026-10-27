@@ -34,7 +34,7 @@ CI runs the same validator and the branch-specific prose, sweep and SHA-reachabi
 
 ## Manual pin and automated adapter
 
-The Browser SDK is the manual example. Its existing `scope.pages` contains six mapped pages, and `sources.ant-browser-sdk` records the release, npm package and shipped WebAssembly (WASM) evidence. A promotion advances that source record and all six blocks without adding a `release_baselines` entry. The package remains `experimental`; a version change cannot alter that classification.
+The Browser SDK is the manual example. Its existing `scope.pages` contains six mapped pages, and `sources.ant-browser-sdk` records the release, npm package and shipped WebAssembly (WASM) evidence. A promotion may change only that source record, its six mapped blocks, rendered prose on those pages when needed, and one dated record; all non-Browser verification blocks remain unchanged as migration debt. The package remains `experimental`; a version change cannot alter that classification.
 
 The CLI is the automated-adapter example. `scripts/sweep_poll.py` uses the `ant-cli` release-discovery configuration to prepare evidence for a version-1 `release_baselines.entries.ant-cli/stable` record. That larger record captures GitHub assets, npm platform packages, installers and shipped `ant-core` evidence. Discovery prepares a candidate; it does not approve or merge a promotion.
 
