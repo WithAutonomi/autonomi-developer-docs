@@ -25,8 +25,12 @@ REPO_REGISTRY_PATH = REPO_ROOT / "repo-registry.yml"
 
 SEMVER_RE = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
+DIGEST_HEX_RE = re.compile(r"[0-9a-f]{64}\Z")
 DIGEST_RE = re.compile(r"sha256:[0-9a-f]{64}\Z")
 PROMOTION_RE = re.compile(r"planning/sweeps/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md\Z")
+PROMOTION_BRANCH_RE = re.compile(
+    r"claude/(sweep|prose)-([0-9]{4}-[0-9]{2}-[0-9]{2})(?:-[a-z0-9][a-z0-9-]*)?\Z"
+)
 PLACEHOLDER_RE = re.compile(r"(?:<[^>]+>|\b(?:TBD|TODO|PLACEHOLDER)\b)", re.IGNORECASE)
 GITHUB_RELEASE_TIMESTAMP_RE = re.compile(
     r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z\Z"
@@ -259,6 +263,121 @@ def _validate_npm_package(
         raise ValidationError(f"{where}.git_head: does not match source commit")
 
 
+def _browser_source(
+    manifest: Any,
+    components: dict[str, Any],
+    repos: dict[str, Any],
+    where: str = "target-manifest.yml",
+) -> tuple[dict[str, Any], list[str]] | None:
+    """Validate the fixed manual Browser SDK source profile, when present."""
+    top = _map(manifest, where)
+    sources = _map(top.get("sources"), f"{where}.sources")
+    if "ant-browser-sdk" not in sources:
+        return None
+
+    component = _map(
+        components.get("ant-browser-sdk"), "components.ant-browser-sdk"
+    )
+    if component.get("repo") != "ant-browser-sdk":
+        raise ValidationError(
+            "components.ant-browser-sdk.repo: expected 'ant-browser-sdk'"
+        )
+    mapped = component.get("feeds_pages")
+    if not isinstance(mapped, list) or len(mapped) != 6:
+        raise ValidationError(
+            "components.ant-browser-sdk.feeds_pages: expected exactly six pages"
+        )
+    expected_pages = [
+        f"docs/{_string(page, 'components.ant-browser-sdk.feeds_pages')}"
+        for page in mapped
+    ]
+    if len(set(expected_pages)) != 6:
+        raise ValidationError(
+            "components.ant-browser-sdk.feeds_pages: expected six unique pages"
+        )
+
+    scope = _exact_keys(top.get("scope"), f"{where}.scope", {"pages"})
+    pages = scope["pages"]
+    if pages != expected_pages:
+        raise ValidationError(
+            f"{where}.scope.pages: must name exactly the six mapped Browser SDK pages"
+        )
+
+    source_where = f"{where}.sources.ant-browser-sdk"
+    source = _exact_keys(
+        sources["ant-browser-sdk"],
+        source_where,
+        {
+            "source_ref",
+            "source_commit",
+            "release_url",
+            "support_status",
+            "package",
+            "shipped_wasm",
+        },
+    )
+    version = _string(
+        _map(source["package"], f"{source_where}.package").get("version"),
+        f"{source_where}.package.version",
+        SEMVER_RE,
+    )
+    tag = _string(source["source_ref"], f"{source_where}.source_ref")
+    if tag != f"v{version}":
+        raise ValidationError(
+            f"{source_where}.source_ref: must be v followed by the package version"
+        )
+    commit = _string(
+        source["source_commit"], f"{source_where}.source_commit", COMMIT_RE
+    )
+
+    repo_config = _map(repos.get("ant-browser-sdk"), "repos.ant-browser-sdk")
+    owner, repo = _repo_coordinates(repo_config, "repos.ant-browser-sdk")
+    _url(
+        source["release_url"],
+        f"{source_where}.release_url",
+        f"https://github.com/{owner}/{repo}/releases/tag/{tag}",
+    )
+    _literal(
+        source["support_status"], "experimental", f"{source_where}.support_status"
+    )
+
+    package_where = f"{source_where}.package"
+    package = _exact_keys(
+        source["package"],
+        package_where,
+        {"name", "version", "metadata_url", "integrity"},
+    )
+    _literal(
+        package["name"],
+        "@withautonomi/ant-browser-sdk",
+        f"{package_where}.name",
+    )
+    if package["version"] != version:
+        raise ValidationError(f"{package_where}.version: does not match release tag")
+    _url(
+        package["metadata_url"],
+        f"{package_where}.metadata_url",
+        f"https://registry.npmjs.org/@withautonomi/ant-browser-sdk/{version}",
+    )
+    _integrity(package["integrity"], f"{package_where}.integrity")
+
+    wasm_where = f"{source_where}.shipped_wasm"
+    wasm = _exact_keys(
+        source["shipped_wasm"],
+        wasm_where,
+        {"source_repo", "source_commit", "sha256", "evidence_url"},
+    )
+    _literal(wasm["source_repo"], "ant-client", f"{wasm_where}.source_repo")
+    _string(wasm["source_commit"], f"{wasm_where}.source_commit", COMMIT_RE)
+    _string(wasm["sha256"], f"{wasm_where}.sha256", DIGEST_HEX_RE)
+    _url(
+        wasm["evidence_url"],
+        f"{wasm_where}.evidence_url",
+        f"https://github.com/{owner}/{repo}/blob/{commit}/src/wasm/source.json",
+    )
+    return source, expected_pages
+
+
 def validate_manifest_data(
     manifest: Any,
     components_data: Any,
@@ -266,12 +385,12 @@ def validate_manifest_data(
     repo_root: Path,
 ) -> None:
     top = _exact_keys(manifest, "target-manifest.yml", {"scope", "sources"}, {"release_baselines"})
-    # Version 1 deliberately leaves the existing browser-only trees opaque.
+    components = _map(_map(components_data, "component-registry.yml").get("components"), "components")
+    repos = _map(_map(repos_data, "repo-registry.yml").get("repos"), "repos")
+    _browser_source(top, components, repos)
     if "release_baselines" not in top:
         return
 
-    components = _map(_map(components_data, "component-registry.yml").get("components"), "components")
-    repos = _map(_map(repos_data, "repo-registry.yml").get("repos"), "repos")
     release = _exact_keys(top["release_baselines"], "release_baselines", {"schema_version", "entries"})
     _literal(release["schema_version"], 1, "release_baselines.schema_version")
     entries = _map(release["entries"], "release_baselines.entries")
@@ -496,6 +615,60 @@ def _verification_blocks(text: bytes, where: str) -> list[tuple[bytes, dict[str,
 def validate_manifest_page_blocks(manifest: Any, repo_root: Path) -> None:
     """Require every release entry to have one exact block on each scoped page."""
     top = _map(manifest, "target-manifest.yml")
+    sources = _map(top.get("sources"), "sources")
+    browser = sources.get("ant-browser-sdk")
+    if browser is not None:
+        browser_map = _map(browser, "sources.ant-browser-sdk")
+        scope = _map(top.get("scope"), "scope")
+        for page in scope.get("pages", []):
+            page_path = repo_root / page
+            try:
+                text = page_path.read_bytes()
+            except OSError as exc:
+                raise ValidationError(
+                    f"{page}: cannot read scoped page: {exc}"
+                ) from exc
+            matches = [
+                fields
+                for _raw, fields in _verification_blocks(text, page)
+                if fields.get("source_repo") == "ant-browser-sdk"
+            ]
+            if len(matches) != 1:
+                raise ValidationError(
+                    f"{page}: expected exactly one 'ant-browser-sdk' verification block"
+                )
+            fields = matches[0]
+            required_fields = {
+                "source_repo",
+                "source_ref",
+                "source_commit",
+                "verified_date",
+                "verification_mode",
+            }
+            missing = sorted(required_fields - fields.keys())
+            unknown = sorted(fields.keys() - required_fields)
+            if missing:
+                raise ValidationError(
+                    f"{page}: target-manifest verification block missing fields: "
+                    + ", ".join(missing)
+                )
+            if unknown:
+                raise ValidationError(
+                    f"{page}: target-manifest verification block has unknown fields: "
+                    + ", ".join(unknown)
+                )
+            expected = {
+                "source_repo": "ant-browser-sdk",
+                "source_ref": browser_map.get("source_ref"),
+                "source_commit": browser_map.get("source_commit"),
+                "verification_mode": "target-manifest",
+            }
+            for key, value in expected.items():
+                if fields.get(key) != value:
+                    raise ValidationError(
+                        f"{page}: {key} does not match manual Browser SDK source"
+                    )
+
     release = top.get("release_baselines")
     if release is None:
         return
@@ -611,6 +784,61 @@ def _top_level_section(text: bytes, key: str) -> bytes:
     return b"".join(lines[start:end])
 
 
+def _optional_top_level_section(text: bytes, key: str) -> bytes | None:
+    try:
+        return _top_level_section(text, key)
+    except ValidationError:
+        return None
+
+
+def _without_mapping_child(text: bytes, parent: str, child: str) -> bytes:
+    """Replace one two-space-indented YAML child while preserving all other bytes."""
+    lines = text.splitlines(keepends=True)
+    parent_start = None
+    for index, line in enumerate(lines):
+        if line.startswith(f"{parent}:".encode("ascii")):
+            parent_start = index
+            break
+    if parent_start is None:
+        raise ValidationError(f"target-manifest.yml: missing top-level {parent!r}")
+    child_start = None
+    for index in range(parent_start + 1, len(lines)):
+        line = lines[index]
+        if TOP_LEVEL_KEY_RE.match(line):
+            break
+        if line.startswith(f"  {child}:".encode("utf-8")):
+            child_start = index
+            break
+    if child_start is None:
+        raise ValidationError(f"target-manifest.yml.{parent}: missing {child!r}")
+    child_end = len(lines)
+    for index in range(child_start + 1, len(lines)):
+        line = lines[index]
+        if line.strip() and (
+            TOP_LEVEL_KEY_RE.match(line)
+            or (line.startswith(b"  ") and not line.startswith(b"    "))
+            or not line.startswith((b" ", b"\t"))
+        ):
+            child_end = index
+            break
+    while child_end > child_start + 1 and not lines[child_end - 1].strip():
+        child_end -= 1
+    return (
+        b"".join(lines[:child_start])
+        + b"  __MANUAL_BROWSER_SOURCE__: true\n"
+        + b"".join(lines[child_end:])
+    )
+
+
+def _semver_tuple(value: str) -> tuple[int, int, int]:
+    major, minor, patch = value.split(".")
+    return int(major), int(minor), int(patch)
+
+
+def _rendered_body(text: bytes | None) -> bytes:
+    return VERIFICATION_BLOCK_RE.sub(b"", text or b"")
+
+
 def _release_entries(manifest: Any) -> dict[str, Any]:
     if not isinstance(manifest, dict):
         return {}
@@ -630,6 +858,189 @@ def _target_blocks(text: bytes | None, where: str) -> list[tuple[bytes, dict[str
         for raw, fields in _verification_blocks(text, where)
         if fields.get("verification_mode") == "target-manifest"
     ]
+
+
+def _validate_browser_git_promotion(
+    *,
+    base_ref: str,
+    head_ref: str,
+    base_manifest_text: bytes,
+    head_manifest_text: bytes,
+    base_manifest: Any,
+    head_manifest: Any,
+    changes: dict[str, str],
+    changed_target_paths: set[str],
+    branch: str,
+    repo_root: Path,
+) -> dict[str, Any]:
+    branch_match = PROMOTION_BRANCH_RE.fullmatch(branch)
+    if branch_match is None:
+        raise ValidationError(
+            "manual Browser SDK promotion requires claude/sweep-YYYY-MM-DD-* "
+            "or claude/prose-YYYY-MM-DD-*"
+        )
+    family, branch_date = branch_match.groups()
+    try:
+        datetime.strptime(branch_date, "%Y-%m-%d")
+    except ValueError as exc:
+        raise ValidationError(
+            "manual Browser SDK promotion branch has an invalid date"
+        ) from exc
+
+    components_data = load_yaml_strict(repo_root / "component-registry.yml")
+    repos_data = load_yaml_strict(repo_root / "repo-registry.yml")
+    components = _map(
+        _map(components_data, "component-registry.yml").get("components"),
+        "components",
+    )
+    repos = _map(_map(repos_data, "repo-registry.yml").get("repos"), "repos")
+    base_profile = _browser_source(
+        base_manifest, components, repos, "base target-manifest.yml"
+    )
+    head_profile = _browser_source(
+        head_manifest, components, repos, "head target-manifest.yml"
+    )
+    if base_profile is None or head_profile is None:
+        raise ValidationError(
+            "manual Browser SDK promotion requires the existing ant-browser-sdk source"
+        )
+    base_source, base_pages = base_profile
+    head_source, expected_pages_list = head_profile
+    if base_pages != expected_pages_list:
+        raise ValidationError("manual Browser SDK promotion cannot change scoped pages")
+    expected_pages = set(expected_pages_list)
+
+    if _top_level_section(base_manifest_text, "scope") != _top_level_section(
+        head_manifest_text, "scope"
+    ):
+        raise ValidationError(
+            "target-manifest.yml scope must remain byte-identical during a "
+            "manual Browser SDK promotion"
+        )
+    if _optional_top_level_section(
+        base_manifest_text, "release_baselines"
+    ) != _optional_top_level_section(head_manifest_text, "release_baselines"):
+        raise ValidationError(
+            "release_baselines must remain byte-identical during a manual Browser SDK promotion"
+        )
+    if _without_mapping_child(
+        base_manifest_text, "sources", "ant-browser-sdk"
+    ) != _without_mapping_child(head_manifest_text, "sources", "ant-browser-sdk"):
+        raise ValidationError(
+            "only sources.ant-browser-sdk may change during a manual Browser SDK promotion"
+        )
+
+    base_version = _string(
+        _map(base_source["package"], "base sources.ant-browser-sdk.package")["version"],
+        "base sources.ant-browser-sdk.package.version",
+        SEMVER_RE,
+    )
+    head_version = _string(
+        _map(head_source["package"], "head sources.ant-browser-sdk.package")["version"],
+        "head sources.ant-browser-sdk.package.version",
+        SEMVER_RE,
+    )
+    if _semver_tuple(head_version) <= _semver_tuple(base_version):
+        raise ValidationError(
+            "manual Browser SDK promotion version must be greater than the reviewed source"
+        )
+
+    if changed_target_paths != expected_pages:
+        raise ValidationError(
+            "changed Browser SDK target-manifest block paths must exactly equal the six scoped pages"
+        )
+    expected_record = f"planning/sweeps/{branch_date}.md"
+    changed_records = {
+        path for path in changes if path.startswith("planning/sweeps/")
+    }
+    if changed_records != {expected_record}:
+        raise ValidationError(
+            "manual Browser SDK promotion must add exactly one dated promotion record matching the branch"
+        )
+    if changes.get(expected_record) != "A":
+        raise ValidationError(f"{expected_record}: promotion record must be newly added")
+
+    rendered_changed = False
+    for path in changes:
+        if not (path.startswith("docs/") and path.endswith(".md")):
+            continue
+        base_text = _git_bytes(base_ref, path)
+        head_text = _git_bytes(head_ref, path)
+        if _rendered_body(base_text) != _rendered_body(head_text):
+            rendered_changed = True
+        base_blocks = _verification_blocks(base_text or b"", path)
+        head_blocks = _verification_blocks(head_text or b"", path)
+        if path not in expected_pages and sorted(
+            raw for raw, _ in base_blocks
+        ) != sorted(raw for raw, _ in head_blocks):
+            raise ValidationError(f"{path}: unrelated verification block changed")
+
+    if rendered_changed and family != "prose":
+        raise ValidationError(
+            "rendered documentation changes require a claude/prose-YYYY-MM-DD-* branch"
+        )
+    if not rendered_changed and family != "sweep":
+        raise ValidationError(
+            "metadata-only Browser SDK promotions require a claude/sweep-YYYY-MM-DD-* branch"
+        )
+
+    for page in sorted(expected_pages):
+        base_all = _verification_blocks(
+            _git_bytes(base_ref, page) or b"", page
+        )
+        head_all = _verification_blocks(
+            _git_bytes(head_ref, page) or b"", page
+        )
+        base_own = [
+            (raw, fields)
+            for raw, fields in base_all
+            if fields.get("source_repo") == "ant-browser-sdk"
+        ]
+        head_own = [
+            (raw, fields)
+            for raw, fields in head_all
+            if fields.get("source_repo") == "ant-browser-sdk"
+        ]
+        if (
+            len(base_own) != 1
+            or len(head_own) != 1
+            or base_own[0][0] == head_own[0][0]
+        ):
+            raise ValidationError(
+                f"{page}: Browser SDK source block must advance exactly once"
+            )
+        expected_fields = {
+            "source_repo": "ant-browser-sdk",
+            "source_ref": head_source["source_ref"],
+            "source_commit": head_source["source_commit"],
+            "verified_date": branch_date,
+            "verification_mode": "target-manifest",
+        }
+        if head_own[0][1] != expected_fields:
+            raise ValidationError(
+                f"{page}: Browser SDK block must match the promoted tag, commit, date, and exact schema"
+            )
+        if base_own[0][1].get("verified_date") == branch_date:
+            raise ValidationError(f"{page}: Browser SDK verified_date did not advance")
+        # Freeze non-Browser blocks until their separate migration debt is resolved.
+        base_other = sorted(
+            raw for raw, fields in base_all if fields.get("source_repo") != "ant-browser-sdk"
+        )
+        head_other = sorted(
+            raw for raw, fields in head_all if fields.get("source_repo") != "ant-browser-sdk"
+        )
+        if base_other != head_other:
+            raise ValidationError(f"{page}: unrelated verification block changed")
+
+    validate_manifest_data(head_manifest, components_data, repos_data, repo_root)
+    validate_manifest_page_blocks(head_manifest, repo_root)
+    return {
+        "promoted": True,
+        "route": "manual-browser-source",
+        "entries": ["sources.ant-browser-sdk"],
+        "pages": sorted(expected_pages),
+        "records": [expected_record],
+    }
 
 
 def validate_git_promotion(
@@ -653,6 +1064,17 @@ def validate_git_promotion(
     head_manifest = load_yaml_strict_text(head_manifest_text, "head target-manifest.yml")
     base_entries = _release_entries(base_manifest)
     head_entries = _release_entries(head_manifest)
+    base_sources = _map(
+        _map(base_manifest, "base target-manifest.yml").get("sources"),
+        "base sources",
+    )
+    head_sources = _map(
+        _map(head_manifest, "head target-manifest.yml").get("sources"),
+        "head sources",
+    )
+    browser_source_changed = base_sources.get("ant-browser-sdk") != head_sources.get(
+        "ant-browser-sdk"
+    )
     record_paths = {
         entry.get("promotion", {}).get("record")
         for entry in [*base_entries.values(), *head_entries.values()]
@@ -668,7 +1090,11 @@ def validate_git_promotion(
         head_blocks = sorted(raw for raw, _fields in _target_blocks(_git_bytes(head_ref, path), path))
         if base_blocks != head_blocks:
             changed_target_paths.add(path)
-    changed_records = {path for path in changes if path in record_paths}
+    changed_records = {
+        path
+        for path in changes
+        if path in record_paths
+    }
     manifest_changed = base_manifest_text != head_manifest_text
     protected = manifest_changed or bool(changed_target_paths) or bool(changed_records)
     if not protected:
@@ -684,6 +1110,21 @@ def validate_git_promotion(
         raise ValidationError(
             "target-manifest blocks and promotion records must change atomically with target-manifest.yml"
         )
+
+    if browser_source_changed:
+        return _validate_browser_git_promotion(
+            base_ref=base_ref,
+            head_ref=head_ref,
+            base_manifest_text=base_manifest_text,
+            head_manifest_text=head_manifest_text,
+            base_manifest=base_manifest,
+            head_manifest=head_manifest,
+            changes=changes,
+            changed_target_paths=changed_target_paths,
+            branch=branch,
+            repo_root=repo_root,
+        )
+
     if _top_level_section(base_manifest_text, "scope") != _top_level_section(
         head_manifest_text, "scope"
     ):
@@ -909,8 +1350,13 @@ def main() -> int:
         print(f"release baseline validation failed: {exc}", file=sys.stderr)
         return 1
     if promotion and promotion["promoted"]:
+        route = (
+            " (manual Browser SDK source)"
+            if promotion.get("route") == "manual-browser-source"
+            else ""
+        )
         print(
-            "release baseline validation passed: atomic promotion for "
+            f"release baseline validation passed: atomic promotion{route} for "
             + ", ".join(promotion["entries"])
         )
     else:

@@ -134,7 +134,7 @@ jobs:
 
           REGISTRY = load_registry()
 
-          def load_release_entries() -> dict:
+          def load_promotion_sources() -> tuple[dict, dict | None, set[str]]:
               text = show(HEAD, MANIFEST_PATH) or ""
               try:
                   data = yaml.safe_load(text) or {}
@@ -145,10 +145,20 @@ jobs:
               entries = release.get("entries") or {} if isinstance(release, dict) else {}
               if not isinstance(entries, dict):
                   fail(MANIFEST_PATH, "release_baselines.entries must be a map")
-                  return {}
-              return entries
+                  entries = {}
+              sources = data.get("sources") or {}
+              scope = data.get("scope") or {}
+              manual = sources.get("ant-browser-sdk") if isinstance(sources, dict) else None
+              pages = scope.get("pages") or [] if isinstance(scope, dict) else []
+              if manual is not None and not isinstance(manual, dict):
+                  fail(MANIFEST_PATH, "sources.ant-browser-sdk must be a map")
+                  manual = None
+              if not isinstance(pages, list) or any(not isinstance(page, str) for page in pages):
+                  fail(MANIFEST_PATH, "scope.pages must be a string list")
+                  pages = []
+              return entries, manual, set(pages)
 
-          RELEASE_ENTRIES = load_release_entries()
+          RELEASE_ENTRIES, MANUAL_BROWSER_SOURCE, MANUAL_BROWSER_PAGES = load_promotion_sources()
 
           def validate_sha(
               loc: str, repo_key: str, ref: str, sha: str
@@ -212,11 +222,21 @@ jobs:
                       and source.get("commit") == sha
                   ):
                       matches.append(entry_key)
+              manual_matches = []
+              if (
+                  isinstance(MANUAL_BROWSER_SOURCE, dict)
+                  and path in MANUAL_BROWSER_PAGES
+                  and repo_key == "ant-browser-sdk"
+                  and MANUAL_BROWSER_SOURCE.get("source_ref") == tag
+                  and MANUAL_BROWSER_SOURCE.get("source_commit") == sha
+              ):
+                  manual_matches.append("sources.ant-browser-sdk")
+              matches.extend(manual_matches)
               if len(matches) != 1:
                   fail(
                       loc,
                       "changed target-manifest block must correspond to exactly "
-                      "one release baseline entry",
+                      "one release baseline entry or reviewed manual source",
                   )
                   return
               entry = REGISTRY.get(repo_key)

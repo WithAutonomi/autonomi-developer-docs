@@ -7,7 +7,9 @@ No network or project commits are used.
 
 from __future__ import annotations
 
+import base64
 import contextlib
+import copy
 import io
 import json
 import os
@@ -40,6 +42,66 @@ sources:
   browser:
     source_ref: v1
     source_commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+"""
+BROWSER_PAGES = [
+    "docs/sdk/build-in-browser.md",
+    "docs/sdk/how-to-guides/retrieve-data-in-browser.md",
+    "docs/sdk/install.md",
+    "docs/sdk/how-to-guides/README.md",
+    "docs/sdk/reference/overview.md",
+    "docs/sdk/reference/README.md",
+]
+BROWSER_OLD_COMMIT = "1" * 40
+BROWSER_NEW_COMMIT = "2" * 40
+BROWSER_INTEGRITY = "sha512-" + base64.b64encode(b"b" * 64).decode("ascii")
+
+
+def browser_source(version: str, commit: str) -> dict:
+    return {
+        "source_ref": f"v{version}",
+        "source_commit": commit,
+        "release_url": f"https://github.com/WithAutonomi/ant-browser-sdk/releases/tag/v{version}",
+        "support_status": "experimental",
+        "package": {
+            "name": "@withautonomi/ant-browser-sdk",
+            "version": version,
+            "metadata_url": f"https://registry.npmjs.org/@withautonomi/ant-browser-sdk/{version}",
+            "integrity": BROWSER_INTEGRITY,
+        },
+        "shipped_wasm": {
+            "source_repo": "ant-client",
+            "source_commit": "3" * 40,
+            "sha256": "4" * 64,
+            "evidence_url": (
+                "https://github.com/WithAutonomi/ant-browser-sdk/blob/"
+                f"{commit}/src/wasm/source.json"
+            ),
+        },
+    }
+
+
+def browser_manifest(
+    source: dict, *, extra_sources=None, release_baselines=None, pages=None
+) -> str:
+    data = {
+        "scope": {
+            "pages": list(BROWSER_PAGES) if pages is None else pages
+        },
+        "sources": {"ant-browser-sdk": source, **(extra_sources or {})},
+    }
+    if release_baselines is not None:
+        data["release_baselines"] = release_baselines
+    return yaml.safe_dump(data, sort_keys=False)
+
+
+def browser_block(version: str, commit: str, date: str) -> str:
+    return f"""<!-- verification:
+  source_repo: ant-browser-sdk
+  source_ref: v{version}
+  source_commit: {commit}
+  verified_date: {date}
+  verification_mode: target-manifest
+-->
 """
 DOC = f"""# Store data
 
@@ -237,6 +299,78 @@ class DocGuardTest(unittest.TestCase):
         self.history(changes, base_extra=base_extra, legacy=False, summary=record)
         return entry
 
+    def browser_promotion_history(
+        self,
+        *,
+        prose=False,
+        head_source=None,
+        head_pages=None,
+        manifest_override=None,
+        page_overrides=None,
+        record=True,
+        extra_changes=None,
+        base_release_baselines=None,
+        head_release_baselines=None,
+    ) -> None:
+        old_source = browser_source("0.1.2", BROWSER_OLD_COMMIT)
+        new_source = copy.deepcopy(
+            head_source or browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        )
+        browser_components = {
+            "components": {
+                "ant-browser-sdk": {
+                    "repo": "ant-browser-sdk",
+                    "kind": "npm-package",
+                    "path": "src/",
+                    "topics": ["browser-sdk"],
+                    "feeds_pages": [page.removeprefix("docs/") for page in BROWSER_PAGES],
+                }
+            }
+        }
+        browser_repos = {
+            "repos": {
+                "ant-browser-sdk": {
+                    "class": "specialist",
+                    "url": "https://github.com/WithAutonomi/ant-browser-sdk",
+                }
+            }
+        }
+        old_block = browser_block("0.1.2", BROWSER_OLD_COMMIT, "2026-09-21")
+        new_block = f"""<!-- verification:
+  source_repo: ant-browser-sdk
+  source_ref: {new_source.get('source_ref')}
+  source_commit: {new_source.get('source_commit')}
+  verified_date: 2026-09-22
+  verification_mode: target-manifest
+-->
+"""
+        base_page = old_block + "\n" + PINNED
+        head_page = new_block + "\n" + PINNED
+        base_extra = {
+            "target-manifest.yml": browser_manifest(
+                old_source, release_baselines=base_release_baselines
+            ),
+            "component-registry.yml": yaml.safe_dump(
+                browser_components, sort_keys=False
+            ),
+            "repo-registry.yml": yaml.safe_dump(browser_repos, sort_keys=False),
+            **{page: base_page for page in BROWSER_PAGES},
+        }
+        changes = {
+            "target-manifest.yml": manifest_override
+            or browser_manifest(
+                new_source,
+                pages=head_pages,
+                release_baselines=head_release_baselines,
+            ),
+            **{page: head_page for page in BROWSER_PAGES},
+        }
+        if prose:
+            changes[BROWSER_PAGES[0]] += "\nRendered Browser SDK release guidance.\n"
+        changes.update(page_overrides or {})
+        changes.update(extra_changes or {})
+        self.history(changes, base_extra=base_extra, legacy=False, summary=record)
+
     def assert_envelopes(self, sweep: bool, prose: bool, *, suffix="2026-09-22",
                          compare=True, diagnostic="") -> None:
         for name, accepted in zip(GUARDS[:2], (sweep, prose)):
@@ -268,6 +402,7 @@ class DocGuardTest(unittest.TestCase):
                     self.assertIn("import yaml", code)
                     self.assertIn("import json", code)
                     self.assertIn("validate_release_tag", code)
+                    self.assertIn("MANUAL_BROWSER_SOURCE", code)
                     self.assertIn("show(BASE, REGISTRY_PATH)", code)
                     self.assertNotIn("show(HEAD, REGISTRY_PATH)", code)
                     self.assertNotIn("skipped (target-manifest pin)", code)
@@ -376,6 +511,156 @@ class DocGuardTest(unittest.TestCase):
         self.assertEqual(prose.returncode, 0, prose.stderr)
         self.assertEqual(strict.returncode, 0, strict.stderr)
 
+    def test_valid_manual_browser_metadata_and_prose_promotions(self) -> None:
+        self.browser_promotion_history()
+        sweep, _ = self.run_guard("sweep-guard")
+        prose_delegate, _ = self.run_guard(
+            "prose-guard", branch="claude/sweep-2026-09-22-browser"
+        )
+        strict = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(sweep.returncode, 0, sweep.stderr)
+        self.assertEqual(prose_delegate.returncode, 0, prose_delegate.stderr)
+        self.assertEqual(strict.returncode, 0, strict.stderr)
+        self.assertIn("sources.ant-browser-sdk", strict.stdout)
+
+        self.browser_promotion_history(prose=True)
+        sweep, _ = self.run_guard("sweep-guard")
+        prose, _ = self.run_guard(
+            "prose-guard", branch="claude/prose-2026-09-22-browser"
+        )
+        strict = self.run_validator("claude/prose-2026-09-22-browser")
+        self.assertEqual(sweep.returncode, 1)
+        self.assertEqual(prose.returncode, 0, prose.stderr)
+        self.assertEqual(strict.returncode, 0, strict.stderr)
+
+    def test_manual_browser_promotion_rejects_wrong_branch_pages_and_scope(self) -> None:
+        self.browser_promotion_history()
+        result = self.run_validator("feature/browser-release")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("claude/sweep-*", result.stderr)
+
+        unchanged = (
+            browser_block("0.1.2", BROWSER_OLD_COMMIT, "2026-09-21")
+            + "\n"
+            + PINNED
+        )
+        self.browser_promotion_history(
+            page_overrides={BROWSER_PAGES[-1]: unchanged}
+        )
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("manual Browser SDK source", result.stderr)
+
+        self.browser_promotion_history(
+            extra_changes={
+                "docs/sdk/extra-browser.md": browser_block(
+                    "0.1.3", BROWSER_NEW_COMMIT, "2026-09-22"
+                )
+            }
+        )
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("exactly equal the six scoped pages", result.stderr)
+
+        self.browser_promotion_history(head_pages=BROWSER_PAGES[:-1])
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("exactly the six mapped", result.stderr)
+
+    def test_manual_browser_promotion_rejects_unrelated_manifest_mutations(self) -> None:
+        source = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        changed_other_source = browser_manifest(
+            source, extra_sources={"unrelated": {"source_ref": "main"}}
+        )
+        self.browser_promotion_history(manifest_override=changed_other_source)
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("only sources.ant-browser-sdk", result.stderr)
+
+        self.browser_promotion_history(
+            head_release_baselines={"schema_version": 1, "entries": {}}
+        )
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("release_baselines must remain byte-identical", result.stderr)
+
+    def test_manual_browser_promotion_requires_one_matching_dated_record(self) -> None:
+        self.browser_promotion_history(record=False)
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("exactly one dated promotion record", result.stderr)
+
+        self.browser_promotion_history(
+            record=False,
+            extra_changes={"planning/sweeps/2026-09-23.md": "Wrong date.\n"},
+        )
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("matching the branch", result.stderr)
+
+    def test_manual_browser_promotion_rejects_versions_and_source_evidence(self) -> None:
+        cases = []
+        non_increasing = browser_source("0.1.2", BROWSER_NEW_COMMIT)
+        cases.append((non_increasing, "greater than"))
+        mismatched = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        mismatched["package"]["version"] = "0.1.4"
+        cases.append((mismatched, "source_ref"))
+        wrong_release = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_release["release_url"] = "https://example.invalid/v0.1.3"
+        cases.append((wrong_release, "release_url"))
+        wrong_metadata = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_metadata["package"]["metadata_url"] = "https://example.invalid/0.1.3"
+        cases.append((wrong_metadata, "metadata_url"))
+        wrong_package = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_package["package"]["name"] = "@withautonomi/other"
+        cases.append((wrong_package, "package.name"))
+        wrong_integrity = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_integrity["package"]["integrity"] = "sha512-invalid"
+        cases.append((wrong_integrity, "integrity"))
+        wrong_commit = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_commit["source_commit"] = "not-a-commit"
+        cases.append((wrong_commit, "source_commit"))
+        wrong_wasm_commit = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_wasm_commit["shipped_wasm"]["source_commit"] = "bad"
+        cases.append((wrong_wasm_commit, "shipped_wasm.source_commit"))
+        wrong_wasm_repo = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_wasm_repo["shipped_wasm"]["source_repo"] = "other"
+        cases.append((wrong_wasm_repo, "shipped_wasm.source_repo"))
+        wrong_wasm_hash = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_wasm_hash["shipped_wasm"]["sha256"] = "bad"
+        cases.append((wrong_wasm_hash, "sha256"))
+        wrong_evidence = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_evidence["shipped_wasm"][
+            "evidence_url"
+        ] = "https://example.invalid/source.json"
+        cases.append((wrong_evidence, "evidence_url"))
+        wrong_status = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        wrong_status["support_status"] = "stable"
+        cases.append((wrong_status, "support_status"))
+        extra_field = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        extra_field["unexpected"] = "value"
+        cases.append((extra_field, "unknown keys"))
+        missing_package_field = browser_source("0.1.3", BROWSER_NEW_COMMIT)
+        del missing_package_field["package"]["name"]
+        cases.append((missing_package_field, "missing keys: name"))
+
+        for source, diagnostic in cases:
+            with self.subTest(diagnostic=diagnostic):
+                self.browser_promotion_history(head_source=source)
+                result = self.run_validator("claude/sweep-2026-09-22-browser")
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(diagnostic, result.stderr)
+
+    def test_manual_browser_promotion_rejects_unrelated_target_block_change(self) -> None:
+        changed_unrelated = PINNED.replace(OLD_SHA, NEW_SHA)
+        promoted = browser_block("0.1.3", BROWSER_NEW_COMMIT, "2026-09-22")
+        self.browser_promotion_history(
+            page_overrides={BROWSER_PAGES[0]: promoted + "\n" + changed_unrelated}
+        )
+        result = self.run_validator("claude/sweep-2026-09-22-browser")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("unrelated verification block changed", result.stderr)
+
     def test_release_promotion_preserves_browser_manifest_and_blocks_byte_for_byte(self) -> None:
         mutated_browser = BROWSER_MANIFEST.replace("source_ref: v1", "source_ref: v2")
         self.promotion_history(browser_manifest=mutated_browser)
@@ -477,6 +762,18 @@ class DocGuardTest(unittest.TestCase):
                 result, summary = self.run_guard(name, branch="feature/ordinary-change")
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn("protected-change scan clean", summary)
+
+    def test_existing_sweep_report_without_promotion_is_not_release_sensitive(self) -> None:
+        self.history(
+            {"planning/sweeps/2026-09-21.md": "Updated report.\n"},
+            legacy=False,
+            summary=False,
+        )
+
+        result = self.run_validator("feature/report-edit")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "release baseline validation passed")
 
     def test_release_promotion_block_rejects_an_added_field(self) -> None:
         promoted = release_fixtures.verification_block(
@@ -649,6 +946,27 @@ class DocGuardTest(unittest.TestCase):
         self.assertEqual(calls, [ref_url, tag_url, ref_url, tag_url])
 
         responses[tag_url] = {"object": {"type": "commit", "sha": "f" * 40}}
+        self.assert_reachability(
+            responses, False, diagnostic="not recorded commit", compare=False
+        )
+
+    def test_mocked_reachability_accepts_reviewed_manual_browser_source(self) -> None:
+        self.browser_promotion_history()
+        api = "https://api.github.com/repos/WithAutonomi/ant-browser-sdk"
+        ref_url = f"{api}/git/ref/tags/v0.1.3"
+        responses = {
+            ref_url: {
+                "object": {"type": "commit", "sha": BROWSER_NEW_COMMIT}
+            }
+        }
+        calls = self.assert_reachability(
+            responses, True, diagnostic="exact release tags validated", compare=False
+        )
+        self.assertEqual(calls, [ref_url] * 6)
+
+        responses[ref_url] = {
+            "object": {"type": "commit", "sha": "f" * 40}
+        }
         self.assert_reachability(
             responses, False, diagnostic="not recorded commit", compare=False
         )
