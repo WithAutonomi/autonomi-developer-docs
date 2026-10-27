@@ -1093,7 +1093,7 @@ def validate_git_promotion(
     changed_records = {
         path
         for path in changes
-        if path in record_paths or path.startswith("planning/sweeps/")
+        if path in record_paths
     }
     manifest_changed = base_manifest_text != head_manifest_text
     protected = manifest_changed or bool(changed_target_paths) or bool(changed_records)

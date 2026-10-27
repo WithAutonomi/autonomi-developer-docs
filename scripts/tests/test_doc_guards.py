@@ -763,6 +763,18 @@ class DocGuardTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn("protected-change scan clean", summary)
 
+    def test_existing_sweep_report_without_promotion_is_not_release_sensitive(self) -> None:
+        self.history(
+            {"planning/sweeps/2026-09-21.md": "Updated report.\n"},
+            legacy=False,
+            summary=False,
+        )
+
+        result = self.run_validator("feature/report-edit")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "release baseline validation passed")
+
     def test_release_promotion_block_rejects_an_added_field(self) -> None:
         promoted = release_fixtures.verification_block(
             release_fixtures.COMMIT, "ant-cli-v0.3.12", "target-manifest"
