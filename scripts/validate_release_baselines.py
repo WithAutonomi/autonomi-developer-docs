@@ -179,6 +179,26 @@ def _repo_coordinates(repo_config: dict[str, Any], where: str) -> tuple[str, str
     return parts[0], parts[1].removesuffix(".git")
 
 
+def _immutable_github_source_url(
+    value: Any, where: str, owner: str, repo: str, commit: str
+) -> str:
+    text = _url(value, where)
+    parsed = urllib.parse.urlparse(text)
+    parts = parsed.path.strip("/").split("/")
+    expected = [owner, repo, "blob", commit]
+    if (
+        parsed.params
+        or parsed.query
+        or len(parts) < 5
+        or parts[:4] != expected
+        or any(not part for part in parts[4:])
+    ):
+        raise ValidationError(
+            f"{where}: must identify the immutable source commit"
+        )
+    return text
+
+
 def _validate_asset(
     value: Any,
     where: str,
@@ -402,9 +422,13 @@ def validate_manifest_data(
                 _string(dep["version"], f"{dep_where}.version", SEMVER_RE)
                 dependency_commit = _string(dep["source_commit"], f"{dep_where}.source_commit", COMMIT_RE)
                 dep_owner, dep_repo = _repo_coordinates(_map(repos[dependency_repo], f"repos.{dependency_repo}"), f"repos.{dependency_repo}")
-                evidence = _url(dep["evidence_url"], f"{dep_where}.evidence_url")
-                if not evidence.startswith(f"https://github.com/{dep_owner}/{dep_repo}/") or dependency_commit not in evidence:
-                    raise ValidationError(f"{dep_where}.evidence_url: must identify the immutable source commit")
+                _immutable_github_source_url(
+                    dep["evidence_url"],
+                    f"{dep_where}.evidence_url",
+                    dep_owner,
+                    dep_repo,
+                    dependency_commit,
+                )
 
         scoped_pages = entry["scoped_pages"]
         if not isinstance(scoped_pages, list) or not scoped_pages:

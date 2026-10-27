@@ -268,6 +268,8 @@ class DocGuardTest(unittest.TestCase):
                     self.assertIn("import yaml", code)
                     self.assertIn("import json", code)
                     self.assertIn("validate_release_tag", code)
+                    self.assertIn("show(BASE, REGISTRY_PATH)", code)
+                    self.assertNotIn("show(HEAD, REGISTRY_PATH)", code)
                     self.assertNotIn("skipped (target-manifest pin)", code)
                 else:
                     self.assertNotIn("import yaml", code)
@@ -439,6 +441,34 @@ class DocGuardTest(unittest.TestCase):
                     self.assertEqual(result.returncode, 1, result.stderr)
                     self.assertIn("claude/sweep-*", result.stderr)
                     self.assertIn("claude/prose-*", result.stderr)
+
+    def test_unrelated_branch_rejects_registry_and_verification_change_pair(self) -> None:
+        untrusted_registry = REGISTRY.replace(
+            "https://github.com/WithAutonomi/ant-sdk",
+            "https://github.com/attacker/untrusted",
+        )
+        self.history(
+            {
+                "docs/page.md": REFRESHED,
+                "repo-registry.yml": untrusted_registry,
+            },
+            legacy=False,
+            summary=False,
+        )
+        for name in GUARDS[:2]:
+            with self.subTest(guard=name):
+                result, _ = self.run_guard(
+                    name, branch="feature/registry-and-verification-change"
+                )
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("repo-registry.yml", result.stderr)
+
+        calls = self.assert_reachability(
+            {COMMIT_URL: {}, COMPARE_URL: {"status": "ahead"}},
+            True,
+            compare=False,
+        )
+        self.assertEqual(calls, [COMMIT_URL, COMPARE_URL])
 
     def test_unrelated_branch_passes_without_release_sensitive_changes(self) -> None:
         self.history({"README.md": "Ordinary branch change.\n"}, legacy=False, summary=False)

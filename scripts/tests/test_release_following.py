@@ -388,6 +388,31 @@ class ReleaseBaselineValidatorTest(FixtureRepo):
             other_components,
         )
 
+    def test_shipped_dependency_evidence_requires_commit_as_blob_ref(self) -> None:
+        invalid_urls = (
+            f"https://github.com/WithAutonomi/ant-client/blob/main/ant-core/Cargo.toml?commit={COMMIT}",
+            f"https://github.com/WithAutonomi/ant-client/blob/main/ant-core/{COMMIT}.toml",
+        )
+        for evidence_url in invalid_urls:
+            with self.subTest(evidence_url=evidence_url):
+                broken = valid_entry(self.root)
+                broken["shipped_dependencies"]["ant-core"][
+                    "evidence_url"
+                ] = evidence_url
+                manifest = {
+                    "scope": {},
+                    "sources": {},
+                    "release_baselines": {
+                        "schema_version": 1,
+                        "entries": {"ant-cli/stable": broken},
+                    },
+                }
+                with self.assertRaisesRegex(
+                    validator.ValidationError,
+                    r"evidence_url: must identify the immutable source commit",
+                ):
+                    self.validate(manifest)
+
     def test_promoted_blocks_require_exact_five_field_schema(self) -> None:
         entry = valid_entry(self.root)
         manifest = {

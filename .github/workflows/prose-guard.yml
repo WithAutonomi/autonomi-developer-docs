@@ -137,7 +137,10 @@ jobs:
           if not HEAD_REF.startswith(("claude/sweep-", "claude/prose-")):
               protected = []
               for path in changed_paths:
-                  if path == "target-manifest.yml" or path.startswith(SWEEPS_PREFIX):
+                  if (
+                      path in {"target-manifest.yml", "repo-registry.yml"}
+                      or path.startswith(SWEEPS_PREFIX)
+                  ):
                       protected.append(path)
                       continue
                   if path.startswith(DOCS_PREFIX) and path.endswith(".md"):

@@ -124,7 +124,7 @@ jobs:
               return owner, repo
 
           def load_registry() -> dict:
-              text = show(HEAD, REGISTRY_PATH) or ""
+              text = show(BASE, REGISTRY_PATH) or ""
               try:
                   data = yaml.safe_load(text) or {}
               except yaml.YAMLError as exc:
