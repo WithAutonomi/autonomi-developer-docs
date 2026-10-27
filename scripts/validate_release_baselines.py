@@ -193,7 +193,10 @@ def _immutable_github_source_url(
         or len(parts) < 5
         or parts[:4] != expected
         or any(not part for part in parts[4:])
-        or any(urllib.parse.unquote(part) in {".", ".."} for part in parts[4:])
+        or any(
+            decoded in {".", ".."} or any(char in decoded for char in "/\\")
+            for decoded in (urllib.parse.unquote(part) for part in parts[4:])
+        )
     ):
         raise ValidationError(
             f"{where}: must identify the immutable source commit"

@@ -396,6 +396,8 @@ class ReleaseBaselineValidatorTest(FixtureRepo):
             f"https://github.com/WithAutonomi/ant-client/blob/{COMMIT}/../main/ant-core/Cargo.toml",
             f"https://github.com/WithAutonomi/ant-client/blob/{COMMIT}/%2e/ant-core/Cargo.toml",
             f"https://github.com/WithAutonomi/ant-client/blob/{COMMIT}/%2e%2e/main/ant-core/Cargo.toml",
+            f"https://github.com/WithAutonomi/ant-client/blob/{COMMIT}/..\\main/ant-core/Cargo.toml",
+            f"https://github.com/WithAutonomi/ant-client/blob/{COMMIT}/..%5Cmain/ant-core/Cargo.toml",
         )
         for evidence_url in invalid_urls:
             with self.subTest(evidence_url=evidence_url):
