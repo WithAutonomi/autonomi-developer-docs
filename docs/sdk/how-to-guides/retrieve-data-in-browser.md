@@ -30,7 +30,7 @@ This example only reads existing public data. It does not configure a wallet or 
 
 Vite serves the JavaScript and WASM assets during development and bundles them for deployment.
 
-This tutorial uses browser SDK 0.1.4 and Vite 8.2.0. The commands save these exact versions so reinstalling the project does not select a different version of either package.
+This tutorial uses browser SDK 0.1.4 and Vite 8.3.5. The commands save these exact versions so reinstalling the project does not select a different version of either package.
 
 In a terminal, run:
 
@@ -39,7 +39,7 @@ mkdir autonomi-browser-demo
 cd autonomi-browser-demo
 npm init -y
 npm install --save-exact @withautonomi/ant-browser-sdk@0.1.4
-npm install --save-dev --save-exact vite@8.2.0
+npm install --save-dev --save-exact vite@8.3.5
 ```
 
 ### 2. Add the page
