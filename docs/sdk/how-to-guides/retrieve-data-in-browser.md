@@ -2,8 +2,8 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.3
-  source_commit: 813aa1817274551e3596038ffc8d2706672eba3b
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
   verified_date: 2026-10-27
   verification_mode: target-manifest
 -->
@@ -30,7 +30,7 @@ This example only reads existing public data. It does not configure a wallet or 
 
 Vite serves the JavaScript and WASM assets during development and bundles them for deployment.
 
-This tutorial uses browser SDK 0.1.3 and Vite 8.2.0. The commands save these exact versions so reinstalling the project does not select a different version of either package.
+This tutorial uses browser SDK 0.1.4 and Vite 8.2.0. The commands save these exact versions so reinstalling the project does not select a different version of either package.
 
 In a terminal, run:
 
@@ -38,7 +38,7 @@ In a terminal, run:
 mkdir autonomi-browser-demo
 cd autonomi-browser-demo
 npm init -y
-npm install --save-exact @withautonomi/ant-browser-sdk@0.1.3
+npm install --save-exact @withautonomi/ant-browser-sdk@0.1.4
 npm install --save-dev --save-exact vite@8.2.0
 ```
 
@@ -174,7 +174,7 @@ The browser retrieves the data directly from Autonomi nodes. Vite serves your ap
 
 ## Next steps
 
-- [Browser SDK documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.3): upload, wallet, private-file and media APIs for the same experimental release.
+- [Browser SDK documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4): upload, wallet, private-file and media APIs for the same experimental release.
 - [Browser SDK](../build-in-browser.md): capabilities, application ideas and how browser connections work.
 - [Build with the SDKs](../install.md): compare application connection options.
 - [Keys, Addresses, and DataMaps](../../core-concepts/keys-addresses-and-datamaps.md): understand public addresses and private-file access.

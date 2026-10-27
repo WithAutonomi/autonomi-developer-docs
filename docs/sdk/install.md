@@ -10,8 +10,8 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.3
-  source_commit: 813aa1817274551e3596038ffc8d2706672eba3b
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
   verified_date: 2026-10-27
   verification_mode: target-manifest
 -->

@@ -2,8 +2,8 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.3
-  source_commit: 813aa1817274551e3596038ffc8d2706672eba3b
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
   verified_date: 2026-10-27
   verification_mode: target-manifest
 -->
@@ -67,17 +67,17 @@ You do not have to load every file into memory before using it. The SDK provides
 
 For seekable audio and video, the SDK provides a service worker: a browser-managed script that connects a media element's requests to the SDK's file reader. This setup requires HTTPS or localhost and the application's page to remain open. Applications with an existing service worker must integrate the media handling with it.
 
-Browser SDK 0.1.3 accepts uploads from 3 bytes up to 1 GB (1,000,000,000 bytes).
+Browser SDK 0.1.4 accepts uploads from 3 bytes up to 1 GB (1,000,000,000 bytes).
 
 `download()` and `downloadAndSave()` buffer the whole file and use a default 1 GB `maxMemoryBytes` budget. You can pass a different budget, but the returned bytes and `Blob`, the resolved DataMap, caches and transport buffers need additional memory.
 
-Streaming downloads and media do not have a fixed 1 GB cap. For bounded-memory downloads, use `client.streamAndSave(source, options)` or `client.openFile(file, options)` followed by `reader.pipeTo(destination, options)`. Use `reader.stream(options)` to consume a bounded stream in your application. Browser memory, storage and safe-integer limits remain practical constraints. Uploads from byte arrays may run out of memory before reaching the upload cap. The [browser SDK API documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.3#stream-directly-to-disk) covers streaming saves, range reads, media setup and file-size limits.
+Streaming downloads and media do not have a fixed 1 GB cap. For bounded-memory downloads, use `client.streamAndSave(source, options)` or `client.openFile(file, options)` followed by `reader.pipeTo(destination, options)`. Use `reader.stream(options)` to consume a bounded stream in your application. Browser memory, storage and safe-integer limits remain practical constraints. Uploads from byte arrays may run out of memory before reaching the upload cap. The [browser SDK API documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#stream-directly-to-disk) covers streaming saves, range reads, media setup and file-size limits.
 
 ## Uploading from a browser
 
 The SDK also accepts browser files and byte arrays for public or private uploads. Your application supplies a payment provider to authorize storage payments; supported integrations include Ethers and Wagmi/Viem. A read-only application does not need these wallet integrations.
 
-File uploads have additional browser requirements, including a worker for file processing and IndexedDB for temporary storage. Use the [browser SDK's upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.3#upload-files) when adding uploads and payment handling.
+File uploads have additional browser requirements, including a worker for file processing and IndexedDB for temporary storage. Use the [browser SDK's upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#upload-files) when adding uploads and payment handling.
 
 ## Network compatibility
 
