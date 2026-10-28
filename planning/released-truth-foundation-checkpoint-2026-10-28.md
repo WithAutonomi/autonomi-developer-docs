@@ -8,17 +8,17 @@ Agents/tools used: OpenCode, verifier, Craft Review, adversarial review, ADR hel
 
 ## Status
 
-Continue. Local implementation and review passed, and Jim authorized the Unit 1 commit. The work is not pull-request-ready until clean-context review runs against that revision and CI provides the green of record.
+Continue. Local implementation and review passed. Jim authorized the Unit 1 commit, push, and pull-request creation, and deferred the required clean-context review to Hermes/Claude on the pull request. CI remains the green of record.
 
 Meaningful work-unit: Yes — it changes the repository authoring contract and removes moving-branch advancement.
-Review cadence: Per-unit Craft Review and goal verification completed; adversarial review ran at the milestone; clean-context remains due before pull-request readiness.
-Unreviewed backlog: None for Craft Review. Clean-context is pending its named due point.
+Review cadence: Per-unit Craft Review and goal verification completed; adversarial review ran at the milestone; clean-context is deferred to pull-request review.
+Unreviewed backlog: None for Craft Review. Clean-context remains required and pending on the pull request.
 
 ### Review selection and timing
 
 | Lane | Requirement and selection | Due point | Result or deferral |
 | --- | --- | --- | --- |
-| Clean-context | Required and requested under the full shared-repository profile | Before pull-request readiness; not due until a reviewable revision exists | Not run; required and pending |
+| Clean-context | Required and requested under the full shared-repository profile | Hermes/Claude review on the pull request | Controlled launcher blocked before project review with `guard or CLI data invalid; details withheld`; Jim approved deferral on 2026-10-28 |
 | Adversarial | Required and requested | Foundation milestone | Reported blockers; ADR-0019 was accepted and implementation findings were fixed and independently verified |
 | Craft | Required and requested | Meaningful unit checkpoint | PASS, no remaining findings |
 
@@ -53,7 +53,13 @@ Additional checks:
 - Direct scanner walk: 108 unique legacy backlog entries and 6 target-manifest pins.
 - Every backlog entry has exactly `location`, `repo`, `ref`, and `recorded_sha`.
 - No changes under `docs/**`, `.github/**`, `target-manifest.yml`, either registry, or `scripts/validate_release_baselines.py`.
-- Direct validation of ADR-0019 passed filename, Accepted status, human acceptance metadata, required sections, and unique numbering checks. The governance command must be rerun after the Unit 1 commit so the committed diff includes the new ADR.
+- Direct validation of ADR-0019 passed filename, Accepted status, human acceptance metadata, required sections, and unique numbering checks. After the Unit 1 commit, ADR governance passed with one ADR checked.
+
+Clean-context launcher:
+
+- Result: Blocked before project review.
+- Error: `guard or CLI data invalid; details withheld`.
+- Disposition: Not a pass. Jim deferred the required review to Hermes/Claude on the pull request.
 
 ## Honesty rules check
 
@@ -89,13 +95,13 @@ None. Unit 1 did not change rendered documentation, release baselines, registrie
 
 ## Open questions / decisions for Jim
 
-- Pull request ready to raise: No.
-- Jim confirmed a pull request may be opened: No.
-- Jim authorized the local Unit 1 commit on 2026-10-28.
+- Pull request ready to raise: Yes for CI and Hermes/Claude review; acceptance remains pending those results.
+- Jim confirmed a pull request may be opened: Yes, on 2026-10-28.
+- Jim authorized the local Unit 1 commit and push on 2026-10-28.
 
 ## Recommended next step
 
-Create the authorized Unit 1 commit. Then run clean-context review on that revision and return for the separate push and pull-request gates.
+Push the committed branch, open the authorized pull request, inspect CI, and obtain the deferred Hermes/Claude clean-context review before any merge decision.
 
 ## Handoff note
 

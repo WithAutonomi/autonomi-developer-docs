@@ -79,9 +79,9 @@ Rigor profile: Full. This is shared, production-bound process code implementing 
 
 | Lane | Requirement and selection | Due point | Deferral |
 |---|---|---|---|
-| Craft | Required and requested | Packet/spec checkpoint and implementation checkpoint | Planning PASS; implementation review remains due |
-| Adversarial | Required and requested | Completed foundation milestone, before PR readiness | None |
-| Clean-context | Required and requested | Before PR readiness | None; historical authentication failures do not count as a pass |
+| Craft | Required and requested | Packet/spec checkpoint and implementation checkpoint | Planning and implementation PASS |
+| Adversarial | Required and requested | Completed foundation milestone, before PR readiness | Report completed; findings addressed and independently verified |
+| Clean-context | Required and requested | Pull-request review | Deferred by Jim on 2026-10-28 to Hermes/Claude review on the PR after the controlled launcher blocked before project review |
 
 ## Verification required
 
