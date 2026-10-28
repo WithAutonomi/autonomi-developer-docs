@@ -44,7 +44,7 @@ Each language reference covers installation and its API. Python and Node.js also
 
 ## Browser applications
 
-Use `@withautonomi/ant-browser-sdk` to connect directly from JavaScript or TypeScript running in a browser. WebAssembly runs the network client; WebRTC carries its connections to nodes. Visitors do not need a local daemon. Applications can work with individual files, portable collections and updatable pointers, and can stream large files without holding the complete file in memory.
+Use `@withautonomi/ant-browser-sdk` to connect directly from JavaScript or TypeScript running in a browser. WebAssembly runs the network client; WebRTC carries its connections to nodes. Visitors do not need a local daemon. Applications can work with individual files, manifests and updatable pointers, and can stream large files without holding the complete file in memory.
 
 The browser SDK is experimental. Read the [Browser SDK overview](build-in-browser.md) for capabilities and application ideas, then follow [Retrieve Data in the Browser](how-to-guides/retrieve-data-in-browser.md) for a complete public-image example.
 

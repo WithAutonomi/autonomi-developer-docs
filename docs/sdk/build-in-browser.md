@@ -26,7 +26,7 @@ The SDK gives your web application access to stored content. You choose how to p
 | Image gallery | Retrieve images and display them with ordinary browser elements |
 | Audio or video player | Read media progressively and support seeking without downloading the entire file first |
 | Data viewer | Retrieve a stored dataset or JSON file and present it as tables, charts or another application view |
-| File-sharing application | Open or create links and portable collections, then retrieve public or shared private files |
+| File-sharing application | Upload files, then share them as links or manifests that others can open |
 | Updatable catalogue or profile | Keep one lasting address while the content behind it changes |
 
 These are application patterns, not ready-made interfaces included in the SDK. For example, a book reader still needs code that understands the book's format and displays its pages. The SDK supplies access to the file's data.
@@ -62,19 +62,7 @@ Private files require their DataMap, the information needed to locate and decryp
 
 For a complete working example, follow [Retrieve Data in the Browser](how-to-guides/retrieve-data-in-browser.md). It downloads a public image and displays it in a small web page.
 
-## Sharing files and collections
-
-An `ant://` link can identify one public file or describe a collection of files. The collection form carries a manifest: a portable list of file names and the information needed to retrieve each one. Your application can also open the same kind of collection from a `.ant` file.
-
-A manifest does not upload or publish its files. Your application can create one from files it has already uploaded, then offer the link or `.ant` file to another person. The recipient can open the manifest and choose which entries to retrieve.
-
-Public entries contain an address. An embedded entry contains the DataMap needed to read a private file. Anyone who receives a manifest with an embedded entry receives access to that private file, so protect that manifest as you would protect the DataMap itself.
-
-See the released SDK documentation for [opening manifests and `ant://` links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#manifests-and-ant-links) and [creating manifests and share links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#creating-manifests-and-share-links).
-
 ## Choosing how to retrieve a file
-
-You do not have to load every file into memory before using it. The SDK provides range reads and streams, so an application can request parts of a file as it needs them.
 
 Choose the approach that matches the file and what your application needs to do with it:
 
@@ -92,17 +80,27 @@ The SDK also accepts browser files and byte arrays for public or private uploads
 
 Uploads can be from 3 bytes up to 1 GB (1,000,000,000 bytes). Uploading a browser `File` or `Blob` processes it in a background worker and stages encrypted records in browser storage. Uploading a byte array holds the complete input in memory, so it may fail before reaching the upload limit.
 
-If an upload stops after the wallet may have paid, do not immediately start the upload again. Keep the page open and let the user resume or discard the failed attempt. The SDK retains the prepared input and payment history, reuses confirmed payment where it can, and stops for explicit authorization if more payment is needed. This recovery state does not survive a page reload.
+If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. Keep the page open and let the user resume or discard the failed attempt. The SDK retains the prepared input and payment history, reuses confirmed payment where it can, and stops for explicit authorization if more payment is needed. This recovery state does not survive a page reload.
 
 Use the released SDK's [upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#upload-files) and [upload recovery guidance](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#resume-a-failed-upload) when adding uploads and payment handling.
 
+## Sharing files with manifests
+
+An `ant://` link can identify one public file or carry a manifest that describes multiple files. A `.ant` file carries the same kind of manifest: a portable list of file names and the information needed to retrieve each one.
+
+Creating a manifest does not upload anything. The manifest is not stored on the Autonomi Network either: the `ant://` link or `.ant` file is the manifest, and sharing it gives another person the information needed to retrieve its entries.
+
+Public entries contain an address. An embedded entry contains the DataMap needed to read a private file. Anyone who receives a manifest with an embedded entry receives access to that private file, so protect that manifest as you would protect the DataMap itself.
+
+See the released SDK documentation for [opening manifests and `ant://` links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#manifests-and-ant-links) and [creating manifests and share links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#creating-manifests-and-share-links).
+
 ## Keeping a reference up to date
 
-A pointer gives your application one stable address that can refer to changing content. This is useful for a profile, catalogue or other record whose readers need a lasting address while its owner publishes updates.
+A pointer gives your application one lasting address whose content can change. This is useful for a profile, catalogue or other record people return to.
 
-The owner's secret controls that address, so your application must protect it. Creating or updating the pointer also costs a storage payment. Before the wallet continues, save the SDK's recovery checkpoint somewhere that survives a page reload. When that checkpoint captures the payment evidence, it can let the application finish the original paid update without paying again. It cannot recover evidence that was never saved: if the payment remains unresolved, reconcile it with the original wallet and do not start a new update.
+The pointer is controlled by its owner seed. Keep that seed safe and keep a durable copy: without it, you cannot update the pointer. Each create or update costs a storage payment. If a paid update is interrupted, the SDK can often finish it without charging again, but only if your application saved its recovery checkpoint first. Nodes accept the recovered payment proof only while its quotes are less than a day old; after that, the update needs a new payment. Pointer ownership can also be transferred permanently.
 
-Pointer ownership can also be transferred permanently. A successful write does not by itself prove that enough responsible nodes agree on the result. Applications that depend on that agreement must check the pointer's finality status. See the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes.
+Read the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes. It covers checkpoints, recovery and how to confirm that the Autonomi Network agrees on an update.
 
 ## Network compatibility
 

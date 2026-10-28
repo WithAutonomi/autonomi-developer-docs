@@ -23,7 +23,6 @@ If you're still deciding how your application should connect, [Build with the SD
 ## In a browser
 
 - [Retrieve Data in the Browser](retrieve-data-in-browser.md): display a public image using the experimental browser SDK, without a wallet or local daemon.
-- [Browser SDK](../build-in-browser.md): understand direct browser connections, share links and manifests, large-file retrieval, uploads and updatable pointers before choosing how to build those features.
 
 ## Through a local daemon
 
@@ -38,5 +37,6 @@ These guides use [antd](../use-antd.md), the local background service. For a fir
 
 ## Next steps
 
+- [Browser SDK](../build-in-browser.md): understand direct browser connections, share links and manifests, large-file retrieval, uploads and updatable pointers.
 - [Build with the SDKs](../install.md)
 - [SDK Reference](../reference/README.md)
