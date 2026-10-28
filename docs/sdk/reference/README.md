@@ -18,7 +18,7 @@
 
 Find the methods, parameters, return values, and errors for the library or API you are using.
 
-For native libraries that connect directly to the Autonomi Network, use the [native SDK reference](native-sdks.md). For web applications, [Browser SDK](../build-in-browser.md) introduces the separate experimental package and links to its API documentation. For client libraries that send requests to a local daemon, a separate background service called [antd](../use-antd.md), use [Language Bindings](language-bindings/README.md). The REST and gRPC references cover that service's APIs.
+For native libraries that connect directly to the Autonomi Network, use the [native SDK reference](native-sdks.md). For web applications, [Browser SDK](../build-in-browser.md) introduces the separate experimental package, explains files, manifests, links, streams and pointers, and links to the released API documentation. For client libraries that send requests to a local daemon, a separate background service called [antd](../use-antd.md), use [Language Bindings](language-bindings/README.md). The REST and gRPC references cover that service's APIs.
 
 The APIs are not interchangeable. Each reference describes its own constructors, supported operations, and limits.
 
@@ -33,7 +33,7 @@ The APIs are not interchangeable. Each reference describes its own constructors,
 - [Node.js SDK](../native/nodejs.md): installation, a public-read example, types, and errors.
 - [.NET SDK](../native/csharp.md): installation, methods, types, and errors.
 - [Native SDK Reference](native-sdks.md): data, file, wallet, and external-signer APIs.
-- [Browser SDK](../build-in-browser.md): the experimental browser package and links to its API documentation.
+- [Browser SDK](../build-in-browser.md): the experimental browser package, its major developer tasks and links to its released API documentation.
 
 ## Local service and clients
 

@@ -46,7 +46,7 @@ The compiled library is loaded by your application, not run as a separate comman
 
 ## Connecting directly from a browser
 
-The browser SDK includes a network client compiled to WebAssembly (WASM). Your web application calls it from JavaScript or TypeScript, and WebRTC connects it directly to nodes. There is no local daemon to start. See [Browser SDK](../build-in-browser.md) for capabilities and [Retrieve Data in the Browser](../how-to-guides/retrieve-data-in-browser.md) for a complete example.
+The browser SDK includes a network client compiled to WebAssembly (WASM). Your web application calls it from JavaScript or TypeScript, and WebRTC connects it directly to nodes. There is no local daemon to start. It can retrieve and store files, open or create shareable manifests and `ant://` links, stream large files and use pointers for content that changes behind a stable address. See [Browser SDK](../build-in-browser.md) for these capabilities and [Retrieve Data in the Browser](../how-to-guides/retrieve-data-in-browser.md) for a complete public-read example.
 
 ## Connecting through a local daemon
 

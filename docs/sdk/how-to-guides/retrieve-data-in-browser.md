@@ -174,7 +174,7 @@ The browser retrieves the data directly from Autonomi nodes. Vite serves your ap
 
 ## Next steps
 
-- [Browser SDK documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4): upload, wallet, private-file and media APIs for the same experimental release.
-- [Browser SDK](../build-in-browser.md): capabilities, application ideas and how browser connections work.
+- [Browser SDK](../build-in-browser.md): understand browser connections, share links and manifests, large-file retrieval, uploads and updatable pointers.
+- [Released Browser SDK documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4): complete examples and API details for the same experimental release.
 - [Build with the SDKs](../install.md): compare application connection options.
 - [Keys, Addresses, and DataMaps](../../core-concepts/keys-addresses-and-datamaps.md): understand public addresses and private-file access.
