@@ -8,7 +8,7 @@ Agents/tools used: OpenCode, verifier, Craft Review, adversarial review, ADR hel
 
 ## Status
 
-Continue. Local implementation and review passed. Jim authorized the Unit 1 commit, push, and pull-request creation, and deferred the required clean-context review to Hermes/Claude on the pull request. CI remains the green of record.
+Continue. Local implementation and review passed. [PR #110](https://github.com/WithAutonomi/autonomi-developer-docs/pull/110) is open as a draft and CI is green. Jim deferred the required clean-context review to Hermes/Claude on the pull request.
 
 Meaningful work-unit: Yes — it changes the repository authoring contract and removes moving-branch advancement.
 Review cadence: Per-unit Craft Review and goal verification completed; adversarial review ran at the milestone; clean-context is deferred to pull-request review.
@@ -35,8 +35,8 @@ Unreviewed backlog: None for Craft Review. Clean-context remains required and pe
 
 CI arbiter / green of record:
 
-- Location: Repository Tests and applicable GitHub/GitBook checks on a later authorized pull request.
-- Status: No CI run exists; local evidence is provisional.
+- Location: [PR #110](https://github.com/WithAutonomi/autonomi-developer-docs/pull/110).
+- Status: Repository Tests, ADR Governance, prose guard, sweep guard, SHA reachability, and both GitBook checks passed.
 
 Local fast gate / `.gsd/gate.sh`:
 
@@ -66,7 +66,7 @@ Clean-context launcher:
 - No-harness-modification: Pass. Scanner tests changed within the approved slice; test invocation, CI, validator, and environment did not change.
 - Baseline-diff for evidence: Pass. No failure or skip was dismissed as environmental, flaky, or pre-existing.
 - Evidence reproducible-from-branch: Pass after the authorized Unit 1 commit. Every readiness command uses repository files only; no uncommitted helper, wrapper, or environment variable is required.
-- Local vs CI consistency: Unknown until CI runs.
+- Local vs CI consistency: Pass.
 
 ## Review findings
 
@@ -95,14 +95,14 @@ None. Unit 1 did not change rendered documentation, release baselines, registrie
 
 ## Open questions / decisions for Jim
 
-- Pull request ready to raise: Yes for CI and Hermes/Claude review; acceptance remains pending those results.
+- Pull request ready to raise: [PR #110](https://github.com/WithAutonomi/autonomi-developer-docs/pull/110) is open as a draft; acceptance remains pending Hermes/Claude review.
 - Jim confirmed a pull request may be opened: Yes, on 2026-10-28.
 - Jim authorized the local Unit 1 commit and push on 2026-10-28.
 
 ## Recommended next step
 
-Push the committed branch, open the authorized pull request, inspect CI, and obtain the deferred Hermes/Claude clean-context review before any merge decision.
+Obtain the deferred Hermes/Claude clean-context review on PR #110 before any merge decision.
 
 ## Handoff note
 
-Unit 1 is locally complete and reviewed. Do not start the CLI promotion until the foundation revision has clean-context and CI evidence and Jim has made the required push, pull-request, and merge decisions.
+Unit 1 is implemented and CI-green on PR #110. Do not start the CLI promotion until Hermes/Claude review completes and Jim makes the merge decision.

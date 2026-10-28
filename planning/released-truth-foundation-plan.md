@@ -1,6 +1,6 @@
 # Released-truth rollout plan
 
-Status: ADR-0019 accepted; local implementation, verification, and Craft Review passed. Clean-context review and CI remain pending. Later units require their named checkpoint.
+Status: ADR-0019 accepted; local implementation, verification, Craft Review, and PR #110 CI passed. Hermes/Claude clean-context review remains pending. Later units require their named checkpoint.
 
 ## Milestone
 
