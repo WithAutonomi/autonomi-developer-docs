@@ -12,17 +12,17 @@ scope:
 
 sources:
   ant-browser-sdk:
-    source_ref: v0.1.2
-    source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
-    release_url: https://github.com/WithAutonomi/ant-browser-sdk/releases/tag/v0.1.2
+    source_ref: v0.1.4
+    source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
+    release_url: https://github.com/WithAutonomi/ant-browser-sdk/releases/tag/v0.1.4
     support_status: experimental
     package:
       name: "@withautonomi/ant-browser-sdk"
-      version: 0.1.2
-      metadata_url: https://registry.npmjs.org/@withautonomi/ant-browser-sdk/0.1.2
-      integrity: sha512-uVnIVmuJjyTs1yHyRTNJof2tGIMf2STkRhi8iEGQqaNnizZFKZ6qElZlCIttGBdXwn10TRaERhniRGAeOQa3rg==
+      version: 0.1.4
+      metadata_url: https://registry.npmjs.org/@withautonomi/ant-browser-sdk/0.1.4
+      integrity: sha512-MD/p2TctBvB1KkE6KCrxiE5m0S0il1gmGIQlRpeSEhoItkJfxO/72uxAkxUz77gCpxOwkegjb0ZbPIJgGaq66w==
     shipped_wasm:
       source_repo: ant-client
-      source_commit: 9858af5dbbb2caf090e20db67ac62aa4bd100c81
-      sha256: ab58bd3e331436d22acfe3d08b384992be9addec52145fa0325468c27b6da70a
-      evidence_url: https://github.com/WithAutonomi/ant-browser-sdk/blob/a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0/src/wasm/source.json
+      source_commit: 7a432e7c4442b4628872bd5cf6a3e896e7fc10ad
+      sha256: 7873c65138aa499c48a8c34d9dbaa2fdd82509ca6e981afe9a4f77331b9e4cf4
+      evidence_url: https://github.com/WithAutonomi/ant-browser-sdk/blob/5199100c15527bf657ae4a795c2bdf5d086981f7/src/wasm/source.json

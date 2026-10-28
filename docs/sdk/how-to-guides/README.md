@@ -10,9 +10,9 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.2
-  source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
-  verified_date: 2026-10-16
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
+  verified_date: 2026-10-27
   verification_mode: target-manifest
 -->
 
@@ -37,5 +37,6 @@ These guides use [antd](../use-antd.md), the local background service. For a fir
 
 ## Next steps
 
+- [Browser SDK](../build-in-browser.md): understand direct browser connections, share links and manifests, large-file retrieval, uploads and updatable pointers.
 - [Build with the SDKs](../install.md)
 - [SDK Reference](../reference/README.md)

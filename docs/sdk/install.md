@@ -10,9 +10,9 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.2
-  source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
-  verified_date: 2026-10-16
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
+  verified_date: 2026-10-27
   verification_mode: target-manifest
 -->
 
@@ -25,7 +25,7 @@ Choose based on where your application runs and whether you want it to manage it
 | Connection | Choose it when | Installation and usage |
 |------------|----------------|------------------------|
 | Direct from a native application | You are building in Python, Node.js or .NET and want no separate network service to start | [Native SDKs](native/README.md) |
-| Direct from the browser using WebAssembly (WASM) | You are building a web application that accesses data through the experimental browser SDK | [Browser SDK](build-in-browser.md) |
+| Direct from the browser using WebAssembly (WASM) | You are building a web application that reads, streams, shares or stores data through the experimental browser SDK | [Browser SDK](build-in-browser.md) |
 | Through a local daemon | Several applications should share one service, or you prefer a local REST or gRPC API | [Local-Daemon Clients](use-antd.md) |
 
 The packages and APIs differ. Use the package for the connection arrangement you choose; a Python or Node.js library for one is not interchangeable with the other.
@@ -44,7 +44,7 @@ Each language reference covers installation and its API. Python and Node.js also
 
 ## Browser applications
 
-Use `@withautonomi/ant-browser-sdk` to connect directly from JavaScript or TypeScript running in a browser. WebAssembly runs the network client; WebRTC carries its connections to nodes. Visitors do not need a local daemon.
+Use `@withautonomi/ant-browser-sdk` to connect directly from JavaScript or TypeScript running in a browser. WebAssembly runs the network client; WebRTC carries its connections to nodes. Visitors do not need a local daemon. Applications can work with individual files, manifests and updatable pointers, and can stream large files without holding the complete file in memory.
 
 The browser SDK is experimental. Read the [Browser SDK overview](build-in-browser.md) for capabilities and application ideas, then follow [Retrieve Data in the Browser](how-to-guides/retrieve-data-in-browser.md) for a complete public-image example.
 
@@ -72,7 +72,7 @@ Uploads require a wallet and storage payment. Choose public storage when you wan
 
 ## Related pages
 
-- [Browser SDK](build-in-browser.md): build web applications with direct access to stored data.
+- [Browser SDK](build-in-browser.md): read, share, stream and store data directly from a web application.
 - [SDK How-To Guides](how-to-guides/README.md)
 - [SDK Reference](reference/README.md)
 - [Use the CLI](../cli/use-the-cli.md) for command-line access

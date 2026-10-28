@@ -2,9 +2,9 @@
 
 <!-- verification:
   source_repo: ant-browser-sdk
-  source_ref: v0.1.2
-  source_commit: a29a87cf8d8f696ae5e8b22d6ee4f91d4e7bfbb0
-  verified_date: 2026-10-16
+  source_ref: v0.1.4
+  source_commit: 5199100c15527bf657ae4a795c2bdf5d086981f7
+  verified_date: 2026-10-27
   verification_mode: target-manifest
 -->
 
@@ -26,7 +26,8 @@ The SDK gives your web application access to stored content. You choose how to p
 | Image gallery | Retrieve images and display them with ordinary browser elements |
 | Audio or video player | Read media progressively and support seeking without downloading the entire file first |
 | Data viewer | Retrieve a stored dataset or JSON file and present it as tables, charts or another application view |
-| File-sharing application | Let users retrieve public files or authorize paid uploads from the browser |
+| File-sharing application | Upload files, then share them as links or manifests that others can open |
+| Updatable catalogue or profile | Keep one lasting address while the content behind it changes |
 
 These are application patterns, not ready-made interfaces included in the SDK. For example, a book reader still needs code that understands the book's format and displays its pages. The SDK supplies access to the file's data.
 
@@ -61,21 +62,45 @@ Private files require their DataMap, the information needed to locate and decryp
 
 For a complete working example, follow [Retrieve Data in the Browser](how-to-guides/retrieve-data-in-browser.md). It downloads a public image and displays it in a small web page.
 
-## Streaming and larger files
+## Choosing how to retrieve a file
 
-You do not have to load every file into memory before using it. The SDK provides range reads and streams, so an application can request parts of a file as it needs them.
+Choose the approach that matches the file and what your application needs to do with it:
 
-For seekable audio and video, the SDK provides a service worker: a browser-managed script that connects a media element's requests to the SDK's file reader. This setup requires HTTPS or localhost and the application's page to remain open. Applications with an existing service worker must integrate the media handling with it.
+- **Download it in one operation.** `download()` returns the complete file as bytes and a browser `Blob`; `downloadAndSave()` also opens a save flow for the user. Both hold the complete file in memory. They refuse files over 1 GB by default, but you can change that memory budget. The returned `Blob`, resolved DataMap, caches and network buffers need additional memory beyond the byte-array budget.
+- **Save it as it arrives.** `streamAndSave()` writes directly to a destination selected by your application or the user. It does not create a complete in-memory copy, and streaming has no fixed file-size cap. The device still needs enough storage for the file.
+- **Read only the parts you need.** `openFile()` provides range reads and a stream for applications such as document readers, archives and data viewers. Your application decides where those pieces go and how to present them.
 
-Browser SDK 0.1.2 accepts files from 3 bytes up to 1 GB (1,000,000,000 bytes) for uploads, downloads, range reads, and media.
+For seekable audio and video, the SDK provides a service worker: a browser-managed script that connects a media element's requests to the SDK's file reader. Deploy the service worker shipped with the same SDK version as your application. This setup requires HTTPS or localhost and the application's page to remain open. Applications with an existing service worker must integrate the media handling with it.
 
-Whole-file downloads and uploads from byte arrays may run out of browser memory well before that limit. Choose range reads or the media integration when loading the whole file would be unsuitable. The [browser SDK API documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.2#random-access-reads) covers range reads, media setup and file-size limits.
+See the released SDK documentation for [whole-file downloads and saves](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#download-and-save), [streaming saves](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#streaming-saves), [range reads](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#random-access-reads) and [seekable media](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#seekable-media).
 
 ## Uploading from a browser
 
 The SDK also accepts browser files and byte arrays for public or private uploads. Your application supplies a payment provider to authorize storage payments; supported integrations include Ethers and Wagmi/Viem. A read-only application does not need these wallet integrations.
 
-File uploads have additional browser requirements, including a worker for file processing and IndexedDB for temporary storage. Use the [browser SDK's upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.2#upload-files) when adding uploads and payment handling.
+Uploads can be from 3 bytes up to 1 GB (1,000,000,000 bytes). Uploading a browser `File` or `Blob` processes it in a background worker and stages encrypted records in browser storage. Uploading a byte array holds the complete input in memory, so it may fail before reaching the upload limit.
+
+If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. In the same page, the SDK retains the prepared input and payment history so the user can resume or discard the failed attempt. For recovery after a reload, retain or reselect the same input and resume with the durable checkpoint that the SDK saves in IndexedDB by default. Check the original wallet to determine whether an unresolved payment went through. This check never authorizes another payment.
+
+Use the released SDK's [upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#upload-files) and [upload recovery guidance](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#resume-a-failed-upload) when adding uploads and payment handling.
+
+## Sharing files with manifests
+
+An `ant://` link can identify one public file or carry a manifest that describes multiple files. A `.ant` file carries the same kind of manifest: a portable list of file names and the information needed to retrieve each one.
+
+Creating a manifest does not upload anything. The manifest is not stored on the Autonomi Network either: the `ant://manifest/...` link or `.ant` file is the manifest, and sharing it gives another person the information needed to retrieve its entries.
+
+Public entries contain an address. An embedded entry contains the DataMap needed to read a private file. Anyone who receives a manifest with an embedded entry receives access to that private file, so protect that manifest as you would protect the DataMap itself.
+
+See the released SDK documentation for [opening manifests and `ant://` links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#manifests-and-ant-links) and [creating manifests and share links](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#creating-manifests-and-share-links).
+
+## Keeping a reference up to date
+
+A pointer gives your application one lasting address whose content can change. This is useful for a profile, catalogue or other record people return to.
+
+The pointer is controlled by its owner seed. Keep that seed safe and keep a durable copy: without it, you cannot update the pointer. Each create or update costs a storage payment. If a paid update is interrupted, the SDK can often finish it without charging again, but only if your application saved its recovery checkpoint first. If a crash hid the transaction identity, reconcile the original wallet and do not start a fresh write while payment is unresolved. Nodes accept a recovered payment proof only while its quotes are less than a day old; after that, the update needs a new payment. Pointer ownership can also be transferred permanently.
+
+A successful write does not establish finality. Only a `final` result from the pointer finality check means the responsible node group agreed with every peer answering and no rival final state. Read the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes.
 
 ## Network compatibility
 
