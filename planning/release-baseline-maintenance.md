@@ -14,7 +14,7 @@ These files move together. A manifest edit alone does not promote documentation.
 
 ## Promotion workflow
 
-1. **Source audit:** start from the exact release recorded on the base branch and compare it with the candidate release. Confirm that the candidate is publicly obtainable, then review the full release notes, public exports and relevant changed source across that range. Record the exact tag and peeled commit, distribution metadata, integrity values, shipped dependencies, support status and known limits required by the profile. Account for each material developer capability as documented, already covered or deliberately deferred.
+1. **Source audit:** confirm that the release is publicly obtainable. Record the exact tag and peeled commit, distribution metadata, integrity values, shipped dependencies, support status and known limits required by the profile.
 2. **Atomic promotion:** update the one manifest source or baseline, every scoped page block, and one new dated promotion record in the same branch. Update rendered documentation in that branch when behavior changed.
 3. **Validation:** run the commands below. Do not bypass a failing guard or move a pin to a branch such as `main`.
 4. **Review:** have a maintainer review the evidence and complete diff. Human review owns pull request scope and must reject unrelated changes that the release does not justify. Merge is the promotion action; validation alone does not approve it.
@@ -45,7 +45,7 @@ Run these commands after committing the candidate promotion so both refs describ
 
 The Browser SDK is the manual example. Its existing `scope.pages` contains six mapped pages, and `sources.ant-browser-sdk` records the release, npm package and shipped WebAssembly (WASM) evidence. The validator requires that source record, all six mapped blocks, one dated promotion record and the tag-to-commit relationships to advance atomically. It also keeps non-Browser verification blocks unchanged as migration debt. The broader prose branch envelope can include rendered changes to other documentation, so human review must reject anything not justified by the release.
 
-This manual route validates recorded structure and relationships; it does not independently fetch the public npm integrity or shipped WASM evidence, or prove that the rendered documentation covers every changed capability. Before approval, the human source audit and review must confirm those values, compare the complete deployed-to-candidate source range and check the promotion-record narrative against public provider truth. The package remains `experimental`; a version change cannot alter that classification.
+This manual route validates recorded structure and relationships; it does not independently fetch the public npm integrity or shipped WASM evidence. Before approval, the human source audit and review must confirm those values and the promotion-record narrative against public provider truth. The package remains `experimental`; a version change cannot alter that classification.
 
 The CLI is the automated-adapter example. `scripts/sweep_poll.py` uses the `ant-cli` release-discovery configuration to prepare evidence for a version-1 `release_baselines.entries.ant-cli/stable` record. That larger record captures GitHub assets, npm platform packages, installers and shipped `ant-core` evidence. Discovery prepares a candidate; it does not approve or merge a promotion.
 

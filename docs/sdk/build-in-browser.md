@@ -100,7 +100,7 @@ Use the released SDK's [upload documentation](https://github.com/WithAutonomi/an
 
 A pointer gives your application one stable address that can refer to changing content. This is useful for a profile, catalogue or other record whose readers need a lasting address while its owner publishes updates.
 
-The owner's secret controls that address, so your application must protect it. Creating or updating the pointer also costs a storage payment. Before the wallet continues, save the SDK's recovery checkpoint somewhere that survives a page reload. If the page closes after payment starts, that checkpoint lets the application finish the original paid update rather than paying again. Do not start a new update while the original payment is unresolved.
+The owner's secret controls that address, so your application must protect it. Creating or updating the pointer also costs a storage payment. Before the wallet continues, save the SDK's recovery checkpoint somewhere that survives a page reload. When that checkpoint captures the payment evidence, it can let the application finish the original paid update without paying again. It cannot recover evidence that was never saved: if the payment remains unresolved, reconcile it with the original wallet and do not start a new update.
 
 Pointer ownership can also be transferred permanently. A successful write does not by itself prove that enough responsible nodes agree on the result. Applications that depend on that agreement must check the pointer's finality status. See the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes.
 
