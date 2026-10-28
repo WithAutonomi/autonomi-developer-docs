@@ -80,7 +80,7 @@ The SDK also accepts browser files and byte arrays for public or private uploads
 
 Uploads can be from 3 bytes up to 1 GB (1,000,000,000 bytes). Uploading a browser `File` or `Blob` processes it in a background worker and stages encrypted records in browser storage. Uploading a byte array holds the complete input in memory, so it may fail before reaching the upload limit.
 
-If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. Keep the page open and let the user resume or discard the failed attempt. The SDK retains the prepared input and payment history, reuses confirmed payment where it can, and stops for explicit authorization if more payment is needed. This recovery state does not survive a page reload.
+If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. In the same page, the SDK retains the prepared input and payment history so the user can resume or discard the failed attempt. For recovery after a reload, retain or reselect the same input and resume with the durable checkpoint that the SDK saves in IndexedDB by default. Reconcile an unresolved payment with the original wallet; it never authorizes another payment.
 
 Use the released SDK's [upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#upload-files) and [upload recovery guidance](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#resume-a-failed-upload) when adding uploads and payment handling.
 
@@ -88,7 +88,7 @@ Use the released SDK's [upload documentation](https://github.com/WithAutonomi/an
 
 An `ant://` link can identify one public file or carry a manifest that describes multiple files. A `.ant` file carries the same kind of manifest: a portable list of file names and the information needed to retrieve each one.
 
-Creating a manifest does not upload anything. The manifest is not stored on the Autonomi Network either: the `ant://` link or `.ant` file is the manifest, and sharing it gives another person the information needed to retrieve its entries.
+Creating a manifest does not upload anything. The manifest is not stored on the Autonomi Network either: the `ant://manifest/...` link or `.ant` file is the manifest, and sharing it gives another person the information needed to retrieve its entries.
 
 Public entries contain an address. An embedded entry contains the DataMap needed to read a private file. Anyone who receives a manifest with an embedded entry receives access to that private file, so protect that manifest as you would protect the DataMap itself.
 
@@ -98,9 +98,9 @@ See the released SDK documentation for [opening manifests and `ant://` links](ht
 
 A pointer gives your application one lasting address whose content can change. This is useful for a profile, catalogue or other record people return to.
 
-The pointer is controlled by its owner seed. Keep that seed safe and keep a durable copy: without it, you cannot update the pointer. Each create or update costs a storage payment. If a paid update is interrupted, the SDK can often finish it without charging again, but only if your application saved its recovery checkpoint first. Nodes accept the recovered payment proof only while its quotes are less than a day old; after that, the update needs a new payment. Pointer ownership can also be transferred permanently.
+The pointer is controlled by its owner seed. Keep that seed safe and keep a durable copy: without it, you cannot update the pointer. Each create or update costs a storage payment. If a paid update is interrupted, the SDK can often finish it without charging again, but only if your application saved its recovery checkpoint first. If a crash hid the transaction identity, reconcile the original wallet and do not start a fresh write while payment is unresolved. Nodes accept a recovered payment proof only while its quotes are less than a day old; after that, the update needs a new payment. Pointer ownership can also be transferred permanently.
 
-Read the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes. It covers checkpoints, recovery and how to confirm that the Autonomi Network agrees on an update.
+A successful write does not establish finality. Only a `final` result from the pointer finality check means the responsible node group agreed with every peer answering and no rival final state. Read the released SDK's [pointer and recovery documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#pointers-and-payment-recovery) before adding pointer writes.
 
 ## Network compatibility
 
