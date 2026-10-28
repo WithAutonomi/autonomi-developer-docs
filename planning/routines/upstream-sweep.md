@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Implements the `source audit -> draft -> verify` workflow defined in `planning/verification-workflow.md` on a daily cadence. Every weekday (and weekend) the routine checks every recorded `source_commit` in the docs against the corresponding upstream HEAD at the declared `source_ref`, audits any drifted page against the exact pinned SHAs the routine intends to stamp, and opens PRs or issues per the topology below.
+Implements the `source audit -> draft -> verify` workflow defined in `planning/verification-workflow.md` on a daily cadence. Every weekday (and weekend) the routine evaluates enrolled release profiles against public release evidence, audits release candidates against exact immutable identities, and opens PRs or issues per the topology below. Legacy `current-merged-truth` blocks are reported as migration debt without moving-ref lookup.
 
 The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning/implementation-plan.md` Section 8. It does not replace the eventual `repository_dispatch`-driven path; it sits alongside as an interim path that works without `notify-docs.yml` being installed in any upstream repo.
 
@@ -20,9 +20,10 @@ The routine is the hosted-scheduled equivalent of Tier 1 + Tier 2 from `planning
 1. Run the open-PR collision check. If a prior `claude/sweep-*` or `claude/prose-*` PR is still open, exit silently. The open PR is itself the signal that drift is pending review; drift is re-detected on the next run.
 2. Run `scripts/sweep_poll.py`. If the JSON status is `error`, open a fresh issue (best-effort labelled `upstream-sweep-failure` — see `## GitHub artifacts the routine produces` for the label-fallback rule) with the JSON diagnostics and a brief cause prose in the body, and exit. A human triages the issue and closes it manually when the underlying cause is understood; the routine never auto-closes failure issues.
 3. Process every `release_manual_review` notice through the existing per-record ambiguity route. Process every `release_candidates` item through the release audit in `## Release candidate audit and promotion`. A release notice or candidate bypasses the ordinary no-drift short-circuit because its synthesized SHA pair may be equal while installer or publication evidence still needs review.
-4. If there is no release candidate or release manual review and `records` is empty or every record has `drifted: false`, exit silently. No GitHub artifact is produced for the happy no-drift path; the routine session log preserves the trace for debugging.
-5. For each ordinary drifted record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
-6. Open at most two PRs (one sweep, one prose draft) plus zero or more issues (best-effort labelled `upstream-sweep-manual-review`) per the topology in `## Page batching rule`, `## Manual-review issue format`, `## Manual-review issue de-duplication`, and `## PR body format`. Manual-review issues are opened **before** PRs so PR bodies can reference issue numbers; a `Tracked in <PR URL>.` comment is posted on each issue once the corresponding PR exists. The PR bodies carry the run summary; no separate aggregated comment is posted anywhere.
+4. Treat `migration_backlog` as an informational migration ledger. Its entries do not enter the audit loop and do not create a PR, issue, or other GitHub artifact. Issue [#104](https://github.com/WithAutonomi/autonomi-developer-docs/issues/104) tracks the migration.
+5. If there is no release candidate or release manual review and `records` is empty or every record has `drifted: false`, exit silently. No GitHub artifact is produced for the happy no-drift path; the routine session log preserves the trace for debugging.
+6. For each ordinary drifted release record, run the `## Opus audit/write/verify loop` (fetch both SHAs, compute the upstream diff, inspect source artifacts, compare against docs, classify the record, apply the page batching rule, write prose where required, run the deferred-record self-check, run practical verification).
+7. Open at most two PRs (one sweep, one prose draft) plus zero or more issues (best-effort labelled `upstream-sweep-manual-review`) per the topology in `## Page batching rule`, `## Manual-review issue format`, `## Manual-review issue de-duplication`, and `## PR body format`. Manual-review issues are opened **before** PRs so PR bodies can reference issue numbers; a `Tracked in <PR URL>.` comment is posted on each issue once the corresponding PR exists. The PR bodies carry the run summary; no separate aggregated comment is posted anywhere.
 
 ## Branch convention
 
@@ -38,9 +39,10 @@ Issues are reserved for things a human needs to address. Successful runs and rou
 | Outcome | GitHub artifact |
 |---|---|
 | No drift | None. Routine exits silently. |
+| Legacy migration backlog only | None. Issue #104 remains the migration ledger. |
 | Drift found, all clean | Sweep PR (and prose draft PR if prose changed). The PR bodies are the run summary. |
 | Drift + ambiguity | PRs plus one issue per deferred record, best-effort labelled `upstream-sweep-manual-review`. |
-| Scanner error or mid-artifact error in step 6 (whole-run fail-closed) | One fresh issue per occurrence, best-effort labelled `upstream-sweep-failure`. The body carries the JSON diagnostic plus a brief cause prose. |
+| Scanner error or mid-artifact error in step 7 (whole-run fail-closed) | One fresh issue per occurrence, best-effort labelled `upstream-sweep-failure`. The body carries the JSON diagnostic plus a brief cause prose. |
 | Open-PR collision (prior `claude/sweep-*` or `claude/prose-*` still open) | None. The open PR is itself the signal. |
 
 The two issue classes are kept distinct because the response differs:
@@ -229,7 +231,7 @@ The body is intentionally concise — no full audit transcript — but every cla
 
 The routine needs:
 
-- read access to all in-scope upstream repos for GitHub API HEAD lookups and the shallow clones,
+- read access to all in-scope upstream repos for release-evidence lookups and the pinned audit checkouts,
 - write access to `withautonomi/autonomi-developer-docs` for branch push, PR creation, and comment/issue creation.
 
 Read access uses a token tier that the prompt resolves at runtime, in order:
@@ -237,7 +239,6 @@ Read access uses a token tier that the prompt resolves at runtime, in order:
 1. `GITHUB_TOKEN` in the routine environment, when set. Recommended for the higher authenticated rate limit (5000 req/hour) and broadest cross-org access.
 2. `gh auth token`, when the routine sandbox carries a GitHub App installation token usable by the `gh` CLI. Provides the higher rate limit on repos covered by the installation; for orgs outside the installation, the scanner's authenticated-403-to-anonymous retry handles the lookup.
 3. Anonymous REST reads, as a fallback when the authenticated request 403s. Limited to 60 req/hour on the sandbox IP.
-4. Unauthenticated `git ls-remote` against the public clone URL, as a final fallback for SHA resolution at the declared `source_ref`. The git smart-HTTP protocol uses a separate code path from the REST API, so this bypasses both org-level fine-grained PAT restrictions and the REST anonymous rate limit. Only works for public repos.
 
 Write access uses the `gh` CLI. `gh` respects `GITHUB_TOKEN` when set, so a configured `GITHUB_TOKEN` must include the docs-repo write scopes (`contents: write`, `pull-requests: write`, `issues: write`) — otherwise issue, label, and PR creation will fail at runtime. When `GITHUB_TOKEN` is unset, `gh` uses its stored auth context (typically a GitHub App installation token, which has the necessary scopes by design). The routine never writes against an upstream repo, only against `withautonomi/autonomi-developer-docs`.
 
@@ -256,14 +257,14 @@ SHAs are bumped only after the per-page audit step succeeds against the pinned u
 
 Scanner fail-closed (whole run aborts):
 
-- GitHub API 4xx/5xx on a declared-ref SHA lookup, after the resolver has exhausted its fallbacks. An authenticated 403 is retried once without the `Authorization` header, and a still-failing lookup is then re-attempted via unauthenticated `git ls-remote` against the public clone URL using the same declared ref. The run aborts only when every path fails. The diagnostic captures the response body, rate-limit state, `x-github-request-id`, and `retry-after` for each REST attempt, plus the `git ls-remote` outcome, so the status comment can distinguish org-policy refusal from anonymous-quota exhaustion from a transient outage.
+- GitHub API 4xx/5xx while reading enrolled release evidence. An authenticated 403 is retried once without the `Authorization` header. The diagnostic captures the response body, rate-limit state, `x-github-request-id`, and `retry-after` for each REST attempt so the status comment can distinguish org-policy refusal from anonymous-quota exhaustion from a transient outage.
 - network timeout,
-- malformed `<!-- verification:` block (missing `source_repo`, `source_ref`, `source_commit`, or `verification_mode`),
+- malformed `<!-- verification:` block (missing `source_repo`, `source_ref`, `source_commit`, `verified_date`, or `verification_mode`),
 - unparseable `repo-registry.yml`,
 - unknown `source_repo` not in the registry,
 - `verification_mode` set to a value other than `current-merged-truth` or `target-manifest`.
 
-The routine treats any non-zero scanner exit as an error condition, opens a fresh `upstream-sweep-failure`-labelled issue with the JSON diagnostics in the body, and exits without opening any PR. The diagnostic includes the response body, rate-limit state, `x-github-request-id`, `retry-after`, and the `git ls-remote` fallback outcome so the issue body alone is enough to triage the cause.
+The routine treats any non-zero scanner exit as an error condition, opens a fresh `upstream-sweep-failure`-labelled issue with the JSON diagnostics in the body, and exits without opening any PR. The diagnostic includes the response body, rate-limit state, `x-github-request-id`, and `retry-after` so the issue body alone is enough to triage the cause.
 
 Per-record fail-closed (one page deferred, rest of run continues):
 
@@ -272,6 +273,8 @@ Per-record fail-closed (one page deferred, rest of run continues):
 That page is held back as a `manual review needed` issue.
 
 `target-manifest` blocks remain listed in the scanner's separate `target_manifest_skipped` array because they are skipped from moving-ref resolution. Enrolled release entries are evaluated separately against public release evidence and synthesize release-driven records. When the run opens a sweep PR, its body and dated record note unchanged manual pins as "pinned by target-manifest, not bumped". A release block moves only through the atomic candidate audit and exact release-tag checks above; the routine never bumps it against a moving HEAD.
+
+`current-merged-truth` blocks remain listed in `migration_backlog` with recorded provenance only. The scanner never resolves their refs or emits ordinary drift records for them. Backlog presence is not an error, ambiguity, release notice, or update candidate and creates no GitHub artifact.
 
 ## Failure modes
 

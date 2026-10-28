@@ -33,22 +33,20 @@ The documentation is written primarily for human developers encountering Autonom
 
 ## Source Of Truth Model
 
-The repo uses two source-of-truth modes:
+The repo retains two verification mode names:
 
-1. `current-merged-truth`
-2. `target-manifest`
-
-### `current-merged-truth`
-
-This is the default mode.
-
-For each page, it means the latest merged commit on the default branch of each in-scope source repo at the time of audit.
+1. `target-manifest`
+2. `current-merged-truth`
 
 ### `target-manifest`
 
-This is an explicit override for launch hardening or release verification.
+This is the authoritative mode for public technical documentation.
 
-When a `target-manifest.yml` exists and a pass explicitly uses it, docs are verified against the pinned refs in that manifest instead of moving default branches.
+`target-manifest.yml` records reviewed public releases and their exact source and distribution evidence. New or refreshed public claims use these pins instead of moving default branches. If a component has no reviewed release profile, its technical update is deferred until that evidence exists.
+
+### `current-merged-truth`
+
+Existing blocks in this mode are historical migration debt. They remain inspectable but cannot be advanced or used to support a new or refreshed public claim.
 
 ## Required Workflow
 
@@ -87,10 +85,10 @@ Verified pages include HTML comment blocks like this:
 ```html
 <!-- verification:
   source_repo: ant-sdk
-  source_ref: main
-  source_commit: 6c4df9b745f3adcb022ac82b6bbc485727297e3e
-  verified_date: 2026-04-02
-  verification_mode: current-merged-truth
+  source_ref: [release tag]
+  source_commit: [release commit SHA]
+  verified_date: [YYYY-MM-DD]
+  verification_mode: target-manifest
 -->
 ```
 
@@ -99,6 +97,8 @@ Rules:
 - `source_commit` must be a real commit SHA
 - multi-repo pages must use multiple verification blocks
 - historical notes and prior synthesis docs are not authoritative
+- baseline changes move atomically with `target-manifest.yml` and a dated promotion record
+- legacy `current-merged-truth` blocks stay byte-identical until their claims are migrated
 
 ## Repository Structure
 
@@ -159,10 +159,11 @@ This repo is designed to become progressively more automated.
 
 The intended model is:
 
-1. detect upstream merged changes
-2. map changed components to affected docs pages
-3. re-run source audit, draft, and verification
-4. update verification SHAs only after re-verification succeeds
+1. observe public releases for enrolled components
+2. reconcile public artifacts with exact source identities
+3. map release candidates to affected docs pages
+4. re-run source audit, draft, and verification
+5. promote the manifest and verification blocks only after human review
 
 The files that support that model are:
 
@@ -191,7 +192,7 @@ If you are editing or reviewing docs here:
 
 1. read `CLAUDE.md`
 2. use `planning/verification-workflow.md`
-3. treat upstream merged code as the authority
+3. treat reviewed release profiles in `target-manifest.yml` as the authority for public claims
 4. keep internal provenance language out of rendered docs prose
 5. favor developer-facing paths and tasks over repo-shaped framing
 

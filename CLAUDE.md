@@ -46,26 +46,30 @@ Network internals (chunks, DataMaps, content addressing, Kademlia routing) are v
 
 ## Source of truth
 
-The repo has two verification modes: `current-merged-truth` and `target-manifest`.
-
-### `current-merged-truth`
-
-This is the default mode. For each page, it means the latest merged commit on the default branch of each in-scope source repo at the time of the source audit.
-
-Rules:
-- Do not document unmerged feature branches, PR branches, or expected future behavior.
-- If a capability exists only on a branch or is "expected by launch", it is out of scope until it merges.
-- Installation, download, package, and version pages must point to artifacts that users can actually install now, even if merged code is newer.
+The repo retains two verification mode names: `target-manifest` and `current-merged-truth`.
 
 ### `target-manifest`
 
-This is an explicit override for launch hardening or release verification. A `target-manifest.yml` pins the exact refs the docs must match.
+This is the authoritative mode for public technical documentation. `target-manifest.yml` records reviewed public releases, exact source commits, scoped pages, and the evidence required by each component profile.
 
 Rules:
-- Use this mode only when a `target-manifest.yml` exists and the task explicitly says to verify against it.
+- Public documentation describes only stable or general-availability software available through supported public routes. Experimental or pre-release material must be dedicated, clearly separated, explicitly labelled, and approved for that scope.
 - Verify against the pinned refs in the manifest, not the moving default branches.
 - Record `verification_mode: target-manifest` in the verification block for pages checked this way.
-- When no target manifest is active, fall back to `current-merged-truth`.
+- Advance a baseline only through a reviewed atomic promotion of its manifest record, scoped page blocks, and dated audit record.
+- If no reviewed release profile supports a new or refreshed technical claim, stop and defer the claim or prepare the missing profile. Never fall back to a moving branch.
+- Default-branch source can help locate implementation and prepare future documentation, but it cannot support a default-public claim.
+
+### `current-merged-truth`
+
+Existing blocks in this mode are historical records of the repository's previous source-selection rule. Under ADR-0016 they are frozen migration debt, not released-truth evidence.
+
+Rules:
+- Do not add this mode to a new page or copy it to another page.
+- Do not advance its ref, commit, or verification date.
+- A pure editorial change may preserve the complete block byte-for-byte. It does not reverify the legacy-backed claim.
+- If a change touches a technical claim supported only by a legacy block, migrate that claim through a reviewed release promotion or defer the change.
+- A page containing both modes is not fully migrated. Do not combine legacy and released evidence to support one claim or developer journey.
 
 ### Required workflow
 
@@ -170,10 +174,10 @@ Each page type has a required structure. Follow the template for the page type d
 
 <!-- verification:
   source_repo: [repo]
-  source_ref: [branch/tag]
+  source_ref: [release tag]
   source_commit: [sha]
   verified_date: [YYYY-MM-DD]
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 
 [One-paragraph summary: what this page helps you do]
@@ -208,10 +212,10 @@ Each page type has a required structure. Follow the template for the page type d
 
 <!-- verification:
   source_repo: [repo]
-  source_ref: [branch/tag]
+  source_ref: [release tag]
   source_commit: [sha]
   verified_date: [YYYY-MM-DD]
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 
 [One-sentence definition of the concept]
@@ -240,10 +244,10 @@ Each page type has a required structure. Follow the template for the page type d
 
 <!-- verification:
   source_repo: [repo]
-  source_ref: [branch/tag]
+  source_ref: [release tag]
   source_commit: [sha]
   verified_date: [YYYY-MM-DD]
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 
 [One-sentence summary: what you will accomplish]
@@ -296,10 +300,10 @@ Each page type has a required structure. Follow the template for the page type d
 
 <!-- verification:
   source_repo: [repo]
-  source_ref: [branch/tag]
+  source_ref: [release tag]
   source_commit: [sha]
   verified_date: [YYYY-MM-DD]
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 
 [One-paragraph overview of what this reference covers]
@@ -341,10 +345,10 @@ Each page type has a required structure. Follow the template for the page type d
 
 <!-- verification:
   source_repo: ant-sdk
-  source_ref: [branch/tag]
+  source_ref: [release tag]
   source_commit: [sha]
   verified_date: [YYYY-MM-DD]
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 
 [Describe the released interface and whether it connects directly or uses a local service. Do not assume all language packages use antd.]
@@ -404,10 +408,10 @@ A page is not verified unless every verification block contains a real `source_c
 ```html
 <!-- verification:
   source_repo: ant-sdk
-  source_ref: main
+  source_ref: [release tag]
   source_commit: abc1234def5678
   verified_date: 2026-04-02
-  verification_mode: current-merged-truth
+  verification_mode: target-manifest
 -->
 ```
 
@@ -473,7 +477,7 @@ local trust scoring | Local Trust Scoring, EigenTrust | Node reputation system b
 
 ### When writing a new page
 
-1. Determine the active verification mode: `current-merged-truth` by default, `target-manifest` only when explicitly active
+1. Identify the reviewed `target-manifest` release profile that supports the page; if none exists, stop and defer or prepare the profile
 2. Run the source audit described in `planning/verification-workflow.md`
 3. Identify the page type from its directory location
 4. Follow the template for that page type (see above)
@@ -488,10 +492,10 @@ local trust scoring | Local Trust Scoring, EigenTrust | Node reputation system b
 ### When updating an existing page
 
 1. Read the current page content first
-2. Determine the active verification mode and re-run the relevant source audit from `planning/verification-workflow.md`
-3. Make the minimum change required to address the drift
+2. Determine which claims are supported by `target-manifest` and which remain frozen legacy debt, then re-run the relevant release audit from `planning/verification-workflow.md`
+3. Make the minimum change required to match the reviewed release
 4. Preserve the existing structure, tone, and formatting
-5. Update the verification metadata to reflect the new source commit
+5. Update verification metadata only through the atomic release-promotion workflow; preserve unrelated and legacy blocks byte-for-byte
 6. Do not rewrite sections that are still accurate
 
 ### When reviewing a page (Greptile / PR review)

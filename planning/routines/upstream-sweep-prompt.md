@@ -75,7 +75,7 @@ Issue shape:
 - **Label**: attempt to attach `upstream-sweep-failure`. If `gh issue create --label upstream-sweep-failure …` fails because the label is missing or the token lacks label-write permission, fall back to creating the same issue without the label and append a note to the body stating that the intended label could not be attached and quoting the underlying error. Only a true issue-creation failure (auth/network/repo-write-permission error from `gh issue create` with no label) aborts the routine.
 - **Body** has two sections:
   - `## Fail-closed diagnostic` — the full `sweep_report.json` content in a fenced JSON block.
-  - `## Cause` — one or two sentences derived from the diagnostic fields the scanner captures (`body_message`, `ratelimit_remaining`, `ratelimit_reset`, `request_id`, `retry_after`, `git_ls_remote.error`). Quote the specific cause; do not infer repo state from a bare status code. Examples of the right phrasing: "Anonymous read returned 403 with `body_message: 'API rate limit exceeded for <ip>'` — the routine sandbox burned through the 60 req/hour anon quota. The next run may recover once the window resets." or "Authenticated request returned 403 with `body_message: 'Resource not accessible by personal access token'` — `saorsa-labs` org refuses fine-grained PATs; `git ls-remote` fallback also failed with `<error>`."
+  - `## Cause` — one or two sentences derived from the diagnostic fields the scanner captures (`body_message`, `ratelimit_remaining`, `ratelimit_reset`, `request_id`, `retry_after`). Quote the specific cause; do not infer repo state from a bare status code. Example: "Anonymous read returned 403 with `body_message: 'API rate limit exceeded for <ip>'` — the routine sandbox burned through the 60 req/hour anonymous quota. The next run may recover once the window resets."
 
 `upstream-sweep-failure` issues are never auto-closed by the routine. A human triages each one and closes it deliberately when the underlying cause is understood. Duplicate failure issues across consecutive runs are intentional — they record discrete observations.
 
@@ -83,11 +83,13 @@ If `notices` is non-empty (for example, the `unauthenticated_mode` info diagnost
 
 If `target_manifest_skipped` is non-empty, include unchanged manual pins in the PR body and `planning/sweeps/<YYYY-MM-DD>.md` as "pinned by target-manifest, not bumped". Enrolled release blocks are still listed there because that array means only “skipped from moving-ref resolution”; process them through `release_candidates` and `release_manual_review` notices instead of treating them as ignored.
 
+Treat `migration_backlog` as an informational ledger only. Do not fetch its refs, enter its items into the audit loop, or create a PR, issue, comment, or run summary merely because it is non-empty. Issue #104 tracks this migration debt.
+
 Read `release_candidates` and every `release_manual_review` notice before applying the no-drift short-circuit. A candidate enters the release audit in step 4.10. A release manual-review notice enters the existing per-record ambiguity route. Its `baseline` field contains the reviewed source, GitHub release, npm, and installer evidence when a baseline exists; its `current` field contains the current GitHub, npm, and installer observations for the dated issue comment.
 
 ### 3. Short-circuit on no drift
 
-If there is no release candidate and no `release_manual_review` notice, and `records` is empty or every record has `drifted: false`, exit silently. Do not short-circuit a candidate, provider disagreement/incompleteness, or installer-only drift merely because a synthesized SHA pair is equal.
+If there is no release candidate and no `release_manual_review` notice, and `records` is empty or every record has `drifted: false`, exit silently regardless of `migration_backlog`. Do not short-circuit a candidate, provider disagreement/incompleteness, or installer-only drift merely because a synthesized SHA pair is equal.
 
 ### 4. Opus audit/write/verify loop
 

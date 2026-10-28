@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Deterministic upstream-drift scanner for the daily sweep routine.
+"""Deterministic release scanner for the daily sweep routine.
 
-Walks every <!-- verification: ... --> block in docs/**/*.md.
-Resolves each (repo, ref) pair against repo-registry.yml plus a GitHub API
-HEAD lookup, and emits a per-record JSON drift report on stdout.
+Walks every <!-- verification: ... --> block in docs/**/*.md. Released profiles
+emit candidate records; legacy moving-source blocks emit migration backlog
+entries without resolving their refs.
 
 Read-only. Never modifies files. Exits 0 on success, 2 on fail-closed errors.
 See planning/routines/upstream-sweep.md for the policy this implements.
@@ -17,7 +17,6 @@ import importlib.util
 import json
 import os
 import re
-import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -38,6 +37,7 @@ SEMVER_RE = re.compile(
     r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\Z"
 )
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
+VERIFIED_DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
 GITHUB_RELEASE_TIMESTAMP_RE = re.compile(
     r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z\Z"
 )
@@ -59,6 +59,7 @@ REQUIRED_DOC_KEYS = (
     "source_repo",
     "source_ref",
     "source_commit",
+    "verified_date",
     "verification_mode",
 )
 
@@ -168,6 +169,20 @@ def github_request(path: str, token: str | None = None) -> Any:
                         ),
                     }
                 ) from anon_exc
+            except (UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError) as anon_exc:
+                raise FailClosed(
+                    {
+                        "kind": "github_api_parse_error",
+                        "url": url,
+                        "auth_status": auth_context["status"],
+                        "auth": auth_context,
+                        "anon_parse_error": str(anon_exc),
+                        "message": (
+                            f"GitHub API returned invalid JSON on anonymous "
+                            f"retry for {path}: {anon_exc}"
+                        ),
+                    }
+                ) from anon_exc
         context = _http_error_context(auth_exc)
         raise FailClosed(
             {
@@ -193,41 +208,6 @@ def github_request(path: str, token: str | None = None) -> Any:
                 "message": f"GitHub API returned invalid JSON for {path}: {exc}",
             }
         ) from exc
-
-
-def git_ls_remote_sha(url: str, ref: str) -> tuple[str | None, str | None]:
-    """Resolve a named ref to a 40-hex SHA via unauthenticated git ls-remote.
-
-    git smart-HTTP uses a different infrastructure path from the REST API, so
-    this bypasses both org-level fine-grained PAT restrictions and the REST
-    anonymous rate limit. Returns (sha, None) on success or (None, error) on
-    failure. A bare commit SHA in `ref` cannot be resolved this way (ls-remote
-    lists refs, not arbitrary objects).
-    """
-    try:
-        result = subprocess.run(
-            ["git", "ls-remote", "--exit-code", url, ref],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        return None, f"git ls-remote {url} {ref}: timeout after 30s"
-    except FileNotFoundError:
-        return None, "git ls-remote: 'git' executable not found on PATH"
-    if result.returncode != 0:
-        err = (result.stderr or result.stdout).strip()[:300]
-        return (
-            None,
-            f"git ls-remote {url} {ref}: exit {result.returncode}: {err}",
-        )
-    for line in result.stdout.splitlines():
-        sha, _, _ = line.partition("\t")
-        sha = sha.strip()
-        if len(sha) == 40 and all(c in "0123456789abcdef" for c in sha):
-            return sha, None
-    return None, f"git ls-remote {url} {ref}: no 40-hex SHA in output"
 
 
 def parse_owner_repo(url: str) -> tuple[str, str]:
@@ -448,15 +428,49 @@ def _release_baselines(manifest: dict[str, Any]) -> dict[str, Any]:
     return release["entries"]
 
 
-def parse_verification_block(body: str) -> dict[str, str]:
+def parse_verification_block(body: str, location: str) -> dict[str, str]:
     fields: dict[str, str] = {}
     for raw_line in body.splitlines():
         line = raw_line.strip()
         if not line:
             continue
         match = KEY_VALUE_RE.match(line)
-        if match:
-            fields[match.group(1)] = match.group(2)
+        if match is None:
+            raise FailClosed(
+                {
+                    "kind": "doc_block_unparseable_line",
+                    "location": location,
+                    "line": line[:200],
+                    "message": (
+                        f"verification block at {location} has an "
+                        f"unparseable line: {line[:200]!r}"
+                    ),
+                }
+            )
+        key = match.group(1)
+        if key in fields:
+            raise FailClosed(
+                {
+                    "kind": "doc_block_duplicate_key",
+                    "location": location,
+                    "key": key,
+                    "message": f"verification block at {location} repeats key: {key}",
+                }
+            )
+        fields[key] = match.group(2)
+    unknown = sorted(set(fields) - set(REQUIRED_DOC_KEYS))
+    if unknown:
+        raise FailClosed(
+            {
+                "kind": "doc_block_unknown_keys",
+                "location": location,
+                "unknown": unknown,
+                "message": (
+                    f"verification block at {location} has unknown keys: "
+                    f"{', '.join(unknown)}"
+                ),
+            }
+        )
     return fields
 
 
@@ -466,12 +480,9 @@ def line_of_offset(text: str, offset: int) -> int:
 
 def walk_docs(
     registry: dict[str, dict[str, Any]],
-    records: list[dict[str, Any]],
+    migration_backlog: list[dict[str, Any]],
     target_manifest_skipped: list[dict[str, Any]],
-    pair_set: set[tuple[str, str]],
-    release_held: set[tuple[str, str]] | None = None,
 ) -> None:
-    release_held = release_held or set()
     if not DOCS_DIR.exists():
         return
     for path in sorted(DOCS_DIR.rglob("*.md")):
@@ -479,7 +490,8 @@ def walk_docs(
         rel = str(path.relative_to(REPO_ROOT))
         for match in VERIFICATION_BLOCK_RE.finditer(text):
             block_line = line_of_offset(text, match.start())
-            fields = parse_verification_block(match.group(1))
+            location = f"{rel}:{block_line}"
+            fields = parse_verification_block(match.group(1), location)
             missing = [k for k in REQUIRED_DOC_KEYS if k not in fields]
             if missing:
                 raise FailClosed(
@@ -521,7 +533,41 @@ def walk_docs(
                 )
             ref = fields["source_ref"]
             recorded = fields["source_commit"]
-            location = f"{rel}:{block_line}"
+            if SHA_RE.fullmatch(recorded) is None:
+                raise FailClosed(
+                    {
+                        "kind": "doc_block_invalid_source_commit",
+                        "location": location,
+                        "source_commit": recorded,
+                        "message": (
+                            f"verification block at {location} must record a "
+                            "lowercase 40-hex source_commit"
+                        ),
+                    }
+                )
+            verified_date = fields["verified_date"]
+            try:
+                valid_date = (
+                    VERIFIED_DATE_RE.fullmatch(verified_date) is not None
+                    and datetime.strptime(verified_date, "%Y-%m-%d").strftime(
+                        "%Y-%m-%d"
+                    )
+                    == verified_date
+                )
+            except ValueError:
+                valid_date = False
+            if not valid_date:
+                raise FailClosed(
+                    {
+                        "kind": "doc_block_invalid_verified_date",
+                        "location": location,
+                        "verified_date": verified_date,
+                        "message": (
+                            f"verification block at {location} must record a "
+                            "real YYYY-MM-DD verified_date"
+                        ),
+                    }
+                )
             if mode == "target-manifest":
                 target_manifest_skipped.append(
                     {
@@ -532,80 +578,14 @@ def walk_docs(
                     }
                 )
                 continue
-            if (rel, repo_key) in release_held:
-                continue
-            records.append(
+            migration_backlog.append(
                 {
                     "location": location,
-                    "scope": "docs",
                     "repo": repo_key,
                     "ref": ref,
                     "recorded_sha": recorded,
-                    "head_sha": None,
-                    "drifted": None,
                 }
             )
-            pair_set.add((repo_key, ref))
-
-
-def resolve_head_shas(
-    pair_set: set[tuple[str, str]],
-    registry: dict[str, dict[str, Any]],
-    token: str | None,
-) -> dict[tuple[str, str], str]:
-    head_shas: dict[tuple[str, str], str] = {}
-    for repo_key, ref in sorted(pair_set):
-        owner, repo = parse_owner_repo(registry[repo_key]["url"])
-        encoded_ref = urllib.parse.quote(ref, safe="")
-        try:
-            commit = github_request(
-                f"/repos/{owner}/{repo}/commits/{encoded_ref}", token
-            )
-        except FailClosed as rest_exc:
-            # Final fallback: unauthenticated git ls-remote. Bypasses both
-            # org-level fine-grained PAT restrictions and the REST anonymous
-            # rate-limit since git smart-HTTP uses a separate code path.
-            clone_url = f"https://github.com/{owner}/{repo}.git"
-            fallback_sha, fallback_err = git_ls_remote_sha(clone_url, ref)
-            if fallback_sha is not None:
-                head_shas[(repo_key, ref)] = fallback_sha
-                continue
-            diag = dict(rest_exc.diagnostic)
-            diag["git_ls_remote"] = {
-                "url": clone_url,
-                "ref": ref,
-                "error": fallback_err,
-            }
-            diag["message"] = (
-                f"{diag.get('message', '')}; ls-remote fallback also failed: "
-                f"{fallback_err}"
-            )
-            raise FailClosed(diag) from rest_exc
-        sha = commit.get("sha")
-        if not isinstance(sha, str) or not sha:
-            raise FailClosed(
-                {
-                    "kind": "github_head_sha_missing",
-                    "repo": repo_key,
-                    "ref": ref,
-                    "message": (
-                        f"GitHub /repos/{owner}/{repo}/commits/{ref} returned "
-                        f"no sha"
-                    ),
-                }
-            )
-        head_shas[(repo_key, ref)] = sha
-    return head_shas
-
-
-def attach_drift(
-    records: list[dict[str, Any]],
-    head_shas: dict[tuple[str, str], str],
-) -> None:
-    for record in records:
-        head = head_shas[(record["repo"], record["ref"])]
-        record["head_sha"] = head
-        record["drifted"] = record["recorded_sha"] != head
 
 
 def _provider_json(url: str, provider: str, token: str | None = None) -> Any:
@@ -620,12 +600,13 @@ def _provider_json(url: str, provider: str, token: str | None = None) -> Any:
         with urllib.request.urlopen(request, timeout=30) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
+        context = _http_error_context(exc)
         raise FailClosed(
             {
                 "kind": f"{provider}_http_error",
                 "url": url,
-                "status": exc.code,
-                "message": f"{provider} returned HTTP {exc.code} for {url}",
+                **context,
+                "message": f"{provider} returned HTTP {context['status']} for {url}",
             }
         ) from exc
     except urllib.error.URLError as exc:
@@ -1204,12 +1185,13 @@ def _match_page_block(
         ) from exc
     matches: list[dict[str, Any]] = []
     for match in VERIFICATION_BLOCK_RE.finditer(text):
-        fields = parse_verification_block(match.group(1))
+        location = f"{page}:{line_of_offset(text, match.start())}"
+        fields = parse_verification_block(match.group(1), location)
         if fields.get("source_repo") == repo_key:
             matches.append(
                 {
                     "fields": fields,
-                    "location": f"{page}:{line_of_offset(text, match.start())}",
+                    "location": location,
                 }
             )
     if len(matches) != 1:
@@ -1530,42 +1512,17 @@ def main() -> int:
         components, manifest = load_release_configuration()
         validate_release_manifest(manifest, components, registry)
         baselines = _release_baselines(manifest)
-        records: list[dict[str, Any]] = []
+        migration_backlog: list[dict[str, Any]] = []
         target_manifest_skipped: list[dict[str, Any]] = []
-        pair_set: set[tuple[str, str]] = set()
-
-        release_held: set[tuple[str, str]] = set()
-        for component_name, _, _ in _release_enrolments(components):
-            component = components[component_name]
-            repo_key = component.get("repo")
-            feeds_pages = component.get("feeds_pages")
-            if not isinstance(repo_key, str) or not isinstance(feeds_pages, list):
-                raise FailClosed(
-                    {
-                        "kind": "release_discovery_configuration_error",
-                        "component": component_name,
-                        "message": "release component requires repo and feeds_pages",
-                    }
-                )
-            release_held.update(
-                (f"docs/{page}", repo_key)
-                for page in feeds_pages
-                if isinstance(page, str)
-            )
-
-        walk_docs(registry, records, target_manifest_skipped, pair_set, release_held)
-
-        head_shas = resolve_head_shas(pair_set, registry, token)
-        attach_drift(records, head_shas)
-        release_records, release_candidates = discover_releases(
-            components, registry, baselines, token, notices
-        )
-        records.extend(release_records)
-        records.sort(
+        walk_docs(registry, migration_backlog, target_manifest_skipped)
+        migration_backlog.sort(
             key=lambda record: (
                 record["location"].rsplit(":", 1)[0],
                 int(record["location"].rsplit(":", 1)[1]),
             )
+        )
+        records, release_candidates = discover_releases(
+            components, registry, baselines, token, notices
         )
 
     except FailClosed as exc:
@@ -1577,6 +1534,7 @@ def main() -> int:
                     "records": [],
                     "release_candidates": [],
                     "target_manifest_skipped": [],
+                    "migration_backlog": [],
                     "notices": notices,
                     "errors": [exc.diagnostic],
                 },
@@ -1591,6 +1549,7 @@ def main() -> int:
         "records": records,
         "release_candidates": release_candidates,
         "target_manifest_skipped": target_manifest_skipped,
+        "migration_backlog": migration_backlog,
         "notices": notices,
         "errors": [],
     }

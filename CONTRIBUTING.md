@@ -12,15 +12,16 @@ Thanks for helping improve the Autonomi developer docs.
 
 - Open a pull request for changes to `main`.
 - Keep each change focused and as small as possible.
-- Treat merged upstream code as the technical source of truth.
-- Do not document unmerged branches or future behavior as if it is current.
+- Treat reviewed public releases in `target-manifest.yml` as the technical source of truth.
+- Use default-branch code only to locate implementation or prepare future work, never to support a default-public claim.
 - Keep provenance and evidence narration out of rendered docs prose.
 
 ## Updating Docs
 
 - Identify the page type and relevant source repos before editing.
-- Use `current-merged-truth` unless a task explicitly activates `target-manifest`.
-- Update verification blocks when you change a verified page.
+- Use the reviewed `target-manifest` profile for every new or refreshed technical claim. If no profile exists, defer the claim or prepare the profile.
+- Do not advance an existing `current-merged-truth` block. Preserve it byte-for-byte for pure editorial work, or migrate its claim through an atomic release promotion.
+- Update release verification blocks together with `target-manifest.yml` and a dated promotion record.
 - Use terminology from `CLAUDE.md` exactly.
 - Keep code examples complete, runnable, and explicit about which developer interface they cover.
 - Use supported interface labels consistently in navigation and overview pages; help readers choose by task rather than declaring one interface universally primary.

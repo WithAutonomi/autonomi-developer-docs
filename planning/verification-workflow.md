@@ -9,32 +9,29 @@ The repo follows a strict source-of-truth model. Pages must describe the active 
 Use this workflow for:
 - new pages
 - rewrites of inaccurate pages
-- updates after upstream merges
-- launch-hardening passes
+- updates after public releases
+- migration of legacy verification records
 
 ## Active mode
 
-The repo has two operating modes.
-
-### `current-merged-truth`
-
-This is the default mode.
-
-Meaning:
-- for each in-scope repo, use the latest merged commit on the default branch at the time of the source audit
-- ignore unmerged branches, PR branches, and expected future behavior
-
-Use this mode unless a `target-manifest.yml` is explicitly active.
+The repo retains two verification mode names during migration.
 
 ### `target-manifest`
 
-This is the launch-hardening or release-verification mode.
+This is the authoritative mode for public technical documentation.
 
 Meaning:
-- use the refs pinned in `target-manifest.yml`
-- do not follow moving default branches for pages verified in this mode
+- use a reviewed public release profile and exact refs pinned in `target-manifest.yml`
+- include the public distribution, shipped dependency, and deployed-network evidence required by the affected claims
+- advance the manifest, scoped page blocks, and dated promotion record atomically
 
-Use this mode only when the manifest exists and the task explicitly says to use it.
+If no reviewed profile supports the claim, defer the technical update or prepare the missing profile. Never fall back to a moving branch.
+
+### `current-merged-truth`
+
+Existing blocks in this mode are historical records of the previous source-selection rule. They are frozen migration debt, not authority for a new or refreshed public claim.
+
+A pure editorial change may leave such a block byte-identical. Work that touches its technical claim must migrate that claim through a reviewed release promotion or defer it.
 
 ## Required workflow
 
@@ -52,8 +49,8 @@ Before writing or editing a page:
 
 1. Identify the page type.
 2. Identify the source repos for the page.
-3. Determine the active mode: `current-merged-truth` or `target-manifest`.
-4. Resolve the exact refs and commit SHAs for each source repo.
+3. Identify the reviewed `target-manifest` profile for every affected claim and any legacy blocks that must remain untouched.
+4. Resolve the exact public release refs, commit SHAs, and distribution evidence.
 5. Collect the canonical source artifacts for the page.
 6. Extract the facts, commands, types, and examples the page is allowed to describe.
 
@@ -81,7 +78,7 @@ Use the canonical interface artifacts first:
 - exported request/response models
 - package metadata and published install instructions
 
-If the interface is not present in these artifacts on the active source of truth, do not document it as current.
+If the interface is not present in these artifacts in the reviewed release, do not document it as available.
 
 #### Getting Started and How-to pages
 
@@ -202,22 +199,24 @@ Meaning:
 
 Pages about installation, binaries, packages, and versions must point to artifacts users can actually download or install now. These pages are not allowed to get ahead of published artifacts.
 
-### Unmerged branches
+### Default branches and previews
 
-Unmerged branches are not part of the source of truth in `current-merged-truth` mode. If a feature exists only on a branch, it stays out of the docs until it merges.
+Default branches and feature branches can inform future documentation, but they are not public release evidence. Future or pre-release material must remain separate from default-public documentation and cannot advance its verification records.
 
-### Launch hardening
+### Legacy verification blocks
 
-When a launch-ready state is declared, create `target-manifest.yml` and re-verify the launch-critical pages against the pinned refs. This is a focused override, not the default day-to-day mode.
+Do not renew a `current-merged-truth` block. Preserve it byte-for-byte during unrelated editorial work. If the work changes a claim it supported, migrate that claim to the active release set or defer the change.
+
+A page containing both modes is a temporary migration state, not a fully verified page. Do not combine the two modes to support one claim or complete developer journey.
 
 ## Automation
 
 Automation must follow the same workflow:
 
-1. detect upstream merged changes
-2. map changed components to affected pages
-3. mark those pages stale
+1. observe public releases for enrolled component profiles
+2. reconcile release channels and exact source identity
+3. map release candidates to affected pages
 4. re-run source audit -> draft -> verify
-5. update verification SHAs only after re-verification succeeds
+5. promote the manifest and verification blocks only after re-verification and human review succeed
 
-Automation does not change the source-of-truth rules. It applies them.
+Automation reports legacy blocks as migration debt and never compares them with moving branch heads. It does not approve or merge a release promotion.
