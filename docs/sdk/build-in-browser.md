@@ -80,7 +80,7 @@ The SDK also accepts browser files and byte arrays for public or private uploads
 
 Uploads can be from 3 bytes up to 1 GB (1,000,000,000 bytes). Uploading a browser `File` or `Blob` processes it in a background worker and stages encrypted records in browser storage. Uploading a byte array holds the complete input in memory, so it may fail before reaching the upload limit.
 
-If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. In the same page, the SDK retains the prepared input and payment history so the user can resume or discard the failed attempt. For recovery after a reload, retain or reselect the same input and resume with the durable checkpoint that the SDK saves in IndexedDB by default. Reconcile an unresolved payment with the original wallet; it never authorizes another payment.
+If an upload fails partway through, the wallet may already have paid, so starting again could pay twice. In the same page, the SDK retains the prepared input and payment history so the user can resume or discard the failed attempt. For recovery after a reload, retain or reselect the same input and resume with the durable checkpoint that the SDK saves in IndexedDB by default. Check the original wallet to determine whether an unresolved payment went through. This check never authorizes another payment.
 
 Use the released SDK's [upload documentation](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#upload-files) and [upload recovery guidance](https://github.com/WithAutonomi/ant-browser-sdk/tree/v0.1.4#resume-a-failed-upload) when adding uploads and payment handling.
 
