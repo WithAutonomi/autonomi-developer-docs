@@ -317,7 +317,7 @@ On reviewed promotion, each of the two CLI blocks keeps `source_repo`, `source_r
 
 ## Scanner report compatibility
 
-The scanner retains the existing top-level fields and meanings documented by [ADR-0004](../adr/ADR-0004-deterministic-scanner-model-audit-loop.md#neutral--operational):
+The CLI discovery unit retained the existing top-level fields and meanings documented by [ADR-0004](../adr/ADR-0004-deterministic-scanner-model-audit-loop.md#neutral--operational):
 
 ```text
 status
@@ -328,11 +328,13 @@ notices
 errors
 ```
 
-It adds one top-level field:
+It added one top-level field:
 
 ```text
 release_candidates
 ```
+
+The later released-truth foundation adds `migration_backlog`, which is always an array and is empty on error. It lists each legacy `current-merged-truth` block once without moving-ref resolution. See [Released-truth foundation specification](released-truth-foundation-spec.md#scanner-behavior) for the active report contract.
 
 `release_candidates` is always an array and is empty on error, no agreement, incomplete evidence, or no drift. Each candidate contains `component`, `context`, `version`, `source`, `github_release`, `npm`, `pages`, and `records`. `source`, `github_release`, and `npm` use the manifest field shapes above. Installer, shipped-dependency, scoped-page, and promotion evidence is added by the audit, so discovery does not claim it in the candidate. Each page has `path` and a sorted `components` array. Each record is a release-driven record synthesized under the rules above with only the existing seven fields: `location`, `scope`, `repo`, `ref`, `recorded_sha`, `head_sha`, and `drifted`. No existing field is removed or renamed.
 
@@ -433,7 +435,7 @@ Fixtures must cover:
 9. Agreement with no incumbent producing a candidate; exact projection equality producing no release drift; a greater complete release producing a candidate; and lower or same-version-mutated projection evidence producing manual review. URL, timestamp, order, and download-count changes alone do not produce release drift.
 10. Installer metadata observation on every run, including no-candidate runs; immutable source-commit/blob agreement; and mismatch while release providers equal baseline, using existing per-record ambiguity and no installer outcome/fingerprint. Isolated selected-version execution remains an audit fixture, not scanner behavior.
 11. `feeds_pages` and reverse-map derivation, the two first-unit pages, all seven deferred pages, byte-identical legacy blocks, and strict missing/multiple/mismatched enrolled-block failures.
-12. Existing output fields unchanged, additive `release_candidates`, deterministic release-driven records for no-change/candidate/disagreement/installer cases, retained `target_manifest_skipped`, and no timestamp in identity/deduplication.
+12. Existing output fields unchanged, additive `release_candidates`, deterministic release-driven records for no-change/candidate/disagreement/installer cases, retained `target_manifest_skipped`, and no timestamp in identity/deduplication. The later foundation unit adds `migration_backlog` under its own specification.
 13. Existing `claude/sweep-*`/`claude/prose-*` collision and envelope behavior, valid atomic release promotion fixtures, browser-pin byte preservation, metadata/prose separation, and rejection of a protected change under an unrelated branch name.
 14. No closed-PR suppression, unchanged existing per-record fingerprint/body formatting, and a reused issue's dated comment containing exact current normalized conflict evidence even when no PR exists.
 15. Local authenticity fixtures for provider hashes, checksum entries, every advertised signature, canonical key/tool/context evidence, and each fail-closed condition; no live archive or signature download occurs in the implementation slice.

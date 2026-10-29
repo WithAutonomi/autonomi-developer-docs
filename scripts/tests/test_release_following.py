@@ -1207,7 +1207,6 @@ class ReleaseDiscoveryTest(FixtureRepo):
         failure = scanner.FailClosed({"kind": "release_provider_fixture", "message": "fixture failure"})
         with (
             patch.multiple(scanner, **paths),
-            patch.object(scanner, "resolve_head_shas", return_value={}),
             patch.object(scanner, "discover_releases", side_effect=failure),
             patch.dict("os.environ", {"GITHUB_TOKEN": "fixture"}),
             contextlib.redirect_stdout(output),
@@ -1217,6 +1216,7 @@ class ReleaseDiscoveryTest(FixtureRepo):
         self.assertEqual(code, 2)
         self.assertEqual(report["status"], "error")
         self.assertEqual(report["records"], [])
+        self.assertEqual(report["migration_backlog"], [])
         self.assertEqual(report["release_candidates"], [])
 
     def test_main_malformed_github_published_at_fails_closed(self) -> None:
@@ -1261,6 +1261,7 @@ class ReleaseDiscoveryTest(FixtureRepo):
                 self.assertEqual(code, 2)
                 self.assertEqual(report["status"], "error")
                 self.assertEqual(report["records"], [])
+                self.assertEqual(report["migration_backlog"], [])
                 self.assertEqual(report["release_candidates"], [])
                 self.assertEqual(
                     report["errors"][0]["kind"], "github_release_shape_error"
@@ -1305,6 +1306,18 @@ class ReleaseDiscoveryTest(FixtureRepo):
         ]
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "ok")
+        self.assertEqual(len(report["migration_backlog"]), len(MAPPED))
+        self.assertEqual(
+            {
+                entry["location"]
+                for entry in report["migration_backlog"]
+                if entry["location"].startswith("docs/cli/")
+            },
+            {
+                "docs/cli/command-reference.md:1",
+                "docs/cli/use-the-cli.md:1",
+            },
+        )
         self.assertEqual(len(observations), 1)
         self.assertEqual(len(observations[0]["installers"]), 2)
 
