@@ -2,10 +2,10 @@
 
 <!-- verification:
   source_repo: ant-client
-  source_ref: main
-  source_commit: a954ec83bd1988a3a8e12c2a748db0d959922461
-  verified_date: 2026-08-25
-  verification_mode: current-merged-truth
+  source_ref: ant-cli-v0.3.12
+  source_commit: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+  verified_date: 2026-10-29
+  verification_mode: target-manifest
 -->
 
 Reference for the released `ant` CLI command tree and its flags. The option tables stay grouped by command family for easier scanning. Hidden or advanced flags are called out where they matter for troubleshooting.
@@ -41,6 +41,23 @@ ant
 ├── chunk
 │   ├── put
 │   └── get
+├── pointer
+│   ├── keygen
+│   ├── address
+│   ├── create
+│   ├── update
+│   ├── transfer
+│   ├── finality
+│   ├── controller
+│   ├── get
+│   └── resolve
+├── manifest
+│   ├── create
+│   ├── list
+│   ├── show
+│   ├── link
+│   ├── export
+│   └── download
 └── update
 ```
 
@@ -57,7 +74,7 @@ The root command accepts flags used across data and node operations. Connection 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `--json` | boolean | No | Request structured JSON from commands that support it. Wallet and chunk commands keep their normal text or raw-byte output. |
-| `-b, --bootstrap <IP:PORT>` | socket list | No | Bootstrap peers for data operations. Can be comma-separated or repeated. |
+| `-b, --bootstrap <ADDRESS>` | multiaddress list | No | QUIC bootstrap peers for data operations. Can be comma-separated or repeated. Legacy `IP:PORT` values are accepted. |
 | `--devnet-manifest <PATH>` | path | No | Path to a local devnet manifest JSON file |
 | `--allow-loopback` | boolean | No | Allow loopback connections for local devnet or local testing |
 | `--ipv4-only` | boolean | No | Disable dual-stack and force IPv4-only mode |
@@ -77,7 +94,7 @@ When you load a devnet manifest that carries an EVM block, set `--evm-network` e
 
 | Variable | Description |
 |------|------|
-| `SECRET_KEY` | Required for uploads and wallet commands |
+| `SECRET_KEY` | Required for wallet commands, file and chunk uploads, pointer writes, manifest creation that uploads files, and every manifest export using `--compact` |
 
 **Example:**
 
@@ -111,6 +128,8 @@ Uploads a file with self-encryption and EVM payment.
 ant file upload photo.jpg --public
 ```
 
+After a successful upload, the CLI attempts to record the file in the local manifest history. The normal output includes the file's SHA-256 and, when the history record can be written, an ID you can pass to `ant manifest download`. If the history write fails, the CLI warns you without changing the successful upload result.
+
 ### Download a file
 
 **Command:** `ant file download [ADDRESS]`
@@ -121,11 +140,12 @@ Downloads a public file by address or a private file using a local DataMap file.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `ADDRESS` | string | Conditionally | Public DataMap address. Required unless `--datamap` is provided. |
+| `ADDRESS` | string | Conditionally | Public DataMap address as 64 hexadecimal characters or an `ant://ADDRESS` link. Required unless `--datamap` is provided. |
 | `--datamap <PATH>` | path | No | Local `.datamap` file for private download |
-| `-o, --output <PATH>` | path | Conditionally | Required for address-based downloads. Optional for `--datamap` downloads that can infer the original filename. |
+| `-o, --output <PATH>` | path | No | Output path. Defaults to the hexadecimal address for address-based downloads, or to the original filename inferred from a `.datamap` filename. |
 | `--peers <COUNT>` | integer | No | Number of closest peers to try for each chunk fetch. Accepts a positive integer. `--peer-count` is accepted as an alias. |
 | `--all-peers` | boolean | No | Diagnostic mode: download the file as usual, then fetch each chunk from every selected closest peer and print ranked per-peer results. `--try-all-peers` is accepted as an alias. The number of closest peers swept per chunk comes from `--peers`, defaulting to the client close group size. With `--json`, the per-peer results are emitted as a `chunk_peer_check` object on the download result. |
+| `--download-diagnostics <PATH>` | path | No | Write one JSON Lines record per normal chunk-fetch attempt. Cannot be combined with `--all-peers`. |
 
 **Example:**
 
@@ -151,7 +171,7 @@ ant file download 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb707
 
 **Command:** `ant file cost <PATH>`
 
-Estimates the upload cost for a file without uploading it.
+Estimates the upload cost for a file without uploading it. The command encrypts the file locally to determine its chunk count and queries the Autonomi Network for prices. It does not require a wallet or make a payment.
 
 **Parameters:**
 
@@ -216,6 +236,326 @@ Diagnostic example (try all closest peers and rank results):
 ant chunk get "$CHUNK_ADDRESS" --all-peers --peer-count 5
 ```
 
+## Pointer commands
+
+Pointers are owner-signed mutable references. Generating a key and deriving its pointer address are offline operations. Creating, updating, and transferring a pointer are paid operations that require `SECRET_KEY` for the payment wallet. A transfer is irreversible after its final state is stored.
+
+Protect every generated key file. A pointer's owner key cannot be changed.
+
+### Generate an owner key
+
+**Command:** `ant pointer keygen --output <PATH>`
+
+Creates an ML-DSA-65 owner key file offline. The command refuses to overwrite an existing file.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `-o, --output <PATH>` | path | Yes | File to create for the owner key. |
+
+**Example:**
+
+```bash
+ant pointer keygen --output pointer-owner.key
+```
+
+### Show a pointer address
+
+**Command:** `ant pointer address --key <PATH>`
+
+Derives the pointer address owned by a key file without connecting to the Autonomi Network.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `-k, --key <PATH>` | path | Yes | Owner key file. |
+
+**Example:**
+
+```bash
+ant pointer address --key pointer-owner.key
+```
+
+### Create a pointer
+
+**Command:** `ant pointer create --key <PATH> [--kind <KIND>] <TARGET>`
+
+Creates the pointer owned by the key and pays to store its first target. The command refuses before payment if the pointer already exists.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `-k, --key <PATH>` | path | Yes | Owner key file. |
+| `TARGET` | hexadecimal string | Yes | 64-character target address. |
+| `--kind <KIND>` | string | No | Target type: `chunk` or `pointer`. Default `chunk`. |
+
+**Example:**
+
+```bash
+: "${SECRET_KEY:?Set SECRET_KEY to the payment wallet private key}"
+: "${TARGET_ADDRESS:?Set TARGET_ADDRESS to a 64-character target address}"
+ant pointer create --key pointer-owner.key --kind chunk "$TARGET_ADDRESS"
+```
+
+### Update a pointer
+
+**Command:** `ant pointer update --key <PATH> [--kind <KIND>] <TARGET>`
+
+Pays to store a new target for the pointer owned by the key.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `-k, --key <PATH>` | path | Yes | Owner key file. |
+| `TARGET` | hexadecimal string | Yes | 64-character target address. |
+| `--kind <KIND>` | string | No | Target type: `chunk` or `pointer`. Default `chunk`. |
+
+**Example:**
+
+```bash
+: "${SECRET_KEY:?Set SECRET_KEY to the payment wallet private key}"
+: "${TARGET_ADDRESS:?Set TARGET_ADDRESS to a 64-character target address}"
+ant pointer update --key pointer-owner.key --kind chunk "$TARGET_ADDRESS"
+```
+
+### Transfer a pointer
+
+**Command:** `ant pointer transfer --key <PATH> <RECIPIENT>`
+
+Pays to store a final state that permanently hands control to another pointer. Before paying, the command refuses if the pointer is already final, the recipient does not exist, or the recipient leads back to this pointer.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `-k, --key <PATH>` | path | Yes | Owner key file. |
+| `RECIPIENT` | hexadecimal string | Yes | 64-character address of the recipient pointer. |
+
+**Example:**
+
+```bash
+: "${SECRET_KEY:?Set SECRET_KEY to the payment wallet private key}"
+: "${RECIPIENT_POINTER:?Set RECIPIENT_POINTER to the recipient pointer address}"
+ant pointer transfer --key pointer-owner.key "$RECIPIENT_POINTER"
+```
+
+### Check pointer finality
+
+**Command:** `ant pointer finality <ADDRESS>`
+
+Asks the close group whether one final state has majority agreement with no rival. Check this before relying on a transfer.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ADDRESS` | hexadecimal string | Yes | 64-character pointer address. |
+
+**Example:**
+
+```bash
+: "${POINTER_ADDRESS:?Set POINTER_ADDRESS to a 64-character pointer address}"
+ant pointer finality "$POINTER_ADDRESS"
+```
+
+### Find the controlling pointer
+
+**Command:** `ant pointer controller <ADDRESS>`
+
+Follows transfers to the pointer whose owner controls resolution.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ADDRESS` | hexadecimal string | Yes | 64-character pointer address. |
+
+**Example:**
+
+```bash
+: "${POINTER_ADDRESS:?Set POINTER_ADDRESS to a 64-character pointer address}"
+ant pointer controller "$POINTER_ADDRESS"
+```
+
+### Read a pointer
+
+**Command:** `ant pointer get <ADDRESS>`
+
+Reads one pointer record without following its target.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ADDRESS` | hexadecimal string | Yes | 64-character pointer address. |
+
+**Example:**
+
+```bash
+: "${POINTER_ADDRESS:?Set POINTER_ADDRESS to a 64-character pointer address}"
+ant pointer get "$POINTER_ADDRESS"
+```
+
+### Resolve a pointer chain
+
+**Command:** `ant pointer resolve <ADDRESS>`
+
+Follows a pointer chain and prints the target at its end.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `ADDRESS` | hexadecimal string | Yes | 64-character pointer address. |
+
+**Example:**
+
+```bash
+: "${POINTER_ADDRESS:?Set POINTER_ADDRESS to a 64-character pointer address}"
+ant pointer resolve "$POINTER_ADDRESS"
+```
+
+## Manifest commands
+
+A manifest describes a set of files. You can share it as a `.ant` file or an `ant://manifest/...` link. The manifest itself is not stored on the Autonomi Network. Uploading new files or publishing private DataMaps is paid; listing, inspecting, linking, and exporting without compaction can run offline.
+
+### Create a manifest
+
+**Command:** `ant manifest create [PATHS]...`
+
+Uploads supplied files and writes a manifest. To create one without uploading, add existing public files with `--public-file`.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `PATHS` | path list | No | Files or directories to upload. One directory contributes its contents under the directory name. |
+| `-o, --output <PATH>` | path | No | Output file. Defaults to `<name>.ant`. |
+| `--name <NAME>` | string | No | Manifest name and default extraction-directory name. |
+| `--compact` | boolean | No | Reference files by public address when their DataMap is already stored. Does not publish by itself. |
+| `--public` | boolean | No | Store each uploaded file's DataMap so anyone with its address can retrieve it. |
+| `--follow-symlinks` | boolean | No | Follow symbolic links to regular files instead of skipping them. |
+| `--public-file <ADDRESS[=PATH]>` | string list | No | Add an existing public file, optionally under a chosen manifest path. Repeatable. |
+| `--embed-public <ADDRESS[=PATH]>` | string list | No | Fetch and embed an existing public file's DataMap. Requires the Autonomi Network but no wallet. Repeatable. |
+| `--torrent-hash <HEX>` | hexadecimal string | No | Record a 40-character BitTorrent v1 or 64-character v2 info hash. Repeat to include both. |
+| `--merkle` | boolean | No | Force Merkle batch payment. |
+| `--no-merkle` | boolean | No | Force per-chunk payment. |
+| `--overwrite` | boolean | No | Replace an existing output file. |
+| `--link` | boolean | No | Also print a manifest link. |
+
+**Example:**
+
+Creates an offline manifest around the public Lucky image:
+
+```bash
+ant manifest create \
+  --name lucky \
+  --public-file 711c7e20006ff3e0ac6c1f3063286a0c1a3e4c409642e8c526173fa60bb7078a=lucky.jpg \
+  --output lucky.ant \
+  --overwrite
+```
+
+### List recorded uploads
+
+**Command:** `ant manifest list`
+
+Lists locally recorded uploads, newest first.
+
+**Parameters:**
+
+This command has no command-specific parameters.
+
+**Example:**
+
+```bash
+ant manifest list
+```
+
+### Show a manifest
+
+**Command:** `ant manifest show <SOURCE>`
+
+Lists entries from a manifest file, manifest link, or recorded upload ID.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `SOURCE` | string | Yes | `.ant` file, manifest link, or upload ID. |
+
+**Example:**
+
+```bash
+ant manifest show lucky.ant
+```
+
+### Print a manifest link
+
+**Command:** `ant manifest link <SOURCE>`
+
+Prints the manifest as an `ant://manifest/...` link, using the short published form for embedded DataMaps.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `SOURCE` | string | Yes | `.ant` file, manifest link, or upload ID. |
+
+**Example:**
+
+```bash
+ant manifest link lucky.ant
+```
+
+### Export a manifest
+
+**Command:** `ant manifest export <SOURCE>`
+
+Writes a manifest to a `.ant` file. Compaction replaces embedded DataMaps with public addresses. Using `--compact` always requires `SECRET_KEY` and a network connection, even when every DataMap is already public. If a DataMap is still private, the CLI asks before publishing it in interactive text mode; publishing is paid and makes the file public. In JSON or non-interactive use, pass `--yes` when publication is required.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `SOURCE` | string | Yes | `.ant` file, manifest link, or upload ID. |
+| `-o, --output <PATH>` | path | No | Output file. Defaults to `<name>.ant`. |
+| `--compact` | boolean | No | Replace embedded DataMaps with public addresses. Always requires `SECRET_KEY`; may require paid publication. |
+| `-y, --yes` | boolean | No | Publish private DataMaps without asking. Required for publication in JSON or non-interactive use. |
+| `--overwrite` | boolean | No | Replace an existing output file. |
+| `--link` | boolean | No | Also print the exported manifest as a link. |
+
+**Example:**
+
+```bash
+ant manifest export lucky.ant --output lucky-copy.ant --overwrite
+```
+
+### Download a manifest
+
+**Command:** `ant manifest download <SOURCE>`
+
+Downloads the files described by a manifest.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `SOURCE` | string | Yes | `.ant` file, manifest link, or upload ID. |
+| `-o, --output <PATH>` | path | No | Extraction directory. Defaults to the manifest name, or the current directory when unnamed. |
+| `--select <PATH>` | string list | No | Download selected entries or directories. Repeatable. |
+| `--overwrite` | boolean | No | Replace existing regular files at target paths. |
+| `--concurrency <N>` | integer | No | Number of entries downloaded at once. Default `1`. |
+
+**Example:**
+
+```bash
+ant manifest download lucky.ant --output lucky-files
+```
+
 ## Wallet commands
 
 ### Show the wallet address
@@ -238,7 +578,7 @@ ant wallet address
 
 **Command:** `ant wallet balance`
 
-Prints the token balance for the configured EVM network.
+Prints the Autonomi Network Token (ANT) balance for the configured EVM network. It does not report the ETH balance used for transaction fees.
 
 **Parameters:**
 
@@ -389,7 +729,7 @@ Adds one or more nodes to the registry.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `--rewards-address <ADDR>` | string | Yes | Wallet address for node earnings |
-| `--count <N>` | integer | No | Number of nodes to add |
+| `--count <N>` | integer | No | Number of nodes to add. Default `1`. |
 | `--node-port <PORT|RANGE>` | string | No | Node port or port range |
 | `--data-dir-path <PATH>` | path | No | Custom data directory prefix |
 | `--log-dir-path <PATH>` | path | No | Custom log directory prefix |
@@ -624,7 +964,7 @@ ant node reset --force
 
 **Command:** `ant update`
 
-For installations made from release downloads or the shell/PowerShell installers, checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation, and the extracted binary must report the expected version.
+For installations made from release downloads or the shell/PowerShell installers, checks GitHub Releases for a newer version of the CLI, downloads it if one is available, and replaces the current executable in place. The downloaded archive's ML-DSA-65 signature is verified against the embedded release signing key before installation. When the extracted binary can report its version, a mismatch stops the update.
 
 For npm installations, use:
 

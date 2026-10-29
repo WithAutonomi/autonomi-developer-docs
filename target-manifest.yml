@@ -1,6 +1,6 @@
-# Scoped manual verification for browser SDK content only.
-# On shared landing pages, this covers only the new browser-source block.
-# This does not promote other sources or implement issue #103's automated contract.
+# Source profiles for scoped public technical documentation.
+# Browser source pins remain under scope and sources; release baselines are additive.
+# Each release promotion is limited to the scoped pages recorded in its entry.
 scope:
   pages:
     - docs/sdk/build-in-browser.md
@@ -26,3 +26,145 @@ sources:
       source_commit: 7a432e7c4442b4628872bd5cf6a3e896e7fc10ad
       sha256: 7873c65138aa499c48a8c34d9dbaa2fdd82509ca6e981afe9a4f77331b9e4cf4
       evidence_url: https://github.com/WithAutonomi/ant-browser-sdk/blob/5199100c15527bf657ae4a795c2bdf5d086981f7/src/wasm/source.json
+
+release_baselines:
+  schema_version: 1
+  entries:
+    ant-cli/stable:
+      component: ant-cli
+      context: stable
+      version: 0.3.12
+      source:
+        repo: ant-client
+        tag: ant-cli-v0.3.12
+        commit: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+      github_release:
+        id: 421325234
+        api_url: https://api.github.com/repos/WithAutonomi/ant-client/releases/421325234
+        release_url: https://github.com/WithAutonomi/ant-client/releases/tag/ant-cli-v0.3.12
+        published_at: "2026-10-23T00:17:25Z"
+        draft: false
+        prerelease: false
+        checksum_asset:
+          name: SHA256SUMS.txt
+          id: 667482035
+          url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/SHA256SUMS.txt
+          digest: sha256:70cd5b4a9a68138bd44fd622f11dec4c44880ece185ba658032b39d4f4cd90c4
+        platforms:
+          aarch64-apple-darwin:
+            archive:
+              name: ant-0.3.12-aarch64-apple-darwin.tar.gz
+              id: 667481967
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-aarch64-apple-darwin.tar.gz
+              digest: sha256:a28d33666c71859f2f18fffc1fd6bb522edd0ebef04f0dca7fb41b2a23efe486
+            signature:
+              name: ant-0.3.12-aarch64-apple-darwin.tar.gz.sig
+              id: 667482023
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-aarch64-apple-darwin.tar.gz.sig
+              digest: sha256:b5a8b898ee1ef21b55c03601e0cbb9ca4446ded294a4a6d0e4688a648a3373a5
+          aarch64-unknown-linux-musl:
+            archive:
+              name: ant-0.3.12-aarch64-unknown-linux-musl.tar.gz
+              id: 667481973
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-aarch64-unknown-linux-musl.tar.gz
+              digest: sha256:0238ddc48556302135e54cd80f63a25b2c6b79f9301270d43bcd008777a4e189
+            signature:
+              name: ant-0.3.12-aarch64-unknown-linux-musl.tar.gz.sig
+              id: 667482028
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-aarch64-unknown-linux-musl.tar.gz.sig
+              digest: sha256:e8467bcb54ef950c6630d603e3eaaac2781bf70c633ca793c074a6afc9db3927
+          x86_64-apple-darwin:
+            archive:
+              name: ant-0.3.12-x86_64-apple-darwin.tar.gz
+              id: 667481970
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-apple-darwin.tar.gz
+              digest: sha256:16b5a2600ef1d263b8b86c5b9862cc49561907361584fd7ea07792ee2ed469eb
+            signature:
+              name: ant-0.3.12-x86_64-apple-darwin.tar.gz.sig
+              id: 667482025
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-apple-darwin.tar.gz.sig
+              digest: sha256:fe61906b10eb3cdc55fe83b667f267cc6df4956781f0fe6b4c3d093cabcd2f50
+          x86_64-pc-windows-msvc:
+            archive:
+              name: ant-0.3.12-x86_64-pc-windows-msvc.zip
+              id: 667481971
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-pc-windows-msvc.zip
+              digest: sha256:ca7f591aecf3c725f5b5dd0b6d2e694219417cce20d3502c7cc251411f408a95
+            signature:
+              name: ant-0.3.12-x86_64-pc-windows-msvc.zip.sig
+              id: 667482032
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-pc-windows-msvc.zip.sig
+              digest: sha256:073585ace14026e1ad308c1346cc86a479e8fac3df1b9ece9351aedea35ebf07
+          x86_64-unknown-linux-musl:
+            archive:
+              name: ant-0.3.12-x86_64-unknown-linux-musl.tar.gz
+              id: 667481969
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-unknown-linux-musl.tar.gz
+              digest: sha256:be148fe0b35429d420b85343d0778131bfc0ef8c141b1370a02ea6b1397f8495
+            signature:
+              name: ant-0.3.12-x86_64-unknown-linux-musl.tar.gz.sig
+              id: 667482031
+              url: https://github.com/WithAutonomi/ant-client/releases/download/ant-cli-v0.3.12/ant-0.3.12-x86_64-unknown-linux-musl.tar.gz.sig
+              digest: sha256:bcafa87848aaf560880ed2a8d5d9494be92a6593fc1d0a8d0fc84ffc2b99fceb
+      npm:
+        package: "@withautonomi/ant"
+        dist_tag: latest
+        version: 0.3.12
+        metadata_url: https://registry.npmjs.org/@withautonomi%2Fant/0.3.12
+        integrity: sha512-ZiGE/cznS8kqR5UX97KTrnFqKE6sBM6PU0zimHc8RqhWsCCcXS0n+F1L7xVfHMvxj68kw5GMlQOzLJQZjMLBLg==
+        git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+        platforms:
+          aarch64-apple-darwin:
+            package: "@withautonomi/ant-darwin-arm64"
+            version: 0.3.12
+            metadata_url: https://registry.npmjs.org/@withautonomi%2Fant-darwin-arm64/0.3.12
+            integrity: sha512-v4J+QHDY1AxFPeITxqF/GAOzTyCjQUHQRXZPFnQxfnntySXmxUrWznYXRBi0zOIT7FX7i88k6I6zFi8e6GKiiw==
+            git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+          aarch64-unknown-linux-musl:
+            package: "@withautonomi/ant-linux-arm64"
+            version: 0.3.12
+            metadata_url: https://registry.npmjs.org/@withautonomi%2Fant-linux-arm64/0.3.12
+            integrity: sha512-toTqGiuTeQNWty/5HXvFll2c26BEH4mj7+BfEprtFcXzK7NjLFbtVCRRqzk1H8asfaKpztiLVX7MVZYMa+Z+hw==
+            git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+          x86_64-apple-darwin:
+            package: "@withautonomi/ant-darwin-x64"
+            version: 0.3.12
+            metadata_url: https://registry.npmjs.org/@withautonomi%2Fant-darwin-x64/0.3.12
+            integrity: sha512-1u/BCto6bX6W0aFBUlWHkHMvcQ4aoE0r4V09xOOFfaVfcQDxTFcKkm7xvL20YoKZnF1sOTSX/iQoknuep7dgbQ==
+            git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+          x86_64-pc-windows-msvc:
+            package: "@withautonomi/ant-win32-x64"
+            version: 0.3.12
+            metadata_url: https://registry.npmjs.org/@withautonomi%2Fant-win32-x64/0.3.12
+            integrity: sha512-ncaoIjBQdwQCnyU9+TEmRXMtbn4pDuPhMTZsqqSOKTSElxxZjtP3OrkGtokLzVplAeSwb9RJ0xMDBht8mS4dEg==
+            git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+          x86_64-unknown-linux-musl:
+            package: "@withautonomi/ant-linux-x64"
+            version: 0.3.12
+            metadata_url: https://registry.npmjs.org/@withautonomi%2Fant-linux-x64/0.3.12
+            integrity: sha512-KbG+1b7lJXxN7SaK83Ex7cc8LZibclH+5SnalhAGRn+5mLBjXtrd1lhFIVF/l6SA+6DB5oJb2swXmMeUwSpmtg==
+            git_head: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+      installers:
+        - platform: linux-macos
+          url: https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.sh
+          source_commit: 1a32bc6af3f3a8a3129f45d0fe3d60d5cdf76bb1
+          blob_sha: 8da2f202afddbc39bdba6f3b52caba53f73de905
+          evidence_url: https://github.com/WithAutonomi/ant-client/blob/1a32bc6af3f3a8a3129f45d0fe3d60d5cdf76bb1/install.sh
+          selected_version: 0.3.12
+        - platform: windows
+          url: https://raw.githubusercontent.com/WithAutonomi/ant-client/main/install.ps1
+          source_commit: 8658e16cbdaee8c2f2d7fb66d43498eb0f95c95a
+          blob_sha: d837fe3a90261ad1320b72e9d2d343979dda5251
+          evidence_url: https://github.com/WithAutonomi/ant-client/blob/8658e16cbdaee8c2f2d7fb66d43498eb0f95c95a/install.ps1
+          selected_version: 0.3.12
+      shipped_dependencies:
+        ant-core:
+          version: 0.14.0
+          source_repo: ant-client
+          source_commit: 6096b1c8caf6688d6825fcb9ff61fa1b590d984b
+          evidence_url: https://github.com/WithAutonomi/ant-client/blob/6096b1c8caf6688d6825fcb9ff61fa1b590d984b/ant-core/Cargo.toml
+      scoped_pages:
+        - docs/cli/command-reference.md
+        - docs/cli/use-the-cli.md
+      promotion:
+        record: planning/sweeps/2026-10-29.md
